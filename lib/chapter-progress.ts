@@ -30,7 +30,11 @@ export function calculateChapterProgress(
     };
   }
 
-  if (input.phase === "cinematic-intro" || input.phase === "opening") {
+  if (
+    input.phase === "cinematic-intro" ||
+    input.phase === "how-to-play" ||
+    input.phase === "opening"
+  ) {
     return { percent: 0, label: "Infiltration", detail: "Briefing" };
   }
 

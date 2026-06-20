@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GameHeader } from "@/components/chapter/GameHeader";
 import { GameShell } from "@/components/chapter/GameShell";
 import { CinematicIntro } from "@/components/chapter/CinematicIntro";
+import { HowToPlayScreen } from "@/components/chapter/HowToPlayScreen";
 import { OpeningScene } from "@/components/chapter/OpeningScene";
 import { DataArchivesSection } from "@/components/chapter/DataArchivesSection";
 import { OuterPerimeterSection } from "@/components/chapter/OuterPerimeterSection";
@@ -592,6 +593,10 @@ export function ActOneInfiltration() {
   }, [setGroknetWhisper, state.finalMood]);
 
   const handleCinematicIntroComplete = useCallback(() => {
+    setState((s) => ({ ...s, phase: "how-to-play" }));
+  }, []);
+
+  const handleHowToPlayComplete = useCallback(() => {
     setState((s) => ({ ...s, phase: "opening" }));
   }, []);
 
@@ -710,6 +715,10 @@ export function ActOneInfiltration() {
     <GameShell shaking={state.screenShaking} variant="act-1">
       {state.phase === "cinematic-intro" ? (
         <CinematicIntro onComplete={handleCinematicIntroComplete} />
+      ) : null}
+
+      {state.phase === "how-to-play" ? (
+        <HowToPlayScreen onComplete={handleHowToPlayComplete} />
       ) : null}
 
       {state.phase === "opening" ? (

@@ -958,6 +958,34 @@ body {
   animation: opening-beat-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+.how-to-play-screen {
+  animation: how-to-play-screen-in 0.55s ease-out both;
+}
+
+.how-to-play-screen-out {
+  animation: how-to-play-screen-out 0.65s ease-in both;
+}
+
+.how-to-play-header {
+  animation: how-to-play-header-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.how-to-play-panel {
+  animation: how-to-play-panel-in 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+}
+
+.how-to-play-tip {
+  animation: how-to-play-tip-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.how-to-play-note {
+  animation: how-to-play-note-in 0.55s ease-out 0.45s both;
+}
+
+.how-to-play-action {
+  animation: how-to-play-action-in 0.55s ease-out 0.55s both;
+}
+
 @keyframes opening-scene-in {
   from {
     opacity: 0;
@@ -980,6 +1008,77 @@ body {
   from {
     opacity: 0;
     transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes how-to-play-screen-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes how-to-play-screen-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes how-to-play-header-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes how-to-play-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes how-to-play-tip-in {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes how-to-play-note-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes how-to-play-action-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
   to {
     opacity: 1;

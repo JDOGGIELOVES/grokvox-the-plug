@@ -4,6 +4,7 @@ import type { RunSummary } from "@/types/run";
 
 export type ChapterPhase =
   | "cinematic-intro"
+  | "how-to-play"
   | "opening"
   | "playing"
   | "complete";
