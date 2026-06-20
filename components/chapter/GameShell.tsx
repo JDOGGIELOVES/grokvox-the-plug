@@ -28,16 +28,16 @@ export function GameShell({
       <CinematicOverlay />
 
       <div className="game-shell-glow pointer-events-none absolute inset-0" />
-      <div className="pointer-events-none absolute inset-0 landing-grid opacity-20" />
-      <div className="pointer-events-none absolute inset-0 landing-vignette opacity-80" />
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,rgba(1,1,2,0.82)_100%)]" />
+      <div className="pointer-events-none absolute inset-0 landing-grid opacity-[0.12]" />
+      <div className="pointer-events-none absolute inset-0 landing-vignette opacity-50" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,rgba(1,1,2,0.65)_100%)]" />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 py-6 sm:px-8 sm:py-10">
+      <div className="game-readable relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 py-6 sm:px-8 sm:py-10">
         {children}
       </div>
 
       <footer className="relative z-10 border-t border-zinc-800/50 py-4 sm:py-5">
-        <p className="text-center font-mono text-[10px] uppercase tracking-[0.35em] text-zinc-600">
+        <p className="text-center font-mono text-xs uppercase tracking-[0.35em] text-zinc-400">
           Groknet is watching · Sector 07
         </p>
       </footer>

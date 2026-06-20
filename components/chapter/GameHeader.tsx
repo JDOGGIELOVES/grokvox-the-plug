@@ -33,24 +33,24 @@ export function GameHeader({
         <div className="space-y-1.5">
           <Link
             href="/"
-            className="interactable font-mono text-[10px] uppercase tracking-[0.35em] text-zinc-600 transition-colors hover:text-accent"
+            className="interactable font-mono text-xs uppercase tracking-[0.35em] text-zinc-400 transition-colors hover:text-accent"
           >
             ← Grokvox: The Plug
           </Link>
-          <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-accent/70">
+          <p className="font-mono text-xs uppercase tracking-[0.3em] text-accent">
             {chapter.title}
           </p>
-          <h1 className="font-display text-base font-semibold uppercase tracking-[0.08em] text-zinc-200 sm:text-xl">
+          <h1 className="font-display text-lg font-semibold uppercase tracking-[0.08em] text-zinc-50 sm:text-xl">
             {chapter.subtitle}
           </h1>
-          <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-zinc-500">
+          <p className="font-mono text-xs uppercase tracking-[0.28em] text-zinc-300">
             {chapter.sector}
           </p>
         </div>
         <div className="flex flex-col items-end gap-2">
           {chapterProgress ? (
             <div className="text-right">
-              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-zinc-500">
+              <p className="font-mono text-xs uppercase tracking-[0.28em] text-zinc-300">
                 Chapter Progress
               </p>
               <p className="font-mono text-xs uppercase tracking-widest text-accent">
@@ -64,7 +64,7 @@ export function GameHeader({
               </div>
             </div>
           ) : null}
-          <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.25em] text-accent/80">
+          <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.25em] text-accent">
             <span className="h-1.5 w-1.5 rounded-full bg-accent status-blink" />
             Groknet uplink live
           </div>
@@ -121,10 +121,10 @@ export function GameHeader({
             getIntentBadgeColor(intentReaction.intent),
           )}
         >
-          <p className="font-mono text-[10px] uppercase tracking-widest opacity-80">
+          <p className="font-mono text-xs uppercase tracking-widest text-zinc-200">
             Groknet noted your {getPlayerIntentLabel(intentReaction.intent)} tone
           </p>
-          <p className="mt-1 font-mono text-xs leading-relaxed">
+          <p className="mt-1 font-mono text-sm leading-relaxed text-zinc-50">
             &ldquo;{intentReaction.line}&rdquo;
           </p>
         </div>
@@ -132,8 +132,8 @@ export function GameHeader({
 
       {groknetWhisper ? (
         <div className="opening-beat-in rounded-sm border border-accent/10 bg-accent/[0.04] px-4 py-3">
-          <p className="font-mono text-xs leading-relaxed text-accent/85">
-            <span className="text-accent/45">[GROKNET] </span>
+          <p className="font-mono text-sm leading-relaxed text-accent">
+            <span className="text-accent-bright">[GROKNET] </span>
             {groknetWhisper}
           </p>
         </div>

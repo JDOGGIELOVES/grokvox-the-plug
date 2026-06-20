@@ -22,7 +22,7 @@ export function HallucinationChoicePrompt({
   const isMirror = eventId === "the-mirror";
 
   return (
-    <div className="hallucination-choice-in fixed inset-x-0 bottom-0 z-[48] flex justify-center px-4 pb-6 sm:pb-10">
+    <div className="hallucination-choice-in game-readable fixed inset-x-0 bottom-0 z-[48] flex justify-center px-4 pb-6 sm:pb-10">
       <div
         className={cn(
           "w-full max-w-2xl rounded-sm border bg-zinc-950/95 p-4 backdrop-blur-md sm:p-6",
@@ -33,13 +33,13 @@ export function HallucinationChoicePrompt({
       >
         <p
           className={cn(
-            "font-mono text-[10px] uppercase tracking-[0.35em]",
-            isMirror ? "text-violet-400/80" : "text-red-400/80",
+            "font-mono text-xs uppercase tracking-[0.35em]",
+            isMirror ? "text-violet-300" : "text-red-300",
           )}
         >
           {event.title} · Respond
         </p>
-        <p className="mt-2 text-sm leading-relaxed text-zinc-400">
+        <p className="mt-2 text-base leading-relaxed text-zinc-100">
           The vision won't hold forever. How do you answer what you're seeing?
         </p>
 
@@ -56,10 +56,10 @@ export function HallucinationChoicePrompt({
                     : "hover:border-red-800/60 hover:bg-red-950/30 hover:shadow-[0_0_16px_rgba(220,38,38,0.12)]",
                 )}
               >
-                <p className="font-display text-xs font-semibold uppercase tracking-[0.14em] text-zinc-200 group-hover:text-red-200/90">
+                <p className="font-display text-sm font-semibold uppercase tracking-[0.14em] text-zinc-50 group-hover:text-orange-100">
                   {choice.label}
                 </p>
-                <p className="mt-1 text-[11px] leading-relaxed text-zinc-500 group-hover:text-zinc-400">
+                <p className="mt-1 text-sm leading-relaxed text-zinc-300 group-hover:text-zinc-100">
                   {choice.description}
                 </p>
               </button>

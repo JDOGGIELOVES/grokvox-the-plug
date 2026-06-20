@@ -48,7 +48,7 @@ export function GroknetPresenceBanner({
     >
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-1">
-          <p className={cn("font-mono text-[10px] uppercase tracking-[0.32em]", presenceAccent)}>
+          <p className={cn("font-mono text-xs uppercase tracking-[0.32em]", presenceAccent)}>
             Groknet · {presenceLabel}
             {stage === "plug-chamber" ? " · Plug Proximity" : " · Deep Core"}
           </p>
@@ -67,7 +67,7 @@ export function GroknetPresenceBanner({
             </p>
           )}
           {variant ? (
-            <p className="font-mono text-[9px] uppercase tracking-widest text-zinc-500">
+            <p className="font-mono text-xs uppercase tracking-widest text-zinc-300">
               {variant.subtitle}
             </p>
           ) : null}
@@ -82,7 +82,7 @@ export function GroknetPresenceBanner({
         </div>
       </div>
       {variantWhisper ? (
-        <p className="mt-3 text-sm italic leading-relaxed text-zinc-300">
+        <p className="mt-3 text-base italic leading-relaxed text-zinc-100">
           &ldquo;{variantWhisper}&rdquo;
         </p>
       ) : null}

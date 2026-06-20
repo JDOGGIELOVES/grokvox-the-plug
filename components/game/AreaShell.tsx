@@ -35,11 +35,11 @@ export function AreaShell({ area, children, atmosphere, alert }: AreaShellProps)
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <span className="lab-pulse h-2 w-2 rounded-full bg-accent/80 shadow-[0_0_8px_rgba(249,115,22,0.5)]" />
-            <span className="font-mono text-[10px] uppercase tracking-[0.35em] text-zinc-500">
+            <span className="font-mono text-xs uppercase tracking-[0.35em] text-zinc-300">
               Facility // {area.facilityCode}
             </span>
           </div>
-          <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-600">
+          <span className="font-mono text-xs uppercase tracking-widest text-zinc-300">
             {area.clearance}
           </span>
         </div>
@@ -57,14 +57,14 @@ export function AreaShell({ area, children, atmosphere, alert }: AreaShellProps)
         <div className="flex flex-col gap-5 p-4 sm:gap-6 sm:p-7 md:min-h-[460px]">
           <div className="space-y-4">
             <div className="space-y-2">
-              <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-accent/70">
+              <p className="font-mono text-xs uppercase tracking-[0.3em] text-accent">
                 {area.subtitle}
               </p>
               <h2 className="font-display text-xl font-semibold uppercase tracking-[0.06em] text-zinc-100 sm:text-2xl">
                 {area.title}
               </h2>
             </div>
-            <p className="max-w-xl text-[15px] leading-7 text-zinc-400">
+            <p className="text-game-body max-w-xl">
               {area.description}
             </p>
           </div>
@@ -73,7 +73,7 @@ export function AreaShell({ area, children, atmosphere, alert }: AreaShellProps)
         </div>
 
         <aside className="border-t border-zinc-800/80 bg-zinc-950/50 p-5 md:border-l md:border-t-0">
-          <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-600">
+          <p className="mb-4 font-mono text-xs uppercase tracking-[0.25em] text-zinc-300">
             Systems Monitor
           </p>
           <ul className="space-y-3">
@@ -82,7 +82,7 @@ export function AreaShell({ area, children, atmosphere, alert }: AreaShellProps)
                 key={system.label}
                 className="flex items-center justify-between gap-3 border-b border-zinc-800/60 pb-3 last:border-0 last:pb-0"
               >
-                <span className="text-xs text-zinc-500">{system.label}</span>
+                <span className="text-sm text-zinc-300">{system.label}</span>
                 <span className="flex items-center gap-2">
                   <span
                     className={cn(
@@ -90,7 +90,7 @@ export function AreaShell({ area, children, atmosphere, alert }: AreaShellProps)
                       system.ok ? "bg-emerald-500/70" : "bg-accent/80",
                     )}
                   />
-                  <span className="font-mono text-[10px] uppercase tracking-wide text-zinc-400">
+                  <span className="font-mono text-xs uppercase tracking-wide text-zinc-200">
                     {system.status}
                   </span>
                 </span>

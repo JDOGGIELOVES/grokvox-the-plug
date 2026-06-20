@@ -26,9 +26,9 @@ function getSpeakerColor(speaker: (typeof OPENING_BEATS)[number]["speaker"]) {
     case "groknet":
       return "text-accent";
     case "system":
-      return "text-zinc-400";
+      return "text-zinc-200";
     default:
-      return "text-zinc-500";
+      return "text-zinc-300";
   }
 }
 
@@ -73,7 +73,7 @@ export function OpeningScene({ onComplete }: OpeningSceneProps) {
       )}
     >
       <div className="pointer-events-none absolute inset-0 landing-vignette" />
-      <div className="pointer-events-none absolute inset-0 landing-scanlines opacity-40" />
+      <div className="pointer-events-none absolute inset-0 landing-scanlines opacity-20" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_40%,rgba(249,115,22,0.12),transparent_70%)]" />
 
       <div className="relative z-10 w-full max-w-2xl space-y-8">
@@ -91,18 +91,18 @@ export function OpeningScene({ onComplete }: OpeningSceneProps) {
             <p
               key={beat.id}
               className={cn(
-                "opening-beat-in font-mono text-sm leading-relaxed sm:text-[15px]",
+                "opening-beat-in font-mono text-base leading-relaxed text-zinc-100 sm:text-[17px]",
                 getSpeakerColor(beat.speaker),
               )}
             >
-              <span className="mr-2 text-[10px] uppercase tracking-widest opacity-60">
+              <span className="mr-2 text-xs uppercase tracking-widest text-accent">
                 {getSpeakerLabel(beat.speaker)}
               </span>
               {beat.text}
             </p>
           ))}
           {visibleCount < OPENING_BEATS.length ? (
-            <p className="font-mono text-xs text-zinc-600">
+            <p className="font-mono text-sm text-zinc-300">
               <span className="status-blink inline-block h-1.5 w-1.5 rounded-full bg-accent align-middle" />{" "}
               Receiving transmission…
             </p>
@@ -124,7 +124,7 @@ export function OpeningScene({ onComplete }: OpeningSceneProps) {
           >
             {exiting ? "Deploying to perimeter…" : "Enter Outer Perimeter"}
           </button>
-          <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-600">
+          <p className="font-mono text-xs uppercase tracking-[0.25em] text-zinc-300">
             {ready ? "Groknet is listening" : "Establishing uplink…"}
           </p>
         </div>

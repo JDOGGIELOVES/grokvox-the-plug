@@ -68,7 +68,7 @@ export function MainMenu() {
   if (!menu) {
     return (
       <div className="flex min-h-[9rem] items-center justify-center">
-        <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-zinc-600">
+        <p className="font-mono text-xs uppercase tracking-[0.35em] text-zinc-300">
           Groknet scanning local uplink…
         </p>
       </div>
@@ -142,7 +142,7 @@ export function MainMenu() {
           disabled={entering}
           className={cn(
             "interactable w-full rounded-sm border border-zinc-800/80 bg-zinc-950/50 px-6 py-3",
-            "font-mono text-[11px] uppercase tracking-[0.28em] text-zinc-400",
+            "font-mono text-xs uppercase tracking-[0.28em] text-zinc-200",
             "transition-colors hover:border-zinc-700 hover:text-zinc-200",
           )}
         >
@@ -150,7 +150,7 @@ export function MainMenu() {
         </button>
       ) : null}
 
-      <p className="max-w-md text-center font-mono text-[10px] uppercase tracking-[0.22em] text-zinc-600">
+      <p className="max-w-md text-center font-mono text-xs uppercase tracking-[0.22em] text-zinc-300">
         {menu.progressLine}
       </p>
 
@@ -203,7 +203,7 @@ export function MainMenu() {
             <h3 className="mt-2 font-display text-lg font-semibold uppercase tracking-[0.08em] text-zinc-100">
               Wipe local progress?
             </h3>
-            <p className="mt-3 text-sm leading-relaxed text-zinc-400">
+            <p className="mt-3 text-base leading-relaxed text-zinc-200">
               This clears your save and all checkpoints on this device. Groknet
               will treat you as a first-time intruder.
             </p>

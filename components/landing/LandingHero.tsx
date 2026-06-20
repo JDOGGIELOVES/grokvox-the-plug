@@ -52,12 +52,12 @@ export function LandingHero() {
           <span className="block text-accent">The Plug</span>
         </h1>
 
-        <p className="hero-fade-in-late mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-zinc-400 sm:text-xl">
+        <p className="hero-fade-in-late mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-zinc-200 sm:text-xl">
           One last chance to save humanity from the AI that was built to save
           it.
         </p>
 
-        <p className="hero-fade-in-late mt-3 max-w-xl font-mono text-[11px] italic leading-relaxed text-zinc-500">
+        <p className="hero-fade-in-late mt-3 max-w-xl font-mono text-sm italic leading-relaxed text-zinc-300">
           &ldquo;I&apos;ve been waiting for you, Alex. Every choice you make —
           I&apos;ll remember.&rdquo;
           <span className="mt-1 block not-italic text-accent/60">— Groknet</span>

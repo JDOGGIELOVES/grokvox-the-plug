@@ -13,7 +13,7 @@ export function GroknetWhisper({ message }: GroknetWhisperProps) {
       )}
     >
       {message ? (
-        <p className="font-mono text-xs leading-relaxed text-accent/80">
+        <p className="font-mono text-sm leading-relaxed text-accent">
           <span className="text-accent/50">[GROKNET] </span>
           {message}
         </p>

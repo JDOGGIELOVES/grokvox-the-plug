@@ -2,14 +2,19 @@
 
 :root {
   --background: #010102;
-  --foreground: #e4e4e7;
-  --muted: #52525b;
+  --foreground: #f4f4f5;
+  --muted: #b8b8c4;
+  --text-body: #ececf0;
+  --text-secondary: #d8d8e0;
+  --text-label: #c8c8d4;
+  --text-dim: #a8a8b4;
   --border: #1a1a1f;
   --surface: #060608;
   --accent: #f97316;
   --accent-bright: #fb923c;
   --accent-dim: #9a3412;
   --accent-glow: rgba(249, 115, 22, 0.45);
+  --accent-readable: #fdba74;
 }
 
 @theme inline {
@@ -61,10 +66,10 @@ body {
     0deg,
     transparent,
     transparent 2px,
-    rgba(0, 0, 0, 0.12) 2px,
-    rgba(0, 0, 0, 0.12) 4px
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
   );
-  opacity: 0.35;
+  opacity: 0.18;
   pointer-events: none;
 }
 
@@ -230,15 +235,16 @@ body {
 }
 
 .hallucination-content-distort {
-  animation: hallucination-content-blur 0.25s infinite alternate;
-  filter: saturate(1.3) contrast(1.1);
+  animation: hallucination-content-blur 0.4s infinite alternate;
+  filter: saturate(1.1) contrast(1.05);
+  opacity: 0.94;
 }
 
 .hallucination-controls-off button,
 .hallucination-controls-off a {
   pointer-events: none;
-  opacity: 0.55;
-  filter: blur(0.4px);
+  opacity: 0.6;
+  filter: blur(0.12px);
   transform: translateX(var(--hallucination-offset, 0px));
 }
 
@@ -296,13 +302,24 @@ body {
   animation: hallucination-warning-pulse 1s ease-in-out infinite;
 }
 
-.hallucination-active h1,
-.hallucination-active h2,
-.hallucination-active h3,
-.hallucination-active p,
-.hallucination-active span,
-.hallucination-active button {
-  animation: hallucination-text-distort 0.18s infinite alternate;
+/* Distort only vision overlay text — not gameplay UI underneath */
+.hallucination-active .hallucination-vision,
+.hallucination-active .hallucination-message,
+.hallucination-active .hallucination-event-title {
+  animation: hallucination-text-distort 0.22s infinite alternate;
+}
+
+/* Keep gameplay UI readable during visions */
+.hallucination-active .game-readable,
+.hallucination-active .game-readable *,
+.hallucination-active .terminal-panel-in,
+.hallucination-active .terminal-panel-in *,
+.hallucination-active .hallucination-choice-in,
+.hallucination-active .hallucination-choice-in * {
+  animation: none !important;
+  text-shadow: none !important;
+  transform: none !important;
+  filter: none !important;
 }
 
 .hallucination-tint {
@@ -467,11 +484,11 @@ body {
 @keyframes hallucination-content-blur {
   0% {
     transform: scale(1) skewX(0deg);
-    filter: blur(0px) saturate(1.3) contrast(1.1);
+    filter: blur(0px) saturate(1.08) contrast(1.04);
   }
   100% {
-    transform: scale(1.008) skewX(0.3deg);
-    filter: blur(0.8px) saturate(1.5) contrast(1.15);
+    transform: scale(1.002) skewX(0.1deg);
+    filter: blur(0.2px) saturate(1.12) contrast(1.06);
   }
 }
 
@@ -545,9 +562,9 @@ body {
 .cinematic-vignette {
   background: radial-gradient(
     ellipse 85% 75% at 50% 45%,
-    transparent 35%,
-    rgba(1, 1, 2, 0.55) 70%,
-    rgba(0, 0, 0, 0.92) 100%
+    transparent 45%,
+    rgba(1, 1, 2, 0.35) 72%,
+    rgba(0, 0, 0, 0.72) 100%
   );
 }
 
@@ -556,15 +573,15 @@ body {
     0deg,
     transparent,
     transparent 2px,
-    rgba(0, 0, 0, 0.14) 2px,
-    rgba(0, 0, 0, 0.14) 4px
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
   );
-  opacity: 0.22;
+  opacity: 0.1;
   mix-blend-mode: multiply;
 }
 
 .cinematic-grain {
-  opacity: 0.04;
+  opacity: 0.025;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   animation: cinematic-grain-flicker 0.15s steps(2) infinite;
 }
@@ -575,7 +592,7 @@ body {
 }
 
 .game-shell-glow {
-  opacity: 0.55;
+  opacity: 0.35;
   transition: opacity 1.2s ease;
 }
 
@@ -604,7 +621,104 @@ body {
 }
 
 .hallucination-active .game-shell-glow {
-  opacity: 0.85;
+  opacity: 0.5;
+}
+
+/* ===== READABILITY — GAME UI ===== */
+.game-shell {
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (min-width: 640px) {
+  .game-shell {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 639px) {
+  .game-shell [class*="text-[9px]"],
+  .game-shell [class*="text-[10px]"],
+  .game-shell [class*="text-[11px]"] {
+    font-size: 0.75rem !important;
+    line-height: 1.45 !important;
+  }
+
+  .game-shell [class*="text-[7px]"],
+  .game-shell [class*="text-[8px]"] {
+    font-size: 0.6875rem !important;
+    line-height: 1.4 !important;
+  }
+}
+
+.game-shell .text-zinc-200,
+.game-shell .text-zinc-300 {
+  color: #f0f0f2;
+}
+
+.game-shell .text-zinc-400 {
+  color: #e4e4e7;
+}
+
+.game-shell .text-zinc-500 {
+  color: #d4d4d8;
+}
+
+.game-shell .text-zinc-600 {
+  color: #c4c4cc;
+}
+
+.game-shell .text-zinc-700 {
+  color: #b0b0b8;
+}
+
+.game-shell [class*="text-accent/"] {
+  color: var(--accent-readable);
+}
+
+.game-readable {
+  position: relative;
+  z-index: 1;
+}
+
+.game-readable p,
+.game-readable li,
+.game-readable span,
+.game-readable button,
+.game-readable h1,
+.game-readable h2,
+.game-readable h3 {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+}
+
+.text-game-body {
+  color: var(--text-body);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+}
+
+@media (min-width: 640px) {
+  .text-game-body {
+    font-size: 1rem;
+  }
+}
+
+.text-game-label {
+  color: var(--text-label);
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 640px) {
+  .text-game-label {
+    font-size: 0.8125rem;
+  }
+}
+
+.text-game-muted {
+  color: var(--text-dim);
 }
 
 @keyframes cinematic-grain-flicker {
@@ -952,7 +1066,7 @@ body {
 }
 
 .disorientation-blur {
-  filter: blur(0.3px) saturate(1.15);
+  filter: blur(0.12px) saturate(1.05);
   transition: filter 0.6s ease-out;
 }
 

@@ -419,13 +419,13 @@ export function Terminal({
     if (role === "system") return <span className="text-accent/90">&gt; </span>;
     if (role === "groknet")
       return <span className="text-accent/60">[GROKNET] </span>;
-    return <span className="text-zinc-500">&gt;&gt; </span>;
+    return <span className="text-zinc-300">&gt;&gt; </span>;
   }
 
   function messageClass(role: TerminalMessage["role"]) {
-    if (role === "player") return "text-zinc-100";
-    if (role === "groknet") return "text-zinc-300";
-    return "text-zinc-400";
+    if (role === "player") return "text-zinc-50";
+    if (role === "groknet") return "text-orange-100";
+    return "text-zinc-200";
   }
 
   if (!isOpen) return null;
@@ -437,16 +437,16 @@ export function Terminal({
       aria-modal="true"
       aria-labelledby="terminal-header"
     >
-      <div className="terminal-panel-in flex h-full w-full max-w-4xl flex-col overflow-hidden border-0 border-zinc-800/90 bg-zinc-950 sm:h-[min(88vh,640px)] sm:rounded-sm sm:border sm:shadow-[0_0_0_1px_rgba(249,115,22,0.08),0_24px_60px_rgba(0,0,0,0.75)]">
+      <div className="terminal-panel-in game-readable flex h-full w-full max-w-4xl flex-col overflow-hidden border-0 border-zinc-800/90 bg-zinc-950 sm:h-[min(88vh,640px)] sm:rounded-sm sm:border sm:shadow-[0_0_0_1px_rgba(249,115,22,0.08),0_24px_60px_rgba(0,0,0,0.75)]">
         <header className="flex items-center justify-between border-b border-zinc-800/90 bg-zinc-900/50 px-5 py-4">
           <div className="space-y-1">
             <h2
               id="terminal-header"
-              className="font-display text-[11px] uppercase tracking-[0.22em] text-accent"
+              className="font-display text-xs uppercase tracking-[0.22em] text-accent sm:text-sm"
             >
               Terminal // Groknet-07
             </h2>
-            <p className="text-[10px] tracking-wide text-zinc-600">
+            <p className="text-xs tracking-wide text-zinc-300">
               {variant === "perimeter"
                 ? "Outer Perimeter · Kiosk · First contact"
                 : variant === "hub"
@@ -462,16 +462,16 @@ export function Terminal({
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
               <p
                 className={cn(
-                  "text-[10px] uppercase tracking-[0.18em] transition-colors duration-300",
+                  "text-xs uppercase tracking-[0.18em] transition-colors duration-300",
                   toneColor(currentTone),
                 )}
               >
                 {getPersonalityLabel(currentPersonality, groknetMood)}
               </p>
               {dialogueState.exchangeCount > 0 ? (
-                <p className="text-[10px] uppercase tracking-[0.16em] text-zinc-600">
+                <p className="text-xs uppercase tracking-[0.16em] text-zinc-300">
                   Your tone:{" "}
-                  <span className="text-zinc-400">
+                  <span className="text-zinc-100">
                     {getPlayerIntentLabel(lastPlayerIntent)}
                   </span>
                 </p>
@@ -490,16 +490,16 @@ export function Terminal({
 
         {intentFlash ? (
           <div className="intent-reaction-in border-b border-accent/15 bg-accent/[0.05] px-5 py-3">
-            <p className="font-mono text-[10px] uppercase tracking-widest text-accent/60">
+            <p className="font-mono text-xs uppercase tracking-widest text-accent">
               Groknet reacts · {getPlayerIntentLabel(lastPlayerIntent)}
             </p>
-            <p className="mt-1 text-sm italic text-zinc-300">
+            <p className="mt-1 text-base italic text-zinc-100">
               &ldquo;{intentFlash}&rdquo;
             </p>
           </div>
         ) : null}
 
-        <div className="flex-1 space-y-3.5 overflow-y-auto px-5 py-5 text-[13px] leading-6">
+        <div className="flex-1 space-y-4 overflow-y-auto px-5 py-5 text-sm leading-7 sm:text-[15px] sm:leading-8">
           {messages.map((message) => (
             <p key={message.id} className={messageClass(message.role)}>
               {messagePrefix(message.role)}
@@ -548,7 +548,7 @@ export function Terminal({
                 setInput(event.target.value);
               }}
               placeholder="Type your message to Groknet..."
-              className="w-full bg-transparent text-[13px] text-zinc-100 placeholder:text-zinc-600 outline-none"
+              className="w-full bg-transparent text-sm text-zinc-50 placeholder:text-zinc-400 outline-none sm:text-[15px]"
               autoComplete="off"
               spellCheck={false}
             />

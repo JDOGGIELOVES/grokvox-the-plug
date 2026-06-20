@@ -21,7 +21,7 @@ export function Button({
         variant === "primary" &&
           "border border-zinc-600 bg-zinc-100 text-zinc-900 hover:bg-white hover:shadow-md hover:shadow-black/30",
         variant === "ghost" &&
-          "border border-zinc-800 bg-transparent text-zinc-400 hover:border-zinc-600 hover:bg-zinc-900/80 hover:text-zinc-100",
+          "border border-zinc-700 bg-transparent text-zinc-200 hover:border-zinc-500 hover:bg-zinc-900/80 hover:text-zinc-50",
         variant === "accent" &&
           "border border-accent/60 bg-accent text-zinc-950 hover:bg-accent-bright hover:shadow-[0_0_28px_rgba(249,115,22,0.35)]",
         className,

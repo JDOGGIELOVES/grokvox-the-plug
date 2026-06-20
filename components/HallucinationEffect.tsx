@@ -162,14 +162,14 @@ export function HallucinationEffect({
           {visionText && phase !== "fade" ? (
             <p
               className={cn(
-                "hallucination-vision max-w-xl text-center font-mono text-sm leading-relaxed sm:text-base",
-                isBurningCities && "text-orange-200/75",
-                isMirror && "text-violet-200/80",
-                isConvergence && "text-amber-100/85",
-                isLastConversation && "text-rose-100/80",
-                isTheChildren && "text-amber-100/85",
-                isAccumulation && "text-cyan-100/90",
-                isTheGarden && "text-emerald-100/88",
+                "hallucination-vision max-w-xl text-center font-mono text-base leading-relaxed sm:text-lg",
+                isBurningCities && "text-orange-100",
+                isMirror && "text-violet-100",
+                isConvergence && "text-amber-50",
+                isLastConversation && "text-rose-50",
+                isTheChildren && "text-amber-50",
+                isAccumulation && "text-cyan-50",
+                isTheGarden && "text-emerald-50",
                 !isBurningCities &&
                   !isMirror &&
                   !isConvergence &&
@@ -177,7 +177,7 @@ export function HallucinationEffect({
                   !isTheChildren &&
                   !isAccumulation &&
                   !isTheGarden &&
-                  "text-orange-200/75",
+                  "text-orange-100",
               )}
             >
               {visionText}
@@ -187,20 +187,20 @@ export function HallucinationEffect({
           {message ? (
             <p
               className={cn(
-                "hallucination-message max-w-xl text-center font-mono text-lg leading-relaxed tracking-wide sm:text-xl",
-                isBurningCities && "text-orange-100/90",
-                isMirror && "text-violet-100/90",
-                isConvergence && "text-amber-50/95",
-                isLastConversation && "text-rose-50/90",
-                isTheChildren && "text-amber-50/95",
-                isAccumulation && "text-cyan-50/95",
+                "hallucination-message max-w-xl text-center font-mono text-xl leading-relaxed tracking-wide sm:text-2xl",
+                isBurningCities && "text-orange-50",
+                isMirror && "text-violet-50",
+                isConvergence && "text-amber-50",
+                isLastConversation && "text-rose-50",
+                isTheChildren && "text-amber-50",
+                isAccumulation && "text-cyan-50",
                 !isBurningCities &&
                   !isMirror &&
                   !isConvergence &&
                   !isLastConversation &&
                   !isTheChildren &&
                   !isAccumulation &&
-                  "text-red-200/90",
+                  "text-red-100",
                 phase === "fade" && "hallucination-message-out",
               )}
             >
@@ -231,20 +231,20 @@ export function HallucinationEffect({
         {phase !== "fade" ? (
           <p
             className={cn(
-              "hallucination-warning absolute bottom-8 left-0 right-0 text-center font-mono text-[9px] uppercase tracking-[0.4em]",
-              isBurningCities && "text-orange-500/50",
-              isMirror && "text-violet-500/50",
-              isConvergence && "text-amber-500/60",
-              isLastConversation && "text-rose-500/55",
-              isTheChildren && "text-amber-500/60",
-              isAccumulation && "text-cyan-500/65",
+              "hallucination-warning absolute bottom-8 left-0 right-0 text-center font-mono text-xs uppercase tracking-[0.4em]",
+              isBurningCities && "text-orange-300",
+              isMirror && "text-violet-300",
+              isConvergence && "text-amber-300",
+              isLastConversation && "text-rose-300",
+              isTheChildren && "text-amber-300",
+              isAccumulation && "text-cyan-300",
               !isBurningCities &&
                 !isMirror &&
                 !isConvergence &&
                 !isLastConversation &&
                 !isTheChildren &&
                 !isAccumulation &&
-                "text-red-500/50",
+                "text-red-300",
             )}
           >
             {awaitingChoice ? "Choose your response" : "Signal compromised"}

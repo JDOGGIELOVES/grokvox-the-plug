@@ -40,13 +40,13 @@ export function InteractableCard({
     >
       <div className="pointer-events-none absolute inset-0 rounded-sm bg-gradient-to-br from-accent/0 via-accent/0 to-accent/[0.03] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
-      <p className="relative font-mono text-[10px] uppercase tracking-widest text-zinc-600">
+      <p className="relative font-mono text-xs uppercase tracking-widest text-zinc-300">
         {label}
       </p>
-      <p className="relative mt-1.5 text-sm font-medium text-zinc-200 transition-colors group-hover:text-zinc-50">
+      <p className="relative mt-1.5 text-base font-medium text-zinc-50 transition-colors group-hover:text-white">
         {title}
       </p>
-      <p className="relative mt-2 text-xs leading-relaxed text-zinc-500">
+      <p className="relative mt-2 text-sm leading-relaxed text-zinc-300">
         {description}
       </p>
 
