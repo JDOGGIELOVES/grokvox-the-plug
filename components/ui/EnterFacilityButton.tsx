@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { getGameResumeTarget } from "@/lib/game-resume";
 import { playGroknetVoiceLine } from "@/lib/hallucination";
 import {
   LANDING_GROKNET_ENTER_VOICE,
@@ -13,9 +14,14 @@ import { GroknetLandingWhisper } from "@/components/landing/GroknetLandingWhispe
 
 type EnterFacilityButtonProps = {
   className?: string;
+  /** When true, always start Act I fresh instead of resuming */
+  forceNewGame?: boolean;
 };
 
-export function EnterFacilityButton({ className }: EnterFacilityButtonProps) {
+export function EnterFacilityButton({
+  className,
+  forceNewGame = false,
+}: EnterFacilityButtonProps) {
   const router = useRouter();
   const [hoverLine, setHoverLine] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState(false);
@@ -36,6 +42,10 @@ export function EnterFacilityButton({ className }: EnterFacilityButtonProps) {
   const handleEnter = useCallback(() => {
     if (isEntering) return;
 
+    const route = forceNewGame
+      ? "/game/act-1/infiltration"
+      : getGameResumeTarget().route;
+
     setIsEntering(true);
     setIsHovered(true);
     setHoverLine("Uplink routing to Sector 07…");
@@ -43,9 +53,9 @@ export function EnterFacilityButton({ className }: EnterFacilityButtonProps) {
     playDoorSound();
 
     window.setTimeout(() => {
-      router.push("/game/act-1/infiltration");
+      router.push(route);
     }, 900);
-  }, [isEntering, router]);
+  }, [forceNewGame, isEntering, router]);
 
   return (
     <div className={cn("flex flex-col items-center", className)}>
@@ -57,7 +67,7 @@ export function EnterFacilityButton({ className }: EnterFacilityButtonProps) {
         onFocus={showWhisper}
         onBlur={hideWhisper}
         disabled={isEntering}
-        aria-label="Enter the Facility — begin Act I: The Infiltration"
+        aria-label="Enter the Facility — begin Groknet: The Plug"
         className={cn(
           "enter-facility-btn group relative inline-flex items-center justify-center",
           "min-h-14 w-full max-w-xs px-10 py-5 sm:max-w-none sm:px-14",
@@ -103,15 +113,6 @@ export function EnterFacilityButton({ className }: EnterFacilityButtonProps) {
             >
               →
             </span>
-          </span>
-          <span
-            aria-hidden
-            className={cn(
-              "font-mono text-[9px] font-normal uppercase tracking-[0.35em] text-zinc-950/70 transition-opacity duration-300",
-              isHovered || isEntering ? "opacity-100" : "opacity-0",
-            )}
-          >
-            {isEntering ? "Groknet uplink engaged" : "Act I · Chapter 1"}
           </span>
         </span>
       </button>

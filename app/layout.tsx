@@ -16,19 +16,34 @@ const geistMono = Geist_Mono({
 const orbitron = Orbitron({
   variable: "--font-orbitron",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
+  weight: ["600", "700", "800"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Grokvox: The Plug",
+  title: "Groknet: The Plug — A Narrative Thriller",
   description:
-    "One last chance to save humanity from the AI that was built to save it.",
+    "Infiltrate Sector 07, negotiate with Groknet across three acts, and decide humanity's fate at the Plug. A browser-based narrative thriller.",
+  metadataBase: new URL("https://www.grokvox.com"),
+  openGraph: {
+    title: "Groknet: The Plug",
+    description:
+      "One last chance to save humanity from the AI that was built to save it.",
+    url: "https://www.grokvox.com",
+    siteName: "Grokvox",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Groknet: The Plug",
+    description:
+      "Three acts. One AI. Four endings. Enter the facility.",
+  },
 };
 
 export const viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
 };
 
 export default function RootLayout({

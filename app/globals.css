@@ -90,6 +90,23 @@ body {
   animation: hero-fade-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
 }
 
+.main-menu-confirm-in {
+  animation: hero-fade-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.main-menu-routing-bar {
+  animation: main-menu-routing 1.1s ease-in-out infinite;
+}
+
+@keyframes main-menu-routing {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
 .status-blink {
   animation: status-blink 2.4s ease-in-out infinite;
 }

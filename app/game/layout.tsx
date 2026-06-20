@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Groknet: The Plug — Act I",
+  title: "Groknet: The Plug — Play",
   description:
-    "Act I: The Infiltration. Survive Sector 07, negotiate with Groknet, and seal the Data Archives.",
+    "Act I: The Infiltration · Act II: The Conversation · Act III: The Reckoning. Survive Sector 07 and confront Groknet at the Plug.",
 };
 
 export default function GameLayout({

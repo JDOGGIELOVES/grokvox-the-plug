@@ -156,6 +156,19 @@ export function clearGameSave(): void {
   }
 }
 
+/** Wipe all progress — used for New Game from the main menu */
+export function clearAllGameData(): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(SAVE_STORAGE_KEY);
+    window.localStorage.removeItem(CHECKPOINT_STORAGE_KEY);
+    window.localStorage.removeItem(ACT_TWO_CHECKPOINT_STORAGE_KEY);
+    window.localStorage.removeItem(ACT_THREE_CHECKPOINT_STORAGE_KEY);
+  } catch {
+    // Ignore
+  }
+}
+
 export function clearActOneCheckpoint(): void {
   if (typeof window === "undefined") return;
   try {
@@ -170,19 +183,32 @@ export function hasResumableCheckpoint(): boolean {
 
   if (save?.act2Summary) {
     const act3 = loadActThreeCheckpoint();
-    return (
+    if (
       act3?.actTwoSummary?.completedAt === save.act2Summary.completedAt
-    );
+    ) {
+      return true;
+    }
+    if (!save.act3Complete) return true;
   }
 
   if (save?.summary) {
     const act2 = loadActTwoCheckpoint();
-    return (
-      act2?.actOneSummary?.completedAt === save.summary.completedAt
-    );
+    if (act2?.actOneSummary?.completedAt === save.summary.completedAt) {
+      return true;
+    }
+    if (!save.act2Complete) return true;
   }
 
   return loadActOneCheckpoint() !== null;
+}
+
+export function hasAnyGameProgress(): boolean {
+  return (
+    loadGameSave() !== null ||
+    loadActOneCheckpoint() !== null ||
+    loadActTwoCheckpoint() !== null ||
+    loadActThreeCheckpoint() !== null
+  );
 }
 
 export type ActTwoCheckpointState = {
