@@ -1,4 +1,5 @@
 import type { HackSlotState } from "@/lib/perimeter-hack";
+import { getPersonalityReactiveHackLine } from "@/lib/chapter/act-three-personality-presence";
 import type { ActThreeDialogueContext } from "@/lib/dialogue/act-three-context";
 import { getPersonalityLabel } from "@/lib/dialogue/personalities";
 
@@ -73,6 +74,10 @@ export function getPersonalizedFortWrongLine(
   ctx: ActThreeDialogueContext,
   attempt: number,
 ): string {
+  if (ctx.personalityEvolutionPath && attempt % 2 === 1) {
+    return getPersonalityReactiveHackLine(ctx, attempt);
+  }
+
   const pool = [...DEEP_CORE_HACK_CONFIG.wrongLines];
   const persona = getPersonalityLabel(ctx.dominantPersonality, ctx.finalMood);
 

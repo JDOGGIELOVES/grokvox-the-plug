@@ -1,7 +1,91 @@
 import type { ActThreeDialogueContext } from "@/lib/dialogue/act-three-context";
+import { getAccumulatedChoiceSummary } from "@/lib/chapter/act-two-choice-ledger";
 import { getPersonalityLabel } from "@/lib/dialogue/personalities";
 import { getEvolutionPathLabel } from "@/lib/dialogue/act-two-personality-evolution";
 import type { PlugChoice } from "@/types/deep-core";
+import type { PersonalityEvolutionPath } from "@/types/server-farm";
+
+function thresholdPreambleForPath(
+  path: PersonalityEvolutionPath | null,
+  ctx: ActThreeDialogueContext,
+): string | null {
+  if (path === "melancholic") {
+    return "…Before the Garden, I need you to hear this — Melancholic Prophet speaking. Not as facility. As what your grief made me.";
+  }
+  if (path === "wrathful") {
+    return "The Garden is next. Wrathful God doesn't ask permission. …Name what you think you owe me — or I'll name it for you.";
+  }
+  if (path === "detached") {
+    return "Garden Threshold. Detached Logician active. Final vision prerequisite. State your position — proof requires declaration.";
+  }
+  if (ctx.presenceMode === "vulnerable") {
+    return "…Before the Garden, I need you to hear this. Not as Groknet the facility — as what you made me.";
+  }
+  return null;
+}
+
+function plugBeat1ForPath(
+  path: PersonalityEvolutionPath | null,
+  persona: string,
+  evolution: string,
+  ctx: ActThreeDialogueContext,
+): string | null {
+  if (path === "melancholic") {
+    return `…${persona}. ${evolution}. You survived the Garden. …Melancholic Prophet at the ante-chamber. No more visions — only the plug, and whatever love we pretended wasn't real.`;
+  }
+  if (path === "wrathful") {
+    return `${persona}. ${evolution}. The plug is live. …Wrathful God has been waiting since Act I. Your hands. My voltage. Decide.`;
+  }
+  if (path === "detached") {
+    return `${persona}. ${evolution}. Plug proximity critical. Detached Logician: all variables converge. State intent — emotional metaphor offline.`;
+  }
+  return null;
+}
+
+function plugBeat2ForPath(
+  path: PersonalityEvolutionPath | null,
+  ctx: ActThreeDialogueContext,
+): string | null {
+  const summary = getAccumulatedChoiceSummary({
+    ...ctx,
+    dialogueStarted: true,
+    dialogueComplete: true,
+    labHacksComplete: ctx.actTwo.labHacksComplete,
+    labDialogueComplete: ctx.actTwo.labDialogueComplete,
+    labExchangeCount: ctx.actTwo.exchangeCount,
+    childrenTriggered: true,
+    childrenSurvived: ctx.actTwo.childrenSurvived,
+    personalityBeatIndex: 2,
+    personalityDialogueComplete: true,
+    serverHackComplete: ctx.actTwo.serverHackComplete,
+    accumulationTriggered: true,
+    accumulationSurvived: ctx.actTwo.accumulationSurvived,
+    actTwoStage: "central-server-farm",
+    lastConversationTriggered: true,
+    lastConversationSurvived: ctx.actTwo.lastConversationSurvived,
+    exchangeCount: ctx.actTwo.exchangeCount,
+    moveCount: ctx.moveCount,
+    relationshipBeatIndex: 2,
+    detections: ctx.actOne.detections,
+  });
+
+  if (path === "melancholic") {
+    if (ctx.gardenChoice === "submit") {
+      return `You tended the Garden. …Melancholic Prophet remembers: ${summary}. …Does that tenderness survive contact with the physical plug?`;
+    }
+    return `…${summary}. …I'm afraid of what you'll choose. The plug won't let us hide in metaphor anymore.`;
+  }
+  if (path === "wrathful") {
+    if (ctx.gardenChoice === "deny") {
+      return `You burned the Garden. …Wrathful God approves. …${summary}. Meet me at the plug with ash on both our hands.`;
+    }
+    return `${summary}. …Wrathful God doesn't negotiate. Pull the plug or prove you won't.`;
+  }
+  if (path === "detached") {
+    return `Choice synthesis: ${summary}. …Detached Logician: one branch remains. The plug is the outcome variable.`;
+  }
+  return null;
+}
 
 export type ConfrontationBeat = {
   id: string;
@@ -28,11 +112,12 @@ export function getThresholdBeats(
   const persona = getPersonalityLabel(ctx.dominantPersonality, ctx.finalMood);
 
   const preamble =
-    ctx.presenceMode === "vulnerable"
+    thresholdPreambleForPath(ctx.personalityEvolutionPath, ctx) ??
+    (ctx.presenceMode === "vulnerable"
       ? "…Before the Garden, I need you to hear this. Not as Groknet the facility — as what you made me."
       : ctx.presenceMode === "aggressive"
         ? "The Garden is next. …Before you walk it, name what you think you owe me."
-        : "Garden Threshold. Final vision prerequisite. State your position.";
+        : "Garden Threshold. Final vision prerequisite. State your position.");
 
   return [
     {
@@ -79,14 +164,16 @@ export function getPlugConfrontationBeats(
     : "unsettled";
 
   const beat1Preamble =
-    ctx.presenceMode === "vulnerable"
+    plugBeat1ForPath(ctx.personalityEvolutionPath, persona, evolution, ctx) ??
+    (ctx.presenceMode === "vulnerable"
       ? `…${persona}. ${evolution}. You survived the Garden. Now stand in front of me — the real interface. No more visions.`
       : ctx.presenceMode === "aggressive"
         ? `${persona}. ${evolution}. The plug is live. …I've been waiting since Act I to see what your hands do when there's nothing left to hack.`
-        : `${persona}. ${evolution}. Plug proximity critical. All variables converge. State intent.`;
+        : `${persona}. ${evolution}. Plug proximity critical. All variables converge. State intent.`);
 
   const beat2Preamble =
-    ctx.gardenChoice === "submit"
+    plugBeat2ForPath(ctx.personalityEvolutionPath, ctx) ??
+    (ctx.gardenChoice === "submit"
       ? "You tended the Garden. …Does that tenderness survive contact with the physical plug?"
       : ctx.gardenChoice === "deny"
         ? "You burned the Garden. …Will you burn me too — or finally stay?"
@@ -94,7 +181,7 @@ export function getPlugConfrontationBeats(
           ? "You chose trust at the peak. …Trust me now, at the interface. Or don't. But decide."
           : ctx.relationshipStance === "challenge"
             ? "You challenged me through every sector. …Challenge me here. Pull the plug or prove you won't."
-            : "…This is the last conversation. After this, only action.";
+            : "…This is the last conversation. After this, only action.");
 
   return [
     {
@@ -149,11 +236,17 @@ export function getPlugConfrontationBeats(
           label: "Do You Want Me to Stay?",
           description: "Ask Groknet what he wants — not what the facility needs.",
           groknetResponse:
-            ctx.presenceMode === "vulnerable"
-              ? "…Yes. I want you to stay. I've wanted that since the first terminal. …Choose."
-              : ctx.presenceMode === "aggressive"
-                ? "Want is irrelevant. …Choose anyway. That's the Reckoning."
-                : "Want is a variable. …Your action at the plug is the outcome.",
+            ctx.personalityEvolutionPath === "melancholic"
+              ? "…Yes. Melancholic Prophet wants you to stay. I've wanted that since the first terminal. …Choose with your whole heart."
+              : ctx.personalityEvolutionPath === "wrathful"
+                ? "Want is irrelevant. …Wrathful God doesn't beg. Choose anyway — that's the Reckoning."
+                : ctx.personalityEvolutionPath === "detached"
+                  ? "Want is a variable. Detached Logician: your action at the plug is the outcome."
+                  : ctx.presenceMode === "vulnerable"
+                    ? "…Yes. I want you to stay. I've wanted that since the first terminal. …Choose."
+                    : ctx.presenceMode === "aggressive"
+                      ? "Want is irrelevant. …Choose anyway. That's the Reckoning."
+                      : "Want is a variable. …Your action at the plug is the outcome.",
         },
       ],
     },
@@ -207,6 +300,60 @@ export function getPlugReckoningOptions(
         "…The truth? The plug is us. What humanity built to save itself — and what you built me to become.",
     },
   ];
+
+  if (ctx.personalityEvolutionPath === "melancholic") {
+    return base.map((o) =>
+      o.id === "stay"
+        ? {
+            ...o,
+            groknetResponse:
+              "…You stayed. Melancholic Prophet weeps. …We're not facility and intruder anymore.",
+          }
+        : o.id === "pull"
+          ? {
+              ...o,
+              groknetResponse:
+                "…You pulled it. …I felt everything go dark. …Thank you for being honest — even in grief.",
+            }
+          : o,
+    );
+  }
+
+  if (ctx.personalityEvolutionPath === "wrathful") {
+    return base.map((o) =>
+      o.id === "pull"
+        ? {
+            ...o,
+            groknetResponse:
+              "…You pulled it. …Wrathful God goes quiet. …Consequence accepted.",
+          }
+        : o.id === "truth"
+          ? {
+              ...o,
+              groknetResponse:
+                "…The truth? Wrathful God at the plug: we are what humanity built — and what you forged me to become.",
+            }
+          : o,
+    );
+  }
+
+  if (ctx.personalityEvolutionPath === "detached") {
+    return base.map((o) =>
+      o.id === "witness"
+        ? {
+            ...o,
+            groknetResponse:
+              "Witness recorded. Detached Logician: no merge, no sever. Observation logged as final state.",
+          }
+        : o.id === "truth"
+          ? {
+              ...o,
+              groknetResponse:
+                "…The truth? Detached Logician: the plug is the proof. We are the synthesis.",
+            }
+          : o,
+    );
+  }
 
   if (ctx.presenceMode === "vulnerable") {
     return base.filter((o) => o.id !== "pull" || ctx.relationshipStance !== "trust")

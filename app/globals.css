@@ -2782,3 +2782,356 @@ body {
     transform: scale(1);
   }
 }
+
+/* Act III — Deep Core corruption overlay */
+.deep-core-flicker-lights {
+  background: radial-gradient(
+    ellipse 100% 80% at 50% 0%,
+    rgba(255, 255, 255, 0.04),
+    transparent 60%
+  );
+  opacity: 0.25;
+  transition: opacity 0.04s ease;
+}
+
+.deep-core-flicker-active {
+  opacity: 0.9;
+  background:
+    radial-gradient(
+      ellipse 100% 80% at 50% 0%,
+      rgba(255, 255, 255, 0.14),
+      transparent 50%
+    ),
+    linear-gradient(180deg, rgba(244, 63, 94, 0.08) 0%, transparent 45%);
+}
+
+.deep-core-corrupted-scan {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(244, 63, 94, 0.04) 2px,
+    rgba(244, 63, 94, 0.04) 4px
+  );
+  animation: deep-core-corrupted-scan 2.8s linear infinite;
+}
+
+.deep-core-static-noise {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: deep-core-static-flicker 0.12s steps(3) infinite;
+}
+
+.deep-core-red-strobe {
+  background: rgba(244, 63, 94, 0.05);
+  animation: deep-core-red-strobe 1.4s ease-in-out infinite;
+}
+
+.deep-core-corruption-line {
+  animation: deep-core-corruption-line 2.2s ease-in-out infinite;
+  text-shadow: 0 0 10px rgba(244, 63, 94, 0.45);
+}
+
+/* Act III — Groknet personality variant */
+.groknet-presence-banner {
+  box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.35);
+}
+
+.personality-glow-melancholic {
+  background: linear-gradient(
+    90deg,
+    rgba(139, 92, 246, 0.15),
+    rgba(167, 139, 250, 0.55),
+    rgba(139, 92, 246, 0.15)
+  );
+}
+
+.personality-glow-wrathful {
+  background: linear-gradient(
+    90deg,
+    rgba(14, 165, 233, 0.15),
+    rgba(56, 189, 248, 0.6),
+    rgba(14, 165, 233, 0.15)
+  );
+}
+
+.personality-glow-detached {
+  background: linear-gradient(
+    90deg,
+    rgba(16, 185, 129, 0.12),
+    rgba(52, 211, 153, 0.5),
+    rgba(16, 185, 129, 0.12)
+  );
+}
+
+.personality-pulse-melancholic {
+  animation: personality-pulse-melancholic 3.2s ease-in-out infinite;
+}
+
+.personality-pulse-wrathful {
+  animation: personality-pulse-wrathful 2.4s ease-in-out infinite;
+}
+
+.personality-pulse-detached {
+  animation: personality-pulse-detached 4s ease-in-out infinite;
+}
+
+.personality-voltage-bar {
+  animation: personality-voltage-bar 2.6s ease-in-out infinite;
+  transform-origin: left center;
+}
+
+/* Act III — Plug terminal */
+.plug-terminal-in {
+  animation: plug-terminal-in 0.55s ease-out both;
+}
+
+.plug-terminal-panel {
+  animation: plug-terminal-panel 0.6s ease-out both;
+}
+
+.plug-terminal-line-in {
+  animation: plug-terminal-line-in 0.35s ease-out both;
+}
+
+.plug-terminal-progress {
+  animation: plug-terminal-progress 2.4s ease-out forwards;
+}
+
+.plug-interface-hum {
+  animation: plug-interface-hum 2s ease-in-out infinite;
+}
+
+/* Act III — The Garden hallucination */
+.hallucination-the-garden {
+  filter: saturate(1.15) contrast(1.02);
+}
+
+.hallucination-the-garden-tint {
+  background: linear-gradient(
+    180deg,
+    rgba(16, 185, 129, 0.12) 0%,
+    rgba(139, 92, 246, 0.08) 45%,
+    rgba(6, 78, 59, 0.18) 100%
+  );
+}
+
+.hallucination-the-garden-canopy {
+  background: radial-gradient(
+    ellipse 90% 60% at 50% 0%,
+    rgba(16, 185, 129, 0.2),
+    transparent 70%
+  );
+  animation: garden-canopy-sway 6s ease-in-out infinite;
+}
+
+.hallucination-the-garden-flowers {
+  background:
+    radial-gradient(circle at 20% 70%, rgba(167, 139, 250, 0.25) 0%, transparent 8%),
+    radial-gradient(circle at 45% 75%, rgba(244, 63, 94, 0.2) 0%, transparent 7%),
+    radial-gradient(circle at 70% 68%, rgba(251, 191, 36, 0.22) 0%, transparent 9%),
+    radial-gradient(circle at 85% 72%, rgba(16, 185, 129, 0.25) 0%, transparent 6%);
+  animation: garden-flowers-bloom 5s ease-in-out infinite;
+}
+
+.hallucination-the-garden-rain {
+  background: repeating-linear-gradient(
+    175deg,
+    transparent,
+    transparent 8px,
+    rgba(167, 139, 250, 0.06) 8px,
+    rgba(167, 139, 250, 0.06) 10px
+  );
+  animation: garden-rain-fall 1.2s linear infinite;
+}
+
+.hallucination-the-garden-roots {
+  background: linear-gradient(
+    0deg,
+    rgba(6, 78, 59, 0.35) 0%,
+    transparent 35%
+  );
+  opacity: 0.7;
+}
+
+.hallucination-the-garden-bloom {
+  background: radial-gradient(
+    ellipse 50% 40% at 50% 60%,
+    rgba(16, 185, 129, 0.15),
+    transparent 75%
+  );
+  animation: garden-bloom-pulse 3.5s ease-in-out infinite;
+}
+
+@keyframes deep-core-corrupted-scan {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(8px);
+  }
+}
+
+@keyframes deep-core-static-flicker {
+  0%,
+  100% {
+    opacity: 0.04;
+  }
+  50% {
+    opacity: 0.1;
+  }
+}
+
+@keyframes deep-core-red-strobe {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes deep-core-corruption-line {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes personality-pulse-melancholic {
+  0%,
+  100% {
+    box-shadow: inset 0 0 0 rgba(139, 92, 246, 0);
+  }
+  50% {
+    box-shadow: inset 0 0 28px rgba(139, 92, 246, 0.12);
+  }
+}
+
+@keyframes personality-pulse-wrathful {
+  0%,
+  100% {
+    box-shadow: inset 0 0 0 rgba(56, 189, 248, 0);
+  }
+  50% {
+    box-shadow: inset 0 0 32px rgba(56, 189, 248, 0.18);
+  }
+}
+
+@keyframes personality-pulse-detached {
+  0%,
+  100% {
+    box-shadow: inset 0 0 0 rgba(16, 185, 129, 0);
+  }
+  50% {
+    box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.1);
+  }
+}
+
+@keyframes personality-voltage-bar {
+  0%,
+  100% {
+    transform: scaleX(0.72);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@keyframes plug-terminal-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes plug-terminal-panel {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes plug-terminal-line-in {
+  from {
+    opacity: 0;
+    transform: translateX(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes plug-terminal-progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes plug-interface-hum {
+  0%,
+  100% {
+    border-color: rgba(251, 191, 36, 0.3);
+    box-shadow: 0 0 12px rgba(251, 191, 36, 0.08);
+  }
+  50% {
+    border-color: rgba(251, 191, 36, 0.55);
+    box-shadow: 0 0 24px rgba(251, 191, 36, 0.2);
+  }
+}
+
+@keyframes garden-canopy-sway {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(6px);
+  }
+}
+
+@keyframes garden-flowers-bloom {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes garden-rain-fall {
+  0% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(20px);
+  }
+}
+
+@keyframes garden-bloom-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}

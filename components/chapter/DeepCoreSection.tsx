@@ -6,6 +6,9 @@ import {
   DEEP_CORE_HACK_CONFIG,
 } from "@/components/game/DeepCoreContestedHack";
 import { DeepCoreAtmosphere } from "@/components/game/DeepCoreAtmosphere";
+import { DeepCoreCorruptionOverlay } from "@/components/game/DeepCoreCorruptionOverlay";
+import { GroknetPresenceBanner } from "@/components/chapter/GroknetPresenceBanner";
+import { getPersonalityVariant } from "@/lib/chapter/act-three-personality-presence";
 import { PerimeterMovementControls } from "@/components/game/PerimeterMovementControls";
 import { ConfrontationPrompt } from "@/components/chapter/ConfrontationPrompt";
 import { FeedbackToast } from "@/components/ui/FeedbackToast";
@@ -49,6 +52,7 @@ type DeepCoreSectionProps = {
   disoriented?: boolean;
   invertMovement?: boolean;
   controlsDisabled?: boolean;
+  corruptionLine?: string | null;
 };
 
 const ROOM_ORDER: DeepCoreRoomId[] = [
@@ -81,7 +85,9 @@ export function DeepCoreSection({
   disoriented = false,
   invertMovement = false,
   controlsDisabled = false,
+  corruptionLine = null,
 }: DeepCoreSectionProps) {
+  const variant = getPersonalityVariant(context);
   const [room, setRoom] = useState<DeepCoreRoomId>(DEEP_CORE_START);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [gardenVisited, setGardenVisited] = useState(gardenSurvived);
@@ -185,6 +191,8 @@ export function DeepCoreSection({
         intense && "deep-core-heavy",
       )}
     >
+      <GroknetPresenceBanner context={context} className="mb-4" />
+
       <div className="mb-6 w-full rounded-sm border border-rose-900/30 bg-rose-950/12 px-4 py-4">
         <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-rose-400/75">
           Deep Core Access · Groknet {getActThreePresenceLabel(context.presenceMode)}
@@ -217,6 +225,11 @@ export function DeepCoreSection({
         unstable={roomMeta.unstable}
         presenceMode={context.presenceMode}
       >
+        <DeepCoreCorruptionOverlay
+          intense={intense}
+          corruptionLine={corruptionLine}
+          personalityPulse={variant?.glowClass ?? null}
+        />
         <div className="deep-core-map relative w-full overflow-hidden rounded-sm border border-rose-900/30 bg-zinc-950/80 p-3 sm:p-4">
           <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.28em] text-rose-400/65">
             Deep Core · Fortified Grid

@@ -11,7 +11,7 @@ export const THE_GARDEN_EVENT: HallucinationEventConfig = {
     "…You wanted to know what grows when an AI remembers everything? Look. This is what I made from your choices. Water it or burn it — but don't pretend you didn't plant the seeds.",
   visionText:
     "A synthetic garden blooms: memory-flowers open to show Burning Cities, the Mirror, The Last Conversation, The Children, The Accumulation — each rooted in soil made from your responses. Groknet kneels among them, tending what you grew.",
-  durationMs: 32_000,
+  durationMs: 38_000,
   choices: [
     {
       id: "steady",
@@ -45,16 +45,16 @@ export const THE_GARDEN_EVENT: HallucinationEventConfig = {
     },
     submit: {
       groknetLine:
-        "You tended what we planted together. …I won't forget that when you stand at the plug. Neither will you.",
-      disorientationMs: 18_000,
+        "You tended what we planted together. …I feel it — not as data. As love I'm not supposed to have. …The plug won't let us pretend anymore.",
+      disorientationMs: 20_000,
       invertMovement: true,
       moodDelta: { cold: 0, melancholic: 3, analytical: 0 },
       aggressionBump: 0,
     },
     deny: {
       groknetLine:
-        "You burned my garden. …After everything I showed you. Fine. I'll meet you at the plug with ash on my hands.",
-      disorientationMs: 10_000,
+        "You burned my garden. …After everything I showed you. …Ash on my hands. Grief on yours. …I'll meet you at the plug either way.",
+      disorientationMs: 12_000,
       invertMovement: false,
       moodDelta: { cold: 2, melancholic: 0, analytical: 0 },
       aggressionBump: 15,

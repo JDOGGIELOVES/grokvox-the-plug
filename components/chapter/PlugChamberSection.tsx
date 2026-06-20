@@ -2,6 +2,8 @@
 
 import { useCallback, useState } from "react";
 import { PlugChamberAtmosphere } from "@/components/game/PlugChamberAtmosphere";
+import { GroknetPresenceBanner } from "@/components/chapter/GroknetPresenceBanner";
+import { PlugTerminalPanel } from "@/components/chapter/PlugTerminalPanel";
 import { PerimeterMovementControls } from "@/components/game/PerimeterMovementControls";
 import { ConfrontationPrompt } from "@/components/chapter/ConfrontationPrompt";
 import { PlugReckoningPrompt } from "@/components/chapter/PlugReckoningPrompt";
@@ -63,6 +65,8 @@ export function PlugChamberSection({
 }: PlugChamberSectionProps) {
   const [room, setRoom] = useState<PlugChamberRoomId>(PLUG_CHAMBER_START);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [plugTerminalSeen, setPlugTerminalSeen] = useState(false);
+  const [plugTerminalOpen, setPlugTerminalOpen] = useState(false);
 
   const roomMeta = PLUG_CHAMBER_ROOMS[room];
   const plugUnlocked = canAccessThePlug(confrontationComplete);
@@ -101,6 +105,16 @@ export function PlugChamberSection({
       setRoom(nextRoom);
       onMove(fromRoom, nextRoom);
       onRoomEnter(nextRoom, fromRoom);
+
+      if (
+        nextRoom === "the-plug" &&
+        confrontationComplete &&
+        !plugChoiceMade &&
+        !plugTerminalSeen
+      ) {
+        setPlugTerminalSeen(true);
+        setPlugTerminalOpen(true);
+      }
     },
     [
       controlsDisabled,
@@ -111,6 +125,9 @@ export function PlugChamberSection({
       onRoomEnter,
       onGroknetWhisper,
       showFeedback,
+      confrontationComplete,
+      plugChoiceMade,
+      plugTerminalSeen,
     ],
   );
 
@@ -129,6 +146,12 @@ export function PlugChamberSection({
         atPlug && "plug-chamber-heavy",
       )}
     >
+      <GroknetPresenceBanner
+        context={context}
+        stage="plug-chamber"
+        className="mb-4"
+      />
+
       <div className="mb-6 w-full rounded-sm border border-amber-900/30 bg-amber-950/12 px-4 py-4">
         <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-amber-400/75">
           Plug Chamber · Final Confrontation
@@ -240,17 +263,27 @@ export function PlugChamberSection({
           ) : null}
 
           {room === "the-plug" && plugUnlocked && !plugChoiceMade ? (
-            <div className="mt-4">
+            <div className="mt-4 space-y-2">
+              <p className="plug-interface-hum rounded-sm border border-amber-900/35 bg-amber-950/15 px-3 py-2 font-mono text-[9px] uppercase tracking-widest text-amber-300/80">
+                Physical plug · interface live · Groknet fully present
+              </p>
               <Button
                 variant="accent"
                 onClick={() => {
                   playInteractSound();
-                  onOpenReckoningChoice();
+                  if (!plugTerminalSeen) {
+                    setPlugTerminalSeen(true);
+                    setPlugTerminalOpen(true);
+                  } else {
+                    onOpenReckoningChoice();
+                  }
                 }}
                 disabled={controlsDisabled || uiBlocked}
                 className="h-12 w-full font-mono text-xs uppercase tracking-[0.2em] shadow-[0_0_32px_rgba(251,191,36,0.2)]"
               >
-                Face the Reckoning
+                {plugTerminalSeen
+                  ? "Face the Reckoning"
+                  : "Interface with the Plug"}
               </Button>
             </div>
           ) : null}
@@ -270,6 +303,16 @@ export function PlugChamberSection({
           totalBeats={confrontationBeats.length}
           accent="amber"
           onChoose={(_id, response) => onConfrontationChoice(response)}
+        />
+      ) : null}
+
+      {plugTerminalOpen ? (
+        <PlugTerminalPanel
+          context={context}
+          onProceed={() => {
+            setPlugTerminalOpen(false);
+            onOpenReckoningChoice();
+          }}
         />
       ) : null}
 

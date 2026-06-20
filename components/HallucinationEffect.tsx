@@ -29,6 +29,7 @@ export function HallucinationEffect({
   const isLastConversation = eventId === "the-last-conversation";
   const isTheChildren = eventId === "the-children";
   const isAccumulation = eventId === "the-accumulation";
+  const isTheGarden = eventId === "the-garden";
 
   return (
     <>
@@ -50,6 +51,7 @@ export function HallucinationEffect({
           isLastConversation && "hallucination-the-last-conversation",
           isTheChildren && "hallucination-the-children",
           isAccumulation && "hallucination-the-accumulation",
+          isTheGarden && "hallucination-the-garden",
           phase === "surge" && "hallucination-phase-surge",
           phase === "peak" && "hallucination-phase-peak",
           phase === "fade" && "hallucination-phase-fade",
@@ -66,6 +68,7 @@ export function HallucinationEffect({
             isLastConversation && "hallucination-last-conversation-tint",
             isTheChildren && "hallucination-the-children-tint",
             isAccumulation && "hallucination-the-accumulation-tint",
+            isTheGarden && "hallucination-the-garden-tint",
           )}
         />
         {isBurningCities ? (
@@ -115,6 +118,15 @@ export function HallucinationEffect({
             <div className="hallucination-the-accumulation-flash absolute inset-0" />
           </>
         ) : null}
+        {isTheGarden ? (
+          <>
+            <div className="hallucination-the-garden-canopy absolute inset-0" />
+            <div className="hallucination-the-garden-flowers absolute inset-0" />
+            <div className="hallucination-the-garden-rain absolute inset-0" />
+            <div className="hallucination-the-garden-roots absolute inset-0" />
+            <div className="hallucination-the-garden-bloom absolute inset-0" />
+          </>
+        ) : null}
         <div className="hallucination-chromatic absolute inset-0" />
         <div className="hallucination-scanlines absolute inset-0" />
         <div className="hallucination-glitch absolute inset-0" />
@@ -129,7 +141,8 @@ export function HallucinationEffect({
             isConvergence ||
             isLastConversation ||
             isTheChildren ||
-            isAccumulation) ? (
+            isAccumulation ||
+            isTheGarden) ? (
             <p
               className={cn(
                 "hallucination-event-title font-display text-sm uppercase tracking-[0.35em] sm:text-base",
@@ -139,6 +152,7 @@ export function HallucinationEffect({
                 isLastConversation && "text-rose-200/75",
                 isTheChildren && "text-amber-200/80",
                 isAccumulation && "text-cyan-200/85",
+                isTheGarden && "text-emerald-200/80",
               )}
             >
               {eventTitle}
@@ -155,12 +169,14 @@ export function HallucinationEffect({
                 isLastConversation && "text-rose-100/80",
                 isTheChildren && "text-amber-100/85",
                 isAccumulation && "text-cyan-100/90",
+                isTheGarden && "text-emerald-100/88",
                 !isBurningCities &&
                   !isMirror &&
                   !isConvergence &&
                   !isLastConversation &&
                   !isTheChildren &&
                   !isAccumulation &&
+                  !isTheGarden &&
                   "text-orange-200/75",
               )}
             >

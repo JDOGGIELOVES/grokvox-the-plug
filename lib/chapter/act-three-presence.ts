@@ -1,4 +1,6 @@
 import type { ActThreeDialogueContext } from "@/lib/dialogue/act-three-context";
+import { getHistoryPersonalWhisper } from "@/lib/chapter/act-three-history-presence";
+import { getPersonalityVariantWhisper } from "@/lib/chapter/act-three-personality-presence";
 import { getPersonalityLabel } from "@/lib/dialogue/personalities";
 import { getEvolutionPathLabel } from "@/lib/dialogue/act-two-personality-evolution";
 import type { DeepCoreRoomId, PlugChamberRoomId } from "@/types/deep-core";
@@ -145,6 +147,13 @@ export function getDeepCoreRoomWhisper(
   }
   if (ctx.fortificationHackComplete && room === "descent-shaft") {
     pool.push("DC-FORT-01 fell. The plug is the only lock left.");
+  }
+  if (room === "neural-garden" || room === "garden-threshold") {
+    pool.push(getHistoryPersonalWhisper(ctx));
+  }
+  if (ctx.moveCount % 3 === 0) {
+    const variantLine = getPersonalityVariantWhisper(ctx);
+    if (variantLine) pool.push(variantLine);
   }
 
   const seed = room.length + ctx.moveCount + ctx.aggressionLevel;

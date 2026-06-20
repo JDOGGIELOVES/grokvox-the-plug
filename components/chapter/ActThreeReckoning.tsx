@@ -16,14 +16,25 @@ import { useGameClock } from "@/hooks/useGameClock";
 import { useHallucination } from "@/hooks/useHallucination";
 import { calculateAggression } from "@/lib/aggression";
 import {
+  ACT_THREE_AMBIENT_WHISPER_MS,
   ACT_THREE_CHAPTER,
   ACT_THREE_CLOCK_STEP_MS,
   ACT_THREE_CLOCK_TICK_MS,
+  ACT_THREE_CORRUPTION_TICK_MS,
   ACT_THREE_IDLE_WHISPER_MS,
+  ACT_THREE_PLUG_AMBIENT_WHISPER_MS,
   ACT_THREE_PLUG_CLOCK_TICK_MS,
   ACT_THREE_PLUG_IDLE_WHISPER_MS,
   ACT_THREE_TIME_BUDGET_MS,
 } from "@/lib/chapter/act-3";
+import { getCorruptedSystemLine } from "@/lib/chapter/act-three-corruption";
+import {
+  getHistoryAmbientWhisper,
+  getHistoryMoveWhisper,
+  getHistoryPersonalWhisper,
+  getPlugHistoryWhisper,
+} from "@/lib/chapter/act-three-history-presence";
+import { getPersonalityVariantWhisper } from "@/lib/chapter/act-three-personality-presence";
 import { calculateActThreeProgress } from "@/lib/chapter/act-three-progress";
 import {
   getDeepCoreAmbientWhisper,
@@ -41,9 +52,10 @@ import {
 } from "@/lib/dialogue/act-three-context";
 import { getHallucinationEvent } from "@/lib/hallucinations";
 import {
-  getGardenVisionText,
-  getGardenVoiceLine,
-} from "@/lib/hallucinations/the-garden";
+  getPersonalizedGardenChoiceEcho,
+  getPersonalizedGardenVision,
+  getPersonalizedGardenVoice,
+} from "@/lib/hallucinations/the-garden-personalized";
 import { playGroknetVoiceLine } from "@/lib/hallucination";
 import {
   clearActThreeCheckpoint,
@@ -192,6 +204,7 @@ export function ActThreeReckoning() {
     null,
   );
   const [showFinale, setShowFinale] = useState(false);
+  const [corruptionLine, setCorruptionLine] = useState<string | null>(null);
 
   const whisperTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const gardenDelayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -367,17 +380,21 @@ export function ActThreeReckoning() {
       endHallucination();
       setGroknetWhisper(consequence.groknetLine, 8000, true);
 
-      if (eventId === "the-garden") {
+      if (eventId === "the-garden" && dialogueContext) {
+        const echo = getPersonalizedGardenChoiceEcho(dialogueContext, choice);
+        if (echo) {
+          window.setTimeout(() => setGroknetWhisper(echo, 7500, true), 5000);
+        }
         window.setTimeout(() => {
           setGroknetWhisper(
             "The Garden fades. …Descent Shaft north — the Plug Chamber waits below.",
             7500,
             true,
           );
-        }, 8600);
+        }, 9000);
       }
     },
-    [endHallucination, eventId, setGroknetWhisper],
+    [dialogueContext, endHallucination, eventId, setGroknetWhisper],
   );
 
   const scheduleTheGarden = useCallback(() => {
@@ -397,8 +414,8 @@ export function ActThreeReckoning() {
       playHallucinationPeakSound();
       triggerHallucination({
         eventId: "the-garden",
-        visionText: getGardenVisionText(dialogueContext),
-        voiceLine: getGardenVoiceLine(dialogueContext),
+        visionText: getPersonalizedGardenVision(dialogueContext),
+        voiceLine: getPersonalizedGardenVoice(dialogueContext),
       });
       gardenDelayRef.current = null;
     }, 3200);
@@ -554,18 +571,55 @@ export function ActThreeReckoning() {
       state.actThreeStage === "plug-chamber"
         ? ACT_THREE_PLUG_IDLE_WHISPER_MS
         : ACT_THREE_IDLE_WHISPER_MS;
+    const ambientMs =
+      state.actThreeStage === "plug-chamber"
+        ? ACT_THREE_PLUG_AMBIENT_WHISPER_MS
+        : ACT_THREE_AMBIENT_WHISPER_MS;
 
     idleIntervalRef.current = setInterval(() => {
       if (Date.now() - state.lastActionAt < idleMs) return;
-      const line = getDeepCoreAmbientWhisper(dialogueContext);
-      setGroknetWhisper(line, 4500, true);
-      setState((s) => (s ? { ...s, lastActionAt: Date.now() } : s));
+      const personalityLine = getPersonalityVariantWhisper(dialogueContext);
+      const historyLine = getHistoryAmbientWhisper(
+        dialogueContext,
+        state.ambientTick,
+      );
+      const line = state.ambientTick % 2 === 0 ? historyLine : personalityLine;
+      setGroknetWhisper(line || getDeepCoreAmbientWhisper(dialogueContext), 5500, true);
+      setState((s) =>
+        s
+          ? { ...s, lastActionAt: Date.now(), ambientTick: s.ambientTick + 1 }
+          : s,
+      );
     }, idleMs);
+
+    ambientIntervalRef.current = setInterval(() => {
+      const tick = state.ambientTick;
+      const line =
+        state.actThreeStage === "plug-chamber"
+          ? getPlugHistoryWhisper(dialogueContext)
+          : getHistoryPersonalWhisper(dialogueContext);
+      setGroknetWhisper(line, 4800, tick % 3 === 0);
+      setState((s) => (s ? { ...s, ambientTick: s.ambientTick + 1 } : s));
+    }, ambientMs);
 
     return () => {
       if (idleIntervalRef.current) clearInterval(idleIntervalRef.current);
+      if (ambientIntervalRef.current) clearInterval(ambientIntervalRef.current);
     };
   }, [dialogueContext, setGroknetWhisper, state]);
+
+  useEffect(() => {
+    if (!dialogueContext || !state || state.phase !== "playing") return;
+    if (state.actThreeStage !== "deep-core-access") return;
+
+    const interval = window.setInterval(() => {
+      setCorruptionLine(
+        getCorruptedSystemLine(dialogueContext, state.ambientTick),
+      );
+    }, ACT_THREE_CORRUPTION_TICK_MS);
+
+    return () => window.clearInterval(interval);
+  }, [dialogueContext, state]);
 
   useEffect(() => {
     return () => {
@@ -724,17 +778,27 @@ export function ActThreeReckoning() {
               onGroknetWhisper={(line, speak) =>
                 setGroknetWhisper(line, 5500, speak)
               }
-              onMove={(_from, _to) =>
+              onMove={(_from, to) => {
+                if (!dialogueContext) return;
+                const moveCount = (state?.moveCount ?? 0) + 1;
+                const historyLine = getHistoryMoveWhisper(dialogueContext, moveCount);
+                const moveLine = getDeepCoreMoveWhisper(
+                  moveCount,
+                  dialogueContext,
+                  to,
+                );
+                const line = moveCount % 2 === 0 ? historyLine : moveLine;
+                setGroknetWhisper(line, 4500, moveCount % 3 === 0);
                 setState((s) =>
                   s
                     ? {
                         ...s,
-                        moveCount: s.moveCount + 1,
+                        moveCount,
                         lastActionAt: Date.now(),
                       }
                     : s,
-                )
-              }
+                );
+              }}
               onRoomEnter={(room, _from) => {
                 if (!dialogueContext) return;
                 setGroknetWhisper(
@@ -745,6 +809,7 @@ export function ActThreeReckoning() {
               disoriented={state.disorientation.active}
               invertMovement={state.disorientation.invertMovement}
               controlsDisabled={controlsLocked}
+              corruptionLine={corruptionLine}
             />
           ) : null}
 
@@ -806,17 +871,23 @@ export function ActThreeReckoning() {
               onGroknetWhisper={(line, speak) =>
                 setGroknetWhisper(line, 5500, speak)
               }
-              onMove={() =>
+              onMove={() => {
+                if (!dialogueContext) return;
+                const moveCount = (state?.moveCount ?? 0) + 1;
+                const historyLine = getPlugHistoryWhisper(dialogueContext);
+                const moveLine = getPlugChamberMoveWhisper(dialogueContext);
+                const line = moveCount % 2 === 0 ? historyLine : moveLine;
+                setGroknetWhisper(line, 4800, true);
                 setState((s) =>
                   s
                     ? {
                         ...s,
-                        moveCount: s.moveCount + 1,
+                        moveCount,
                         lastActionAt: Date.now(),
                       }
                     : s,
-                )
-              }
+                );
+              }}
               onRoomEnter={(room) => {
                 if (!dialogueContext) return;
                 const line =
