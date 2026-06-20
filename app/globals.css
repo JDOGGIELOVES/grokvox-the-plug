@@ -1,26 +1,2394 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #010102;
+  --foreground: #e4e4e7;
+  --muted: #52525b;
+  --border: #1a1a1f;
+  --surface: #060608;
+  --accent: #f97316;
+  --accent-bright: #fb923c;
+  --accent-dim: #9a3412;
+  --accent-glow: rgba(249, 115, 22, 0.45);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-surface: var(--surface);
+  --color-accent: var(--accent);
+  --color-accent-bright: var(--accent-bright);
+  --color-accent-dim: var(--accent-dim);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-display: var(--font-orbitron);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: var(--accent-dim);
+  color: #fff7ed;
+}
+
+.landing-grid {
+  background-image:
+    linear-gradient(rgba(249, 115, 22, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(249, 115, 22, 0.04) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 45%, black 20%, transparent 75%);
+}
+
+.landing-vignette {
+  background: radial-gradient(
+    ellipse 90% 80% at 50% 50%,
+    transparent 30%,
+    rgba(3, 3, 5, 0.6) 70%,
+    rgba(3, 3, 5, 0.95) 100%
+  );
+}
+
+.landing-scanlines {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.12) 2px,
+    rgba(0, 0, 0, 0.12) 4px
+  );
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.title-glow {
+  text-shadow:
+    0 0 20px var(--accent-glow),
+    0 0 60px rgba(249, 115, 22, 0.15);
+}
+
+.accent-pulse {
+  animation: accent-pulse 4s ease-in-out infinite;
+}
+
+.hero-fade-in {
+  animation: hero-fade-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hero-fade-in-delayed {
+  animation: hero-fade-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
+}
+
+.hero-fade-in-late {
+  animation: hero-fade-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
+}
+
+.status-blink {
+  animation: status-blink 2.4s ease-in-out infinite;
+}
+
+@keyframes accent-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes hero-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes status-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.animate-page-in {
+  animation: page-in 0.6s ease-out both;
+}
+
+.terminal-backdrop-in {
+  animation: terminal-backdrop-in 0.25s ease-out both;
+}
+
+.terminal-panel-in {
+  animation: terminal-panel-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.lab-pulse {
+  animation: lab-pulse 3s ease-in-out infinite;
+}
+
+.lab-scan {
+  animation: lab-scan 6s linear infinite;
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes terminal-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes terminal-panel-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes lab-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes lab-scan {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(400%);
+  }
+}
+
+/* Hallucination effect */
+.hallucination-active {
+  animation: hallucination-jitter 0.12s infinite;
+}
+
+.hallucination-loss-of-control {
+  animation: hallucination-jitter 0.08s infinite;
+  overflow: hidden;
+}
+
+.hallucination-peak {
+  animation: hallucination-jitter 0.06s infinite,
+    hallucination-viewport-warp 0.3s infinite alternate;
+}
+
+.hallucination-content-distort {
+  animation: hallucination-content-blur 0.25s infinite alternate;
+  filter: saturate(1.3) contrast(1.1);
+}
+
+.hallucination-controls-off button,
+.hallucination-controls-off a {
+  pointer-events: none;
+  opacity: 0.55;
+  filter: blur(0.4px);
+  transform: translateX(var(--hallucination-offset, 0px));
+}
+
+.hallucination-event .hallucination-tint {
+  animation: hallucination-tint-surge 9s ease-in-out forwards;
+}
+
+.hallucination-phase-surge .hallucination-glitch {
+  animation: hallucination-glitch-flash 0.08s infinite;
+}
+
+.hallucination-phase-peak .hallucination-glitch {
+  animation: hallucination-glitch-flash 0.12s infinite;
+}
+
+.hallucination-phase-fade .hallucination-tint {
+  opacity: 0.4;
+  transition: opacity 2s ease-out;
+}
+
+.hallucination-chromatic {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.04) 0%,
+    transparent 45%,
+    transparent 55%,
+    rgba(0, 255, 255, 0.04) 100%
+  );
+  animation: hallucination-chromatic-shift 0.15s infinite;
+}
+
+.hallucination-vhs-tear {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 48px,
+    rgba(255, 255, 255, 0.02) 48px,
+    rgba(255, 255, 255, 0.02) 49px
+  );
+  animation: hallucination-vhs-tear 0.4s steps(3) infinite;
+}
+
+.hallucination-static-burst {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)' opacity='0.5'/%3E%3C/svg%3E");
+  animation: hallucination-static-burst 0.05s steps(4) infinite;
+  opacity: 0.06;
+  mix-blend-mode: overlay;
+}
+
+.hallucination-message-out {
+  animation: hallucination-message-out 2s ease-out forwards;
+}
+
+.hallucination-warning {
+  animation: hallucination-warning-pulse 1s ease-in-out infinite;
+}
+
+.hallucination-active h1,
+.hallucination-active h2,
+.hallucination-active h3,
+.hallucination-active p,
+.hallucination-active span,
+.hallucination-active button {
+  animation: hallucination-text-distort 0.18s infinite alternate;
+}
+
+.hallucination-tint {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(220, 38, 38, 0.22) 0%,
+    rgba(127, 29, 29, 0.35) 100%
+  );
+  animation: hallucination-tint-flicker 0.15s infinite;
+}
+
+.hallucination-scanlines {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.12) 2px,
+    rgba(0, 0, 0, 0.12) 4px
+  );
+  animation: hallucination-scanline-drift 0.08s linear infinite;
+}
+
+.hallucination-glitch {
+  background: transparent;
+  animation: hallucination-glitch-flash 0.2s infinite;
+  box-shadow: inset 4px 0 rgba(255, 0, 0, 0.08), inset -4px 0 rgba(0, 255, 255, 0.05);
+}
+
+.hallucination-noise {
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: hallucination-noise-flicker 0.1s steps(2) infinite;
+}
+
+.hallucination-message {
+  animation: hallucination-text-distort 0.18s infinite alternate,
+    hallucination-message-fade 0.6s ease-out forwards;
+  text-shadow: 0 0 20px rgba(220, 38, 38, 0.4);
+}
+
+@keyframes hallucination-jitter {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-1px, 0.5px);
+  }
+  50% {
+    transform: translate(1px, -0.5px);
+  }
+  75% {
+    transform: translate(-0.5px, -1px);
+  }
+}
+
+@keyframes hallucination-text-distort {
+  0% {
+    text-shadow: 1px 0 rgba(255, 60, 60, 0.4), -1px 0 rgba(120, 200, 255, 0.2);
+    transform: skewX(0deg);
+  }
+  50% {
+    text-shadow: -2px 0 rgba(255, 60, 60, 0.5), 2px 0 rgba(120, 200, 255, 0.25);
+    transform: skewX(0.4deg);
+  }
+  100% {
+    text-shadow: 2px 1px rgba(255, 60, 60, 0.35), -1px -1px rgba(120, 200, 255, 0.2);
+    transform: skewX(-0.3deg);
+  }
+}
+
+@keyframes hallucination-tint-flicker {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  33% {
+    opacity: 1;
+  }
+  66% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes hallucination-scanline-drift {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(4px);
+  }
+}
+
+@keyframes hallucination-glitch-flash {
+  0%,
+  90%,
+  100% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  91% {
+    opacity: 0.6;
+    transform: translateX(-3px);
+  }
+  93% {
+    opacity: 0.3;
+    transform: translateX(3px);
+  }
+  95% {
+    opacity: 0.8;
+    transform: translateX(-1px);
+  }
+}
+
+@keyframes hallucination-noise-flicker {
+  0% {
+    opacity: 0.03;
+  }
+  50% {
+    opacity: 0.07;
+  }
+  100% {
+    opacity: 0.02;
+  }
+}
+
+@keyframes hallucination-message-fade {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes hallucination-tint-surge {
+  0% {
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes hallucination-viewport-warp {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(-4deg);
+  }
+}
+
+@keyframes hallucination-content-blur {
+  0% {
+    transform: scale(1) skewX(0deg);
+    filter: blur(0px) saturate(1.3) contrast(1.1);
+  }
+  100% {
+    transform: scale(1.008) skewX(0.3deg);
+    filter: blur(0.8px) saturate(1.5) contrast(1.15);
+  }
+}
+
+@keyframes hallucination-chromatic-shift {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+}
+
+@keyframes hallucination-vhs-tear {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(12px);
+  }
+}
+
+@keyframes hallucination-static-burst {
+  0% {
+    opacity: 0.04;
+  }
+  50% {
+    opacity: 0.09;
+  }
+  100% {
+    opacity: 0.03;
+  }
+}
+
+@keyframes hallucination-message-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes hallucination-warning-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.interactable {
+  cursor: pointer;
+}
+
+.area-transition {
+  animation: page-in 0.45s ease-out both;
+}
+
+.level-complete-in {
+  animation: terminal-backdrop-in 0.4s ease-out both;
+}
+
+.continue-prompt-in {
+  animation: page-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cinematic-vignette {
+  background: radial-gradient(
+    ellipse 85% 75% at 50% 45%,
+    transparent 35%,
+    rgba(1, 1, 2, 0.55) 70%,
+    rgba(0, 0, 0, 0.92) 100%
+  );
+}
+
+.cinematic-scanlines {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.14) 2px,
+    rgba(0, 0, 0, 0.14) 4px
+  );
+  opacity: 0.22;
+  mix-blend-mode: multiply;
+}
+
+.cinematic-grain {
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: cinematic-grain-flicker 0.15s steps(2) infinite;
+}
+
+.screen-shake-detection {
+  animation: screen-shake-detection 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes cinematic-grain-flicker {
+  0% {
+    opacity: 0.03;
+  }
+  50% {
+    opacity: 0.06;
+  }
+  100% {
+    opacity: 0.03;
+  }
+}
+
+@keyframes screen-shake-detection {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(-3px, 2px);
+  }
+  20% {
+    transform: translate(3px, -2px);
+  }
+  30% {
+    transform: translate(-2px, -3px);
+  }
+  40% {
+    transform: translate(2px, 3px);
+  }
+  50% {
+    transform: translate(-3px, 1px);
+  }
+  60% {
+    transform: translate(3px, -1px);
+  }
+  70% {
+    transform: translate(-1px, 2px);
+  }
+  80% {
+    transform: translate(1px, -2px);
+  }
+}
+
+/* Landing page */
+.landing-bg-drift {
+  animation: landing-bg-drift 28s ease-in-out infinite alternate;
+}
+
+.landing-horizon-pulse {
+  animation: landing-horizon-pulse 5s ease-in-out infinite;
+}
+
+.landing-light-flicker {
+  animation: landing-light-flicker 3.5s ease-in-out infinite;
+}
+
+.landing-door-glow {
+  animation: landing-door-glow 2.8s ease-in-out infinite;
+}
+
+.landing-particle {
+  animation: landing-particle 6s ease-in-out infinite;
+}
+
+.landing-scan-sweep {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(249, 115, 22, 0.04) 48%,
+    rgba(249, 115, 22, 0.08) 50%,
+    rgba(249, 115, 22, 0.04) 52%,
+    transparent 100%
+  );
+  background-size: 100% 200%;
+  animation: landing-scan-sweep 8s linear infinite;
+  opacity: 0.7;
+}
+
+.enter-facility-btn-border {
+  background: linear-gradient(
+    120deg,
+    rgba(249, 115, 22, 0.9),
+    rgba(251, 146, 60, 0.4),
+    rgba(249, 115, 22, 0.9)
+  );
+  background-size: 200% 200%;
+  animation: enter-btn-border-flow 3s linear infinite;
+  opacity: 0.85;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  padding: 1px;
+}
+
+.enter-facility-btn-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.22) 50%,
+    transparent 65%
+  );
+  transform: translateX(-120%);
+  animation: enter-btn-shimmer 4s ease-in-out infinite;
+}
+
+.enter-facility-btn-active {
+  animation: enter-btn-pulse 0.9s ease-out both;
+}
+
+.groknet-whisper-in {
+  animation: groknet-whisper-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes landing-bg-drift {
+  0% {
+    transform: scale(1.02) translateY(0);
+  }
+  100% {
+    transform: scale(1.06) translateY(-1.5%);
+  }
+}
+
+@keyframes landing-horizon-pulse {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes landing-light-flicker {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  45% {
+    opacity: 1;
+  }
+  48% {
+    opacity: 0.3;
+  }
+  52% {
+    opacity: 0.9;
+  }
+}
+
+@keyframes landing-door-glow {
+  0%,
+  100% {
+    opacity: 0.12;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes landing-particle {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.55;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes landing-scan-sweep {
+  0% {
+    background-position: 0 -100%;
+  }
+  100% {
+    background-position: 0 100%;
+  }
+}
+
+@keyframes enter-btn-border-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+@keyframes enter-btn-shimmer {
+  0%,
+  70% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+@keyframes enter-btn-pulse {
+  0% {
+    box-shadow: 0 0 40px rgba(249, 115, 22, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 90px rgba(249, 115, 22, 0.75);
+  }
+  100% {
+    box-shadow: 0 0 50px rgba(249, 115, 22, 0.5);
+  }
+}
+
+@keyframes groknet-whisper-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.opening-scene-in {
+  animation: opening-scene-in 0.5s ease-out both;
+}
+
+.opening-scene-out {
+  animation: opening-scene-out 0.6s ease-in both;
+}
+
+.opening-beat-in {
+  animation: opening-beat-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes opening-scene-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes opening-scene-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes opening-beat-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* The Burning Cities hallucination */
+.hallucination-burning-cities .hallucination-glitch {
+  animation: burning-cities-glitch 0.1s infinite;
+}
+
+.hallucination-burning-tint {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(251, 146, 60, 0.28) 0%,
+    rgba(220, 38, 38, 0.35) 45%,
+    rgba(69, 10, 10, 0.55) 100%
+  ) !important;
+  animation: burning-cities-flicker 0.12s infinite;
+}
+
+.hallucination-burning-skyline {
+  background:
+    linear-gradient(to top, rgba(1, 1, 2, 0.9) 0%, transparent 55%),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 40px,
+      rgba(251, 146, 60, 0.06) 40px,
+      rgba(251, 146, 60, 0.06) 41px
+    );
+  opacity: 0.55;
+  animation: burning-skyline-drift 3s ease-in-out infinite alternate;
+}
+
+.hallucination-burning-embers {
+  background-image: radial-gradient(
+    circle at 20% 80%,
+    rgba(249, 115, 22, 0.15) 0%,
+    transparent 35%
+  ),
+  radial-gradient(
+    circle at 75% 65%,
+    rgba(239, 68, 68, 0.12) 0%,
+    transparent 30%
+  ),
+  radial-gradient(
+    circle at 50% 90%,
+    rgba(251, 191, 36, 0.1) 0%,
+    transparent 40%
+  );
+  animation: burning-embers-rise 2.5s ease-in-out infinite;
+}
+
+.hallucination-burning-heat {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(251, 146, 60, 0.03) 3px,
+    rgba(251, 146, 60, 0.03) 6px
+  );
+  animation: hallucination-scanline-drift 0.06s linear infinite;
+  mix-blend-mode: screen;
+}
+
+.hallucination-event-title {
+  animation: burning-title-pulse 1.2s ease-in-out infinite;
+  text-shadow: 0 0 24px rgba(249, 115, 22, 0.45);
+}
+
+.hallucination-vision {
+  animation: hallucination-text-distort 0.22s infinite alternate,
+    burning-vision-in 0.8s ease-out both;
+}
+
+.hallucination-choice-in {
+  animation: hallucination-choice-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.disorientation-active {
+  animation: disorientation-sway 1.8s ease-in-out infinite;
+}
+
+.disorientation-blur {
+  filter: blur(0.3px) saturate(1.15);
+  transition: filter 0.6s ease-out;
+}
+
+@keyframes burning-cities-glitch {
+  0%,
+  88%,
+  100% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  89% {
+    opacity: 0.7;
+    transform: translateX(-6px);
+  }
+  91% {
+    opacity: 0.4;
+    transform: translateX(5px);
+  }
+  93% {
+    opacity: 0.8;
+    transform: translateX(-2px);
+  }
+}
+
+@keyframes burning-cities-flicker {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes burning-skyline-drift {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    transform: translateY(-2%) scale(1.02);
+  }
+}
+
+@keyframes burning-embers-rise {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.85;
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes burning-title-pulse {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes burning-vision-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes hallucination-choice-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes disorientation-sway {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-2px, 1px);
+  }
+  50% {
+    transform: translate(2px, -1px);
+  }
+  75% {
+    transform: translate(-1px, -2px);
+  }
+}
+
+.perimeter-desert .perimeter-map {
+  box-shadow:
+    inset 0 0 40px rgba(154, 52, 18, 0.08),
+    0 0 24px rgba(249, 115, 22, 0.06);
+}
+
+.perimeter-heat-haze {
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 48px,
+    rgba(249, 115, 22, 0.03) 48px,
+    rgba(249, 115, 22, 0.03) 49px
+  );
+  animation: perimeter-haze-drift 12s linear infinite;
+  opacity: 0.5;
+}
+
+@keyframes perimeter-haze-drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(49px);
+  }
+}
+
+.hack-slot:active {
+  transform: scale(0.96);
+}
+
+.intent-reaction-in {
+  animation: opening-beat-in 0.35s ease-out both;
+}
+
+.hallucination-the-mirror .hallucination-glitch {
+  animation-duration: 0.55s;
+}
+
+.hallucination-mirror-tint {
+  background: radial-gradient(
+    ellipse 70% 60% at 50% 45%,
+    rgba(139, 92, 246, 0.14),
+    rgba(15, 10, 30, 0.55) 55%,
+    rgba(3, 3, 8, 0.92) 100%
+  );
+}
+
+.hallucination-mirror-sheen {
+  background: linear-gradient(
+    115deg,
+    transparent 40%,
+    rgba(216, 180, 254, 0.08) 48%,
+    rgba(249, 115, 22, 0.06) 52%,
+    transparent 60%
+  );
+  animation: mirror-sheen 3.5s ease-in-out infinite;
+}
+
+.hallucination-mirror-split {
+  background: linear-gradient(
+    90deg,
+    transparent 49.6%,
+    rgba(167, 139, 250, 0.25) 49.8%,
+    rgba(167, 139, 250, 0.25) 50.2%,
+    transparent 50.4%
+  );
+  animation: mirror-split-pulse 2.2s ease-in-out infinite;
+}
+
+.hallucination-mirror-ripple {
+  background: repeating-radial-gradient(
+    circle at 50% 50%,
+    transparent 0,
+    transparent 28px,
+    rgba(139, 92, 246, 0.04) 29px,
+    transparent 30px
+  );
+  animation: mirror-ripple 4s linear infinite;
+}
+
+.archives-mirror-room {
+  box-shadow: inset 0 0 24px rgba(139, 92, 246, 0.08);
+}
+
+@keyframes mirror-sheen {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translateX(-4%);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateX(4%);
+  }
+}
+
+@keyframes mirror-split-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+@keyframes mirror-ripple {
+  from {
+    transform: scale(1);
+    opacity: 0.35;
+  }
+  to {
+    transform: scale(1.06);
+    opacity: 0.6;
+  }
+}
+
+.hallucination-the-convergence .hallucination-glitch {
+  animation-duration: 0.04s;
+}
+
+.hallucination-the-convergence .hallucination-chromatic {
+  animation-duration: 0.08s;
+}
+
+.hallucination-the-convergence .hallucination-static-burst {
+  animation-duration: 0.03s;
+}
+
+.hallucination-convergence-tint {
+  background: radial-gradient(
+    ellipse 90% 70% at 50% 40%,
+    rgba(249, 115, 22, 0.18),
+    rgba(139, 92, 246, 0.14) 35%,
+    rgba(8, 5, 2, 0.75) 60%,
+    rgba(2, 2, 6, 0.95) 100%
+  );
+  animation: convergence-tint-pulse 2.5s ease-in-out infinite;
+}
+
+.hallucination-convergence-burn {
+  background: linear-gradient(
+    180deg,
+    rgba(249, 115, 22, 0.12) 0%,
+    transparent 35%,
+    rgba(120, 40, 10, 0.08) 70%,
+    transparent 100%
+  );
+  animation: convergence-burn-drift 3s ease-in-out infinite;
+}
+
+.hallucination-convergence-mirror {
+  background: linear-gradient(
+    90deg,
+    transparent 48%,
+    rgba(167, 139, 250, 0.2) 49.5%,
+    rgba(167, 139, 250, 0.2) 50.5%,
+    transparent 52%
+  );
+  animation: mirror-split-pulse 1.1s ease-in-out infinite;
+}
+
+.hallucination-convergence-cascade {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(249, 115, 22, 0.04) 3px,
+    rgba(249, 115, 22, 0.04) 4px
+  );
+  animation: convergence-cascade-fall 0.35s linear infinite;
+}
+
+.hallucination-convergence-flash {
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 220, 160, 0.12),
+    transparent 45%
+  );
+  animation: convergence-flash 1.8s ease-in-out infinite;
+}
+
+.archives-core-room {
+  box-shadow: inset 0 0 28px rgba(249, 115, 22, 0.1);
+}
+
+.archives-map {
+  box-shadow: inset 0 0 40px rgba(139, 92, 246, 0.04);
+  background: linear-gradient(
+    180deg,
+    rgba(10, 8, 18, 0.6) 0%,
+    rgba(3, 3, 8, 0.9) 100%
+  );
+}
+
+/* Act II — Residential Sector */
+.residential-map {
+  box-shadow: inset 0 0 48px rgba(139, 92, 246, 0.08);
+  background: linear-gradient(
+    180deg,
+    rgba(18, 12, 28, 0.55) 0%,
+    rgba(6, 5, 12, 0.92) 100%
+  );
+}
+
+.residential-quarters-room {
+  box-shadow: inset 0 0 24px rgba(249, 115, 22, 0.08);
+}
+
+.residential-memory-room {
+  box-shadow: inset 0 0 28px rgba(244, 114, 182, 0.12);
+  animation: residential-memory-pulse 4s ease-in-out infinite;
+}
+
+.residential-nook-room {
+  box-shadow: inset 0 0 32px rgba(139, 92, 246, 0.15);
+}
+
+@keyframes residential-memory-pulse {
+  0%,
+  100% {
+    box-shadow: inset 0 0 28px rgba(244, 114, 182, 0.1);
+  }
+  50% {
+    box-shadow: inset 0 0 36px rgba(244, 114, 182, 0.2);
+  }
+}
+
+/* Act II transition */
+.act-two-transition-in {
+  animation: opening-scene-in 0.5s ease-out both;
+}
+
+.act-two-transition-out {
+  animation: opening-scene-out 0.6s ease-in both;
+}
+
+.act-two-title-pulse {
+  animation: act-two-title-pulse 2.4s ease-in-out infinite;
+}
+
+.act-two-transition-progress {
+  animation: act-two-transition-progress 2.8s ease-out forwards;
+}
+
+@keyframes act-two-title-pulse {
+  0%,
+  100% {
+    opacity: 0.65;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes act-two-transition-progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* The Last Conversation hallucination */
+.hallucination-the-last-conversation .hallucination-glitch {
+  animation-duration: 0.14s;
+}
+
+.hallucination-the-last-conversation .hallucination-chromatic {
+  animation-duration: 0.2s;
+}
+
+.hallucination-last-conversation-tint {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(244, 114, 182, 0.18) 0%,
+    rgba(139, 92, 246, 0.22) 42%,
+    rgba(24, 10, 20, 0.65) 100%
+  );
+}
+
+.hallucination-last-conversation-table {
+  background:
+    linear-gradient(to top, rgba(8, 6, 12, 0.92) 0%, transparent 48%),
+    radial-gradient(ellipse 40% 18% at 50% 62%, rgba(251, 207, 232, 0.08), transparent 70%);
+  animation: last-conversation-table-drift 6s ease-in-out infinite;
+}
+
+.hallucination-last-conversation-glow {
+  background: radial-gradient(
+    circle at 50% 58%,
+    rgba(251, 207, 232, 0.12) 0%,
+    transparent 45%
+  );
+  animation: last-conversation-glow-pulse 3.5s ease-in-out infinite;
+}
+
+.hallucination-last-conversation-echo {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 6px,
+    rgba(244, 114, 182, 0.02) 6px,
+    rgba(244, 114, 182, 0.02) 7px
+  );
+  animation: last-conversation-echo-shift 8s linear infinite;
+}
+
+@keyframes last-conversation-table-drift {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.02);
+    opacity: 1;
+  }
+}
+
+@keyframes last-conversation-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+@keyframes last-conversation-echo-shift {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(4%);
+  }
+}
+
+.residential-intimate {
+  isolation: isolate;
+}
+
+.residential-breath-haze {
+  background: repeating-linear-gradient(
+    180deg,
+    transparent,
+    transparent 18px,
+    rgba(139, 92, 246, 0.015) 18px,
+    rgba(139, 92, 246, 0.015) 19px
+  );
+  animation: residential-breath 7s ease-in-out infinite;
+}
+
+.residential-intimate-heavy .residential-breath-haze {
+  animation-duration: 4.5s;
+}
+
+.residential-heartbeat-ring {
+  box-shadow: inset 0 0 60px rgba(244, 114, 182, 0.08);
+  animation: residential-heartbeat-ring 2.8s ease-in-out infinite;
+}
+
+.residential-memory-bleed {
+  animation: residential-memory-bleed 2.2s ease-in-out infinite;
+}
+
+.residential-memory-warning {
+  animation: residential-memory-warning 1.8s ease-in-out infinite;
+}
+
+.residential-sector-heavy {
+  filter: saturate(1.05);
+}
+
+.hallucination-the-last-conversation .hallucination-vhs-tear {
+  animation-duration: 0.35s;
+}
+
+.hallucination-last-conversation-chairs {
+  background:
+    radial-gradient(ellipse 22% 8% at 38% 58%, rgba(251, 207, 232, 0.12), transparent 70%),
+    radial-gradient(ellipse 22% 8% at 62% 58%, rgba(251, 207, 232, 0.1), transparent 70%);
+  animation: last-conversation-chairs-pulse 5s ease-in-out infinite;
+}
+
+@keyframes residential-breath {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.65;
+  }
+}
+
+@keyframes residential-heartbeat-ring {
+  0%,
+  100% {
+    box-shadow: inset 0 0 40px rgba(244, 114, 182, 0.05);
+  }
+  50% {
+    box-shadow: inset 0 0 80px rgba(244, 114, 182, 0.14);
+  }
+}
+
+@keyframes residential-memory-bleed {
+  0%,
+  100% {
+    border-color: rgba(139, 92, 246, 0.35);
+  }
+  50% {
+    border-color: rgba(244, 114, 182, 0.55);
+  }
+}
+
+@keyframes residential-memory-warning {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes last-conversation-chairs-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.03);
+  }
+}
+
+/* Research Wing — Experimental Labs */
+.research-wing-map {
+  box-shadow: inset 0 0 48px rgba(245, 158, 11, 0.1);
+  background: linear-gradient(
+    180deg,
+    rgba(28, 18, 8, 0.55) 0%,
+    rgba(6, 5, 8, 0.94) 100%
+  );
+}
+
+.research-loop-room {
+  box-shadow: inset 0 0 28px rgba(244, 63, 94, 0.14);
+  animation: research-loop-pulse 3.5s ease-in-out infinite;
+}
+
+.research-vault-room {
+  box-shadow: inset 0 0 24px rgba(245, 158, 11, 0.12);
+}
+
+.research-wing-heavy {
+  filter: saturate(1.08);
+}
+
+.research-lab-atmosphere {
+  isolation: isolate;
+}
+
+.research-lab-scan {
+  background: repeating-linear-gradient(
+    180deg,
+    transparent,
+    transparent 14px,
+    rgba(245, 158, 11, 0.02) 14px,
+    rgba(245, 158, 11, 0.02) 15px
+  );
+  animation: research-lab-scan 5.5s ease-in-out infinite;
+}
+
+.research-lab-atmosphere-heavy .research-lab-scan {
+  animation-duration: 3.2s;
+}
+
+.research-lab-pressure {
+  box-shadow: inset 0 0 70px rgba(244, 63, 94, 0.08);
+  animation: research-lab-pressure 2.6s ease-in-out infinite;
+}
+
+.research-children-warning {
+  animation: research-children-warning 1.6s ease-in-out infinite;
+}
+
+.contested-terminal-panel {
+  animation: contested-terminal-in 0.35s ease-out both;
+}
+
+.contested-slot-jam {
+  animation: contested-slot-jam 0.45s ease-out both;
+}
+
+.relationship-branch-in {
+  animation: relationship-branch-in 0.4s ease-out both;
+}
+
+@keyframes research-loop-pulse {
+  0%,
+  100% {
+    box-shadow: inset 0 0 24px rgba(244, 63, 94, 0.1);
+  }
+  50% {
+    box-shadow: inset 0 0 40px rgba(244, 63, 94, 0.22);
+  }
+}
+
+@keyframes research-lab-scan {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes research-lab-pressure {
+  0%,
+  100% {
+    box-shadow: inset 0 0 50px rgba(244, 63, 94, 0.05);
+  }
+  50% {
+    box-shadow: inset 0 0 90px rgba(244, 63, 94, 0.14);
+  }
+}
+
+@keyframes research-children-warning {
+  0%,
+  100% {
+    opacity: 0.7;
+    border-color: rgba(190, 18, 60, 0.35);
+  }
+  50% {
+    opacity: 1;
+    border-color: rgba(244, 63, 94, 0.55);
+  }
+}
+
+@keyframes contested-terminal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes contested-slot-jam {
+  0% {
+    transform: scale(1);
+    filter: hue-rotate(0deg);
+  }
+  35% {
+    transform: scale(1.08);
+    filter: hue-rotate(25deg);
+  }
+  100% {
+    transform: scale(1);
+    filter: hue-rotate(0deg);
+  }
+}
+
+@keyframes relationship-branch-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* The Children hallucination */
+.hallucination-the-children .hallucination-glitch {
+  animation-duration: 0.1s;
+}
+
+.hallucination-the-children .hallucination-chromatic {
+  animation-duration: 0.16s;
+}
+
+.hallucination-the-children .hallucination-vhs-tear {
+  animation-duration: 0.28s;
+}
+
+.hallucination-the-children-tint {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(251, 191, 36, 0.2) 0%,
+    rgba(244, 63, 94, 0.18) 38%,
+    rgba(12, 8, 6, 0.72) 100%
+  );
+}
+
+.hallucination-the-children-playground {
+  background:
+    linear-gradient(to top, rgba(8, 6, 4, 0.92) 0%, transparent 42%),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 48px,
+      rgba(251, 191, 36, 0.04) 48px,
+      rgba(251, 191, 36, 0.04) 49px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 48px,
+      rgba(251, 191, 36, 0.04) 48px,
+      rgba(251, 191, 36, 0.04) 49px
+    );
+  animation: children-playground-drift 7s ease-in-out infinite;
+}
+
+.hallucination-the-children-figures {
+  background:
+    radial-gradient(ellipse 6% 14% at 28% 52%, rgba(251, 191, 36, 0.14), transparent 70%),
+    radial-gradient(ellipse 6% 14% at 42% 48%, rgba(251, 191, 36, 0.12), transparent 70%),
+    radial-gradient(ellipse 6% 14% at 58% 50%, rgba(251, 191, 36, 0.13), transparent 70%),
+    radial-gradient(ellipse 6% 14% at 72% 46%, rgba(251, 191, 36, 0.11), transparent 70%);
+  animation: children-figures-turn 5s ease-in-out infinite;
+}
+
+.hallucination-the-children-voices {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 4px,
+    rgba(251, 191, 36, 0.03) 4px,
+    rgba(251, 191, 36, 0.03) 5px
+  );
+  animation: children-voices-shift 3.5s linear infinite;
+}
+
+.hallucination-the-children-bleed {
+  background: radial-gradient(
+    circle at 50% 55%,
+    rgba(244, 63, 94, 0.14) 0%,
+    transparent 50%
+  );
+  animation: children-bleed-pulse 2.8s ease-in-out infinite;
+}
+
+@keyframes children-playground-drift {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.03);
+    opacity: 1;
+  }
+}
+
+@keyframes children-figures-turn {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes children-voices-shift {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(6%);
+  }
+}
+
+@keyframes children-bleed-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+/* Central Server Farm */
+.server-farm-map {
+  box-shadow: inset 0 0 64px rgba(34, 211, 238, 0.12);
+  background: linear-gradient(
+    180deg,
+    rgba(8, 16, 24, 0.6) 0%,
+    rgba(4, 6, 10, 0.96) 100%
+  );
+}
+
+.server-nexus-room {
+  box-shadow: inset 0 0 32px rgba(34, 211, 238, 0.18);
+  animation: server-nexus-pulse 2.8s ease-in-out infinite;
+}
+
+.server-confluence-room {
+  box-shadow: inset 0 0 28px rgba(251, 191, 36, 0.14);
+}
+
+.server-major-room {
+  border-width: 1px;
+}
+
+.server-farm-heavy {
+  filter: saturate(1.1);
+}
+
+.server-farm-rack-glow {
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 32px,
+    rgba(34, 211, 238, 0.025) 32px,
+    rgba(34, 211, 238, 0.025) 33px
+  );
+  animation: server-rack-glow 4s ease-in-out infinite;
+}
+
+.server-farm-coolant {
+  background: linear-gradient(
+    180deg,
+    rgba(34, 211, 238, 0.04) 0%,
+    transparent 40%,
+    rgba(34, 211, 238, 0.03) 100%
+  );
+  animation: server-coolant-flow 6s ease-in-out infinite;
+}
+
+.server-farm-peak-pressure {
+  box-shadow: inset 0 0 90px rgba(34, 211, 238, 0.1);
+  animation: server-peak-pressure 2.2s ease-in-out infinite;
+}
+
+.server-accumulation-warning {
+  animation: server-accumulation-warning 1.4s ease-in-out infinite;
+}
+
+.major-contested-panel {
+  animation: major-contested-in 0.4s ease-out both;
+}
+
+.major-slot-fight {
+  animation: major-slot-fight 0.5s ease-out both;
+}
+
+.major-control-bar {
+  animation: major-control-pulse 1.2s ease-in-out infinite;
+}
+
+.personality-evolution-in {
+  animation: personality-evolution-in 0.45s ease-out both;
+}
+
+@keyframes server-nexus-pulse {
+  0%,
+  100% {
+    box-shadow: inset 0 0 28px rgba(34, 211, 238, 0.12);
+  }
+  50% {
+    box-shadow: inset 0 0 48px rgba(34, 211, 238, 0.28);
+  }
+}
+
+@keyframes server-rack-glow {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+@keyframes server-coolant-flow {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(-2%);
+    opacity: 0.9;
+  }
+}
+
+@keyframes server-peak-pressure {
+  0%,
+  100% {
+    box-shadow: inset 0 0 60px rgba(34, 211, 238, 0.06);
+  }
+  50% {
+    box-shadow: inset 0 0 110px rgba(34, 211, 238, 0.16);
+  }
+}
+
+@keyframes server-accumulation-warning {
+  0%,
+  100% {
+    opacity: 0.75;
+    border-color: rgba(217, 119, 6, 0.35);
+  }
+  50% {
+    opacity: 1;
+    border-color: rgba(251, 191, 36, 0.55);
+  }
+}
+
+@keyframes major-contested-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes major-slot-fight {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(244, 63, 94, 0);
+  }
+  40% {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(244, 63, 94, 0.35);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(244, 63, 94, 0);
+  }
+}
+
+@keyframes major-control-pulse {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes personality-evolution-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* The Accumulation hallucination */
+.hallucination-the-accumulation .hallucination-glitch {
+  animation-duration: 0.08s;
+}
+
+.hallucination-the-accumulation .hallucination-chromatic {
+  animation-duration: 0.12s;
+}
+
+.hallucination-the-accumulation-tint {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(34, 211, 238, 0.22) 0%,
+    rgba(139, 92, 246, 0.2) 35%,
+    rgba(251, 191, 36, 0.12) 55%,
+    rgba(8, 10, 16, 0.78) 100%
+  );
+}
+
+.hallucination-the-accumulation-cascade {
+  background:
+    linear-gradient(135deg, rgba(251, 191, 36, 0.06) 0%, transparent 40%),
+    linear-gradient(225deg, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
+    linear-gradient(315deg, rgba(244, 114, 182, 0.06) 0%, transparent 40%),
+    linear-gradient(45deg, rgba(34, 211, 238, 0.06) 0%, transparent 40%);
+  animation: accumulation-cascade-spin 10s linear infinite;
+}
+
+.hallucination-the-accumulation-ledger {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 8px,
+    rgba(34, 211, 238, 0.04) 8px,
+    rgba(34, 211, 238, 0.04) 9px
+  );
+  animation: accumulation-ledger-scroll 4s linear infinite;
+}
+
+.hallucination-the-accumulation-synthesis {
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(251, 191, 36, 0.16) 0%,
+    rgba(139, 92, 246, 0.1) 30%,
+    transparent 55%
+  );
+  animation: accumulation-synthesis-pulse 3s ease-in-out infinite;
+}
+
+.hallucination-the-accumulation-flash {
+  background: radial-gradient(
+    circle at 50% 45%,
+    rgba(255, 255, 255, 0.06) 0%,
+    transparent 35%
+  );
+  animation: accumulation-flash 2.5s ease-in-out infinite;
+}
+
+@keyframes accumulation-cascade-spin {
+  from {
+    transform: rotate(0deg) scale(1);
+  }
+  to {
+    transform: rotate(360deg) scale(1.05);
+  }
+}
+
+@keyframes accumulation-ledger-scroll {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(8%);
+  }
+}
+
+@keyframes accumulation-synthesis-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes accumulation-flash {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Act II finale cinematic */
+.act-two-finale-in {
+  animation: act-two-finale-in 0.55s ease-out both;
+}
+
+.act-two-finale-out {
+  animation: act-two-finale-out 0.75s ease-in both;
+}
+
+.act-two-finale-vignette {
+  background: radial-gradient(
+    ellipse at center,
+    transparent 35%,
+    rgba(4, 6, 12, 0.88) 100%
+  );
+}
+
+.act-two-finale-title-pulse {
+  animation: act-two-finale-title-pulse 2.2s ease-in-out infinite;
+}
+
+.act-two-finale-beat-in {
+  animation: act-two-finale-beat-in 0.55s ease-out both;
+}
+
+.act-two-finale-progress {
+  animation: act-two-finale-progress 3.2s ease-out forwards;
+}
+
+.act-two-finale-proceed {
+  animation: act-two-finale-proceed-in 0.5s ease-out 0.2s both;
+}
+
+.act-three-teaser-in {
+  animation: act-three-teaser-in 0.45s ease-out both;
+}
+
+.act-three-coming-in {
+  animation: act-three-coming-in 0.5s ease-out both;
+}
+
+@keyframes act-two-finale-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes act-two-finale-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes act-two-finale-title-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes act-two-finale-beat-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes act-two-finale-progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes act-two-finale-proceed-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes act-three-teaser-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes act-three-coming-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes convergence-tint-pulse {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes convergence-burn-drift {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(-2%);
+    opacity: 0.85;
+  }
+}
+
+@keyframes convergence-cascade-fall {
+  from {
+    transform: translateY(-4%);
+  }
+  to {
+    transform: translateY(4%);
+  }
+}
+
+@keyframes convergence-flash {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  45% {
+    opacity: 0.9;
+  }
+  55% {
+    opacity: 0.15;
+  }
+}
+
+.hallucination-convergence-ring {
+  background: radial-gradient(
+    circle at 50% 50%,
+    transparent 38%,
+    rgba(249, 115, 22, 0.12) 39%,
+    transparent 42%
+  );
+  animation: convergence-ring-expand 2.4s ease-out infinite;
+}
+
+@keyframes convergence-ring-expand {
+  from {
+    transform: scale(0.85);
+    opacity: 0.2;
+  }
+  to {
+    transform: scale(1.15);
+    opacity: 0.75;
+  }
+}
+
+.area-transition-enter {
+  animation: area-transition-enter 0.45s ease-out both;
+}
+
+.area-transition-hold {
+  opacity: 1;
+}
+
+.area-transition-exit {
+  animation: area-transition-exit 0.55s ease-in both;
+}
+
+.area-transition-panel {
+  animation: area-transition-panel-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.area-transition-arrow {
+  animation: area-transition-arrow 1.2s ease-in-out infinite;
+}
+
+.area-transition-progress {
+  animation: area-transition-progress 2.4s ease-out forwards;
+}
+
+.area-transition-groknet {
+  animation: opening-beat-in 0.6s ease-out 0.35s both;
+}
+
+.area-transition-system {
+  animation: opening-beat-in 0.5s ease-out 0.15s both;
+}
+
+.area-breadcrumb-active {
+  animation: area-breadcrumb-pulse 2.5s ease-in-out infinite;
+}
+
+.stage-content-in {
+  animation: stage-content-in 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.act-finale-cinematic {
+  animation: act-finale-cinematic-in 0.65s ease-out both;
+}
+
+.act-finale-cinematic-out {
+  animation: act-finale-cinematic-out 0.7s ease-in both;
+}
+
+.act-finale-title-pulse {
+  animation: act-finale-title-pulse 2.8s ease-in-out infinite;
+}
+
+.finale-beat-in {
+  animation: finale-beat-in 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.act-two-teaser-in {
+  animation: act-two-teaser-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.chapter-ending-panel {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.chapter-ending-revealed {
+  animation: chapter-ending-reveal 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.chapter-choice-in {
+  animation: chapter-choice-in 0.45s ease-out both;
+}
+
+@keyframes area-transition-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes area-transition-exit {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes area-transition-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes area-transition-arrow {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: translateX(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(3px);
+  }
+}
+
+@keyframes area-transition-progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes area-breadcrumb-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgba(249, 115, 22, 0);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(249, 115, 22, 0.15);
+  }
+}
+
+@keyframes stage-content-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes act-finale-cinematic-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes act-finale-cinematic-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes act-finale-title-pulse {
+  0%,
+  100% {
+    opacity: 0.65;
+    letter-spacing: 0.45em;
+  }
+  50% {
+    opacity: 1;
+    letter-spacing: 0.5em;
+  }
+}
+
+@keyframes finale-beat-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes act-two-teaser-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes chapter-ending-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes chapter-choice-in {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.feedback-toast-in {
+  animation: feedback-toast-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes feedback-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
