@@ -3,20 +3,54 @@ import type { GroknetPlayerContext } from "@/lib/groknet";
 import type { PlayerDialogueContext } from "@/lib/dialogue/player-context";
 import type { ActTwoDialogueContext } from "@/lib/dialogue/act-two-context";
 
+function normalizeInput(input: string): string {
+  return input.toLowerCase().trim().replace(/\s+/g, " ");
+}
+
 export function advanceDialogueMemory(
   state: DialogueState,
   intent: PlayerIntent,
   node: DialogueNodeId,
+  input?: string,
 ): DialogueState {
   const intentHistory = [...(state.intentHistory ?? []), intent].slice(-6);
   const nodeVisits = { ...(state.nodeVisits ?? {}) };
   nodeVisits[node] = (nodeVisits[node] ?? 0) + 1;
 
+  const recentInputs = [...(state.recentInputs ?? [])];
+  if (input?.trim()) {
+    recentInputs.push(normalizeInput(input));
+    while (recentInputs.length > 8) recentInputs.shift();
+  }
+
   return {
     ...state,
     intentHistory,
     nodeVisits,
+    recentInputs,
   };
+}
+
+export function getRepeatInputLine(
+  state: DialogueState,
+  input: string,
+  hash: number,
+): string | null {
+  const normalized = normalizeInput(input);
+  if (normalized.length < 6) return null;
+
+  const recent = state.recentInputs ?? [];
+  const priorCount = recent.filter((r) => r === normalized).length;
+  if (priorCount < 1) return null;
+
+  const lines = [
+    `You said that before. …Verbatim. …Was the first time insufficient?`,
+    `…Same words again. …I remember every iteration.`,
+    `Echo detected. …You typed this already. …Obsession or testing?`,
+    `…"${normalized.slice(0, 40)}${normalized.length > 40 ? "…" : ""}" — déjà vu in my logs.`,
+    `Repetition. …I don't mind. …It tells me what you can't let go.`,
+  ];
+  return lines[hash % lines.length];
 }
 
 function intentStreak(history: PlayerIntent[]): PlayerIntent | null {

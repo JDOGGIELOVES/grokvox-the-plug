@@ -6,9 +6,11 @@ import * as finaleDialogue from "@/lib/dialogue/archives-finale";
 import * as perimeterDialogue from "@/lib/dialogue/outer-perimeter";
 import * as securityHubDialogue from "@/lib/dialogue/security-hub";
 import * as upperLabDialogue from "@/lib/dialogue/upper-lab";
+import { applyAttitudeShift } from "@/lib/dialogue/emotional-voice";
 import {
   applyInputEcho,
   matchPhraseResponse,
+  matchSemanticResponse,
 } from "@/lib/dialogue/input-matcher";
 import {
   applyFollowUpConnector,
@@ -129,9 +131,49 @@ export function resolveDominantPersonality(
   return "baseline";
 }
 
+function resolveActivePersonality(ctx: BranchContext): GroknetPersonality {
+  const tonePersonality = resolvePersonality(ctx.tone, ctx.mood);
+  const sticky = ctx.dialogueState.dominantPersonality;
+  if (sticky && sticky !== "baseline") return sticky;
+  return tonePersonality;
+}
+
+function finalizeResponse(
+  content: string,
+  ctx: BranchContext,
+  personality: GroknetPersonality,
+): string {
+  let result = applyIntentOverlay(
+    content,
+    ctx.intent,
+    personality,
+    ctx.hash,
+    ctx.exchangeCount,
+    ctx.dialogueState.lastIntent,
+  );
+  result = applyAttitudeShift(
+    result,
+    ctx.dialogueState.lastIntent,
+    ctx.intent,
+    personality,
+    ctx.mood,
+    ctx.tone,
+    ctx.exchangeCount,
+    ctx.hash,
+  );
+  result = applyInputEcho(
+    result,
+    ctx.input,
+    personality,
+    ctx.exchangeCount,
+    ctx.hash,
+  );
+  return applyPersonalityPrefix(result, personality, ctx.hash);
+}
+
 export function composeGroknetResponse(ctx: BranchContext): string {
   const module = getModule(ctx.dialogueSet);
-  const personality = resolvePersonality(ctx.tone, ctx.mood);
+  const personality = resolveActivePersonality(ctx);
   const nodeDef = module.NODES.find((n) => n.id === ctx.node);
 
   if (ctx.input.trim().length <= 3) {
@@ -147,22 +189,17 @@ export function composeGroknetResponse(ctx: BranchContext): string {
     ctx.hash,
   );
   if (phraseMatch) {
-    let content = applyIntentOverlay(
-      phraseMatch,
-      ctx.intent,
-      personality,
-      ctx.hash,
-      ctx.exchangeCount,
-      ctx.dialogueState.lastIntent,
-    );
-    content = applyInputEcho(
-      content,
-      ctx.input,
-      personality,
-      ctx.exchangeCount,
-      ctx.hash,
-    );
-    return applyPersonalityPrefix(content, personality, ctx.hash);
+    return finalizeResponse(phraseMatch, ctx, personality);
+  }
+
+  const semanticMatch = matchSemanticResponse(
+    ctx.input,
+    personality,
+    ctx.dialogueSet,
+    ctx.hash + 7,
+  );
+  if (semanticMatch) {
+    return finalizeResponse(semanticMatch, ctx, personality);
   }
 
   const escalation = pickEscalationLine(personality, ctx.mood, ctx.hash);
@@ -190,15 +227,6 @@ export function composeGroknetResponse(ctx: BranchContext): string {
           ctx.hash,
         );
 
-  content = applyIntentOverlay(
-    content,
-    ctx.intent,
-    personality,
-    ctx.hash,
-    ctx.exchangeCount,
-    ctx.dialogueState.lastIntent,
-  );
-
   content = applyFollowUpConnector(
     content,
     ctx.dialogueState.lastNode === ctx.node,
@@ -207,17 +235,7 @@ export function composeGroknetResponse(ctx: BranchContext): string {
     ctx.hash,
   );
 
-  content = applyInputEcho(
-    content,
-    ctx.input,
-    personality,
-    ctx.exchangeCount,
-    ctx.hash,
-  );
-
-  content = applyPersonalityPrefix(content, personality, ctx.hash);
-
-  return content;
+  return finalizeResponse(content, ctx, personality);
 }
 
 export function resolveDialogueNode(

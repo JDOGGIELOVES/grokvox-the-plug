@@ -5,9 +5,11 @@ import {
   resolveDominantPersonality,
   resolvePersonality,
 } from "@/lib/dialogue/engine";
+import { getDecisionMemoryLine } from "@/lib/dialogue/choice-memory";
 import {
   advanceDialogueMemory,
   getCrossActMemoryLine,
+  getRepeatInputLine,
   getSessionMemoryLine,
 } from "@/lib/dialogue/memory-layer";
 import {
@@ -180,7 +182,11 @@ export function getGroknetReply(
   const intent = classifyInput(input);
   const nextMood = updateMood(mood, intent);
   const tone = resolveTone(intent, nextMood);
-  const personality = resolvePersonality(tone, nextMood);
+  const tonePersonality = resolvePersonality(tone, nextMood);
+  const personality =
+    dialogueState.dominantPersonality && dialogueState.dominantPersonality !== "baseline"
+      ? dialogueState.dominantPersonality
+      : tonePersonality;
   const node = resolveDialogueNode(input, dialogueSet);
   const nextExchange = dialogueState.exchangeCount + 1;
   const hash = hashDialogueInput(input, nextExchange);
@@ -243,8 +249,20 @@ export function getGroknetReply(
     if (overlay) content = `${overlay} ${content}`;
   }
 
+  const repeatMemory = getRepeatInputLine(dialogueState, input, hash);
+  if (repeatMemory) content = `${repeatMemory} ${content}`;
+
   const sessionMemory = getSessionMemoryLine(dialogueState, node, hash);
   if (sessionMemory) content = `${sessionMemory} ${content}`;
+
+  const decisionMemory = getDecisionMemoryLine(
+    playerContext,
+    node,
+    intent,
+    nextExchange,
+    hash + 3,
+  );
+  if (decisionMemory) content = `${decisionMemory} ${content}`;
 
   const crossActMemory = getCrossActMemoryLine(
     playerContext,
@@ -256,7 +274,7 @@ export function getGroknetReply(
 
   const dominantPersonality = resolveDominantPersonality(
     dialogueState.dominantPersonality,
-    personality,
+    tonePersonality,
     nextMood,
   );
 
@@ -269,9 +287,11 @@ export function getGroknetReply(
       dominantPersonality,
       intentHistory: dialogueState.intentHistory ?? [],
       nodeVisits: dialogueState.nodeVisits ?? {},
+      recentInputs: dialogueState.recentInputs ?? [],
     },
     intent,
     node,
+    input,
   );
 
   return {

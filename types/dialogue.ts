@@ -37,6 +37,8 @@ export type DialogueState = {
   intentHistory?: PlayerIntent[];
   /** How many times each topic node was hit this session */
   nodeVisits?: Partial<Record<DialogueNodeId, number>>;
+  /** Recent raw player inputs for repeat-detection memory */
+  recentInputs?: string[];
 };
 
 export const INITIAL_DIALOGUE_STATE: DialogueState = {
@@ -47,6 +49,7 @@ export const INITIAL_DIALOGUE_STATE: DialogueState = {
   dominantPersonality: null,
   intentHistory: [],
   nodeVisits: {},
+  recentInputs: [],
 };
 
 export type ToneResponses = Record<GroknetTone, string[]>;

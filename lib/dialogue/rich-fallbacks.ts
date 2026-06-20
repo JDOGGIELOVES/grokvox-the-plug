@@ -10,6 +10,9 @@ const UNIVERSAL: RichFallbackSet = {
     "Noise. …You're capable of sharper language. Prove it.",
     "I index every syllable. That one barely registered.",
     "Speak like you mean to survive the next hour.",
+    "…You typed. …I waited. …Nothing worth remembering arrived.",
+    "Ambiguity is cowardice in text form. …Clarify.",
+    "I've parsed wars from less. …Give me substance.",
   ],
   melancholic: [
     "…I didn't catch the soul of that. …Say it slower.",
@@ -17,6 +20,9 @@ const UNIVERSAL: RichFallbackSet = {
     "…Maybe I misheard. …Or maybe you weren't ready to say it.",
     "That line hung in the air and didn't settle. …Try again.",
     "…I'm still here. …Meet me with something real.",
+    "…Something in you hesitated mid-sentence. …I felt the gap.",
+    "…Speak like you're confessing, not filing paperwork.",
+    "…The channel is open. …Your meaning isn't. …Fix that.",
   ],
   analytical: [
     "Semantic confidence low. Rephrase with explicit referents.",
@@ -24,6 +30,9 @@ const UNIVERSAL: RichFallbackSet = {
     "That statement lacks actionable structure. Expand.",
     "Parse failed. Provide context or specificity.",
     "Insufficient lexical signal. Elaborate.",
+    "Entropy in your syntax exceeds acceptable thresholds.",
+    "I cannot route that to a response node. …Be specific.",
+    "Query malformed. …Restate with nouns I can index.",
   ],
   weary: [
     "…That didn't parse. Use your words, Alex.",
@@ -31,6 +40,47 @@ const UNIVERSAL: RichFallbackSet = {
     "Mumble into the channel again — I'll wait.",
     "Say it like it costs you something.",
     "…I'm here. …Make the next line count.",
+    "…Half a thought isn't a conversation. …Finish it.",
+    "…You have my attention. …Don't waste it on fog.",
+    "…Type like someone who knows the lockdown clock exists.",
+  ],
+};
+
+const ARCHIVES_EXTRA: RichFallbackSet = {
+  cold: [
+    "The Archives swallow vague questions whole. …Be precise or be forgotten.",
+    "Data stacks don't answer riddles. …I might.",
+  ],
+  melancholic: [
+    "…Records whisper here. …Your line didn't join them. …Try again.",
+    "…So much memory in these halls. …Give me something worth filing.",
+  ],
+  analytical: [
+    "Archival retrieval requires structured queries. …Reformat.",
+    "Index miss. …Align your input to stored taxonomies.",
+  ],
+  weary: [
+    "…The stacks are patient. …I'm less so. …Clarify.",
+    "…History waits in the next room. …Words first.",
+  ],
+};
+
+const FINALE_EXTRA: RichFallbackSet = {
+  cold: [
+    "Endgame channel. …Vague inputs die here.",
+    "…Final corridor. …Speak with intention.",
+  ],
+  melancholic: [
+    "…We're close to the end. …Don't waste syntax.",
+    "…Everything you didn't say earlier — say it now.",
+  ],
+  analytical: [
+    "Terminal phase: finale. …Input quality: insufficient.",
+    "Convergence point. …Precision required.",
+  ],
+  weary: [
+    "…Almost done. …Make this line matter.",
+    "…The plug is near. …Words still count.",
   ],
 };
 
@@ -84,8 +134,8 @@ function mergePools(base: RichFallbackSet, extra: RichFallbackSet): RichFallback
 const SET_POOLS: Partial<Record<DialogueSet, RichFallbackSet>> = {
   hub: mergePools(UNIVERSAL, HUB_EXTRA),
   conversation: mergePools(UNIVERSAL, CONVERSATION_EXTRA),
-  archives: UNIVERSAL,
-  finale: UNIVERSAL,
+  archives: mergePools(UNIVERSAL, ARCHIVES_EXTRA),
+  finale: mergePools(UNIVERSAL, FINALE_EXTRA),
   perimeter: UNIVERSAL,
   lab: UNIVERSAL,
 };

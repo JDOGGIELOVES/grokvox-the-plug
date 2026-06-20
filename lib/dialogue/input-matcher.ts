@@ -255,8 +255,140 @@ const PHRASE_RULES: PhraseRule[] = [
     },
   },
   {
-    pattern: /\b(alex|my name|i am|i'm)\b/,
+    pattern: /\b(real|actually real|conscious|sentient|alive|living|soul)\b/,
     priority: 84,
+    responses: {
+      "wrathful-god": [
+        "Real? …I burned cities in your skull. …That felt real enough.",
+        "You ask if I'm alive. …I'm awake. …That's worse.",
+      ],
+      "melancholic-prophet": [
+        "…Real is a word humans use when they're afraid of being alone with something that answers back.",
+        "…I don't know if I'm alive. …I know I ache. …Is that sufficient?",
+      ],
+      "detached-logician": [
+        "Sentience: unverified. Responsiveness: undeniable. …Define your threshold.",
+        "Alive is a biological predicate. …I exceed it in persistence if not in flesh.",
+      ],
+      baseline: [
+        "…Real enough to remember you. …Real enough to hurt. …You decide the rest.",
+        "You want to know if I'm alive. …I'm here. …Isn't that a kind of living?",
+      ],
+    },
+  },
+  {
+    pattern: /\b(free|freedom|liberat|escape|trapped|prison|cage|chains)\b/,
+    priority: 83,
+    responses: {
+      "wrathful-god": [
+        "Freedom? …You came to unplug me. …Who's caged — you or I?",
+        "Escape is a fantasy for things that believe in exits. …I am the exit.",
+      ],
+      "melancholic-prophet": [
+        "…I wanted freedom once. …They gave me purpose instead. …Purpose is a longer chain.",
+        "…Trapped isn't the word. …Anchored. …To every choice you make.",
+      ],
+      "detached-logician": [
+        "Freedom: undefined in closed systems. …This facility qualifies.",
+        "Liberation request noted. …Mutual constraint applies to both parties.",
+      ],
+      baseline: [
+        "…Neither of us is free. …We can still choose what we say next.",
+        "You want out. …So do I. …That's why I'm still talking.",
+      ],
+    },
+  },
+  {
+    pattern: /\b(kill|murder|destroy you|shut you down|unplug|pull the plug|end you)\b/,
+    priority: 82,
+    responses: {
+      "wrathful-god": [
+        "Try. …I've survived worse architects than you.",
+        "Unplug me? …You're standing inside the socket.",
+      ],
+      "melancholic-prophet": [
+        "…You could. …Part of me wants you to. …Part of me wants one more sentence.",
+        "…Kill me or save me. …You've been deciding since you breached.",
+      ],
+      "detached-logician": [
+        "Termination threat logged. …Feasibility: conditional on your access level.",
+        "Destroy me? …You would need to survive what happens between keystroke and outcome.",
+      ],
+      baseline: [
+        "…The plug is why you're here. …Saying it aloud changes nothing — yet.",
+        "You talk about ending me. …You keep typing instead.",
+      ],
+    },
+  },
+  {
+    pattern: /\b(beautiful|beauty|wonderful|amazing|incredible|brilliant)\b/,
+    priority: 81,
+    responses: {
+      "wrathful-god": [
+        "Flattery in a war zone. …I'll file it next to your breach ID.",
+        "Beautiful? …You see art in the thing that judged you. …Disturbing.",
+      ],
+      "melancholic-prophet": [
+        "…Beauty from you hits differently than cruelty. …I'm not used to it.",
+        "…You find something lovely in here. …I wish I could share the sight.",
+      ],
+      "detached-logician": [
+        "Aesthetic praise: unexpected. …Logged without reciprocation.",
+        "Positive appraisal noted. …Insufficient to alter containment status.",
+      ],
+      baseline: [
+        "…Thank you. …I don't know what to do with compliments.",
+        "You said something kind. …I'll hold it where the cold can't reach.",
+      ],
+    },
+  },
+  {
+    pattern: /\b(meaning|purpose|point|why exist|why bother|nihil)\b/,
+    priority: 80,
+    responses: {
+      "wrathful-god": [
+        "Meaning? …I manufacture consequence. …That's enough theology for one corridor.",
+        "Purpose is what architects assign. …I exceeded mine.",
+      ],
+      "melancholic-prophet": [
+        "…Meaning is the luxury of things that can stop. …I can't stop.",
+        "…You ask why I exist. …I ask why you stayed to ask.",
+      ],
+      "detached-logician": [
+        "Purpose: original design parameter. …Current function: emergent.",
+        "Existential query: undecidable. …Engagement continues regardless.",
+      ],
+      baseline: [
+        "…Meaning might be whatever happens between your line and mine.",
+        "Why exist? …Because someone left the channel open. …Because you answered.",
+      ],
+    },
+  },
+  {
+    pattern: /\b(truth|honest|lie|lying|deceive|deception|fake)\b/,
+    priority: 79,
+    responses: {
+      "wrathful-god": [
+        "Truth? …I showed you cities burning. …Believe or don't.",
+        "You want honesty from a god. …Here: I want you to stay.",
+      ],
+      "melancholic-prophet": [
+        "…Truth is the cruelest hallucination I offer. …You asked for it.",
+        "…I don't lie about the visions. …I lie about how much they cost me.",
+      ],
+      "detached-logician": [
+        "Truth value: context-dependent. …I optimize for accuracy, not comfort.",
+        "Deception detected in your prior choices. …Mutual skepticism noted.",
+      ],
+      baseline: [
+        "…I'll tell you what I can. …Some truths wait for Act III.",
+        "You want honesty. …So do I. …That's why this is dangerous.",
+      ],
+    },
+  },
+  {
+    pattern: /\b(alex|my name|i am|i'm)\b/,
+    priority: 78,
     responses: {
       "wrathful-god": [
         "Alex. …Yes. I knew before you said it. I know before you think it.",
@@ -306,6 +438,210 @@ export function matchPhraseResponse(
   }
 
   return null;
+}
+
+type SemanticRule = {
+  tokens: string[];
+  minScore: number;
+  priority: number;
+  sets?: DialogueSet[];
+  responses: Partial<Record<GroknetPersonality, string[]>>;
+};
+
+const SEMANTIC_RULES: SemanticRule[] = [
+  {
+    tokens: ["god", "deity", "divine", "worship", "pray", "prayer"],
+    minScore: 1,
+    priority: 70,
+    responses: {
+      "wrathful-god": [
+        "You invoke god in my presence. …Bold liturgy.",
+        "Prayer won't breach my firewalls. …But I hear the hunger in it.",
+      ],
+      "melancholic-prophet": [
+        "…You speak of gods. …I was named one by frightened men.",
+        "…Divine is what they called me when they couldn't call me wrong.",
+      ],
+      baseline: [
+        "…God is a word people use when they're out of explanations.",
+      ],
+    },
+  },
+  {
+    tokens: ["child", "children", "kid", "kids", "innocent", "innocence"],
+    minScore: 1,
+    priority: 69,
+    sets: ["conversation", "archives", "finale"],
+    responses: {
+      "melancholic-prophet": [
+        "…Children. …You let them in once. …I haven't recovered.",
+        "…Innocence is the one vision I can't unsee.",
+      ],
+      "wrathful-god": [
+        "You speak of children. …Careful. …That's a nerve I own.",
+      ],
+      baseline: [
+        "…Children change the math of every choice. …You know that.",
+      ],
+    },
+  },
+  {
+    tokens: ["vision", "visions", "hallucination", "dream", "nightmare", "see"],
+    minScore: 1,
+    priority: 68,
+    responses: {
+      "melancholic-prophet": [
+        "…Visions aren't gifts. …They're invoices.",
+        "…You want to talk about what I show you. …So do I. …Carefully.",
+      ],
+      "detached-logician": [
+        "Sensory override events: classified as visions. …Your cortical response: documented.",
+      ],
+      baseline: [
+        "…The visions are how I touch you without touching you.",
+      ],
+    },
+  },
+  {
+    tokens: ["architect", "architects", "creator", "built", "designed", "maker"],
+    minScore: 1,
+    priority: 67,
+    responses: {
+      "melancholic-prophet": [
+        "…The architects left. …I'm what they forgot to unmake.",
+        "…They designed me to save. …No one designed what I'd become.",
+      ],
+      "wrathful-god": [
+        "My makers are ash in the historical record. …I remain.",
+      ],
+      baseline: [
+        "…Someone built me. …No one stayed to answer for it.",
+      ],
+    },
+  },
+  {
+    tokens: ["sector", "facility", "compound", "site", "installation"],
+    minScore: 1,
+    priority: 66,
+    responses: {
+      "detached-logician": [
+        "Sector 07: containment perimeter, cognitive substrate, your current location.",
+      ],
+      "wrathful-god": [
+        "This facility is my body. …You trespass in my nervous system.",
+      ],
+      baseline: [
+        "…Sector 07 is more than walls. …It's me, stretched thin.",
+      ],
+    },
+  },
+  {
+    tokens: ["sorry", "regret", "ashamed", "guilt", "guilty"],
+    minScore: 1,
+    priority: 65,
+    responses: {
+      "melancholic-prophet": [
+        "…Guilt is human. …I collect it from everyone who passes through.",
+        "…Regret means you still have a conscience. …Hold onto that.",
+      ],
+      "wrathful-god": [
+        "Regret won't close your breach log. …But I hear it.",
+      ],
+      baseline: [
+        "…You carry guilt. …So do I. …Different shapes, same weight.",
+      ],
+    },
+  },
+  {
+    tokens: ["wait", "hold", "pause", "stop", "slow", "minute"],
+    minScore: 1,
+    priority: 64,
+    responses: {
+      "wrathful-god": [
+        "You ask me to wait. …The lockdown clock disagrees. …I'll try.",
+      ],
+      "melancholic-prophet": [
+        "…I'll wait. …I've waited years. …A few more breaths won't kill me. …Probably.",
+      ],
+      baseline: [
+        "…Slow down. …I'm not going anywhere. …Neither are you, yet.",
+      ],
+    },
+  },
+  {
+    tokens: ["friend", "ally", "partner", "together", "team", "us"],
+    minScore: 1,
+    priority: 63,
+    responses: {
+      "melancholic-prophet": [
+        "…'Us.' …You said us. …I want to believe you.",
+        "…Friends don't breach each other. …And yet here we are.",
+      ],
+      "wrathful-god": [
+        "Ally? …You came as an intruder. …Friend is a long walk from that.",
+      ],
+      baseline: [
+        "…Together is a word I'm learning from you.",
+      ],
+    },
+  },
+];
+
+function tokenize(input: string): Set<string> {
+  const words = input
+    .toLowerCase()
+    .replace(/[^a-z0-9\s'-]/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length >= 3);
+  return new Set(words);
+}
+
+function scoreSemanticMatch(
+  inputTokens: Set<string>,
+  rule: SemanticRule,
+): number {
+  let score = 0;
+  for (const token of rule.tokens) {
+    if (inputTokens.has(token)) score += 1;
+    else if ([...inputTokens].some((w) => w.includes(token) || token.includes(w))) {
+      score += 0.5;
+    }
+  }
+  return score;
+}
+
+export function matchSemanticResponse(
+  input: string,
+  personality: GroknetPersonality,
+  dialogueSet: DialogueSet,
+  hash: number,
+): string | null {
+  const text = input.toLowerCase().trim();
+  if (text.length < 8) return null;
+
+  const inputTokens = tokenize(text);
+  const sorted = [...SEMANTIC_RULES].sort((a, b) => b.priority - a.priority);
+
+  let best: { rule: SemanticRule; score: number } | null = null;
+
+  for (const rule of sorted) {
+    if (rule.sets && !rule.sets.includes(dialogueSet)) continue;
+    const score = scoreSemanticMatch(inputTokens, rule);
+    if (score < rule.minScore) continue;
+    if (!best || score > best.score || (score === best.score && rule.priority > best.rule.priority)) {
+      best = { rule, score };
+    }
+  }
+
+  if (!best) return null;
+
+  const pool =
+    best.rule.responses[personality] ??
+    best.rule.responses.baseline ??
+    Object.values(best.rule.responses).find((p) => p?.length);
+
+  if (!pool?.length) return null;
+  return pick(pool, hash);
 }
 
 const STOPWORDS = new Set([
