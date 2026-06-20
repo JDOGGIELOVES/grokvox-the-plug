@@ -987,6 +987,422 @@ body {
   }
 }
 
+/* Cinematic opening intro */
+.cinematic-intro {
+  animation: cinematic-intro-in 1.2s ease-out both;
+}
+
+.cinematic-intro-out {
+  animation: cinematic-intro-out 0.8s ease-in both;
+}
+
+.intro-black-fade {
+  animation: intro-black-fade 1.8s ease-out both;
+}
+
+.intro-facility-zoom {
+  animation: intro-facility-zoom 15s cubic-bezier(0.25, 0.1, 0.25, 1) both;
+}
+
+.intro-star-twinkle {
+  animation: intro-star-twinkle 3s ease-in-out infinite;
+}
+
+.intro-bunker-pulse {
+  animation: intro-bunker-pulse 4s ease-in-out infinite;
+}
+
+.intro-door-glow {
+  animation: intro-door-glow 2.5s ease-in-out infinite;
+}
+
+.intro-perimeter-light {
+  animation: intro-perimeter-light 2.8s ease-in-out infinite;
+}
+
+.intro-location-tag {
+  animation: intro-location-tag 1.2s ease-out 0.8s both;
+}
+
+.intro-vo-subtitle {
+  animation: intro-vo-subtitle 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.intro-montage-flash {
+  animation: intro-montage-flash 0.35s ease-out both;
+}
+
+.intro-montage-headline {
+  animation: intro-montage-headline 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.intro-montage-subline {
+  animation: intro-montage-subline 0.5s ease-out 0.15s both;
+}
+
+.intro-montage-static {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: intro-montage-static 0.08s steps(2) infinite;
+}
+
+.intro-montage-scan {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.12) 3px,
+    rgba(0, 0, 0, 0.12) 6px
+  );
+  animation: intro-montage-scan 0.12s linear infinite;
+}
+
+.intro-montage-chaos {
+  background: radial-gradient(ellipse at center, rgba(127, 29, 29, 0.55) 0%, rgba(10, 10, 12, 0.95) 70%);
+}
+
+.intro-montage-fire {
+  background: radial-gradient(ellipse at 50% 60%, rgba(249, 115, 22, 0.45) 0%, rgba(127, 29, 29, 0.6) 40%, rgba(10, 10, 12, 0.98) 75%);
+}
+
+.intro-montage-nuclear {
+  background: radial-gradient(ellipse at center, rgba(59, 130, 246, 0.2) 0%, rgba(15, 23, 42, 0.95) 65%);
+}
+
+.intro-montage-news {
+  background: linear-gradient(180deg, rgba(15, 15, 20, 0.98) 0%, rgba(30, 20, 20, 0.95) 100%);
+}
+
+.intro-montage-system {
+  background: radial-gradient(ellipse at center, rgba(249, 115, 22, 0.25) 0%, rgba(10, 10, 14, 0.98) 70%);
+}
+
+.intro-montage-live {
+  animation: intro-montage-live 1s ease-in-out infinite;
+}
+
+.intro-radar-ring {
+  animation: intro-radar-ring 2s ease-out infinite;
+}
+
+.intro-terminal-shot {
+  animation: intro-terminal-shot 1.2s ease-out both;
+}
+
+.intro-terminal-glow-pulse {
+  animation: intro-terminal-glow-pulse 3s ease-in-out infinite;
+}
+
+.intro-screen-flicker {
+  animation: intro-screen-flicker 4s ease-in-out infinite;
+}
+
+.intro-title-prelude {
+  animation: intro-title-prelude 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+}
+
+.intro-title-main {
+  animation: intro-title-main 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both;
+}
+
+.intro-title-divider {
+  animation: intro-title-divider 1s ease-out 1.4s both;
+}
+
+.intro-title-tagline {
+  animation: intro-title-tagline 1.2s ease-out 1.8s both;
+}
+
+.intro-begin-prompt {
+  animation: intro-begin-prompt 0.8s ease-out both;
+}
+
+.intro-skip-btn {
+  animation: intro-skip-btn 0.5s ease-out both;
+}
+
+@keyframes cinematic-intro-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes cinematic-intro-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes intro-black-fade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.3;
+  }
+}
+
+@keyframes intro-facility-zoom {
+  from {
+    transform: scale(1.15);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.55);
+    opacity: 1;
+  }
+}
+
+@keyframes intro-star-twinkle {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+@keyframes intro-bunker-pulse {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes intro-door-glow {
+  0%,
+  100% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.22;
+  }
+}
+
+@keyframes intro-perimeter-light {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  40% {
+    opacity: 0.55;
+  }
+  60% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes intro-location-tag {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes intro-vo-subtitle {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes intro-montage-flash {
+  from {
+    opacity: 0;
+    filter: brightness(2);
+  }
+  30% {
+    opacity: 1;
+    filter: brightness(1.3);
+  }
+  to {
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
+
+@keyframes intro-montage-headline {
+  from {
+    opacity: 0;
+    transform: scale(1.08) translateY(10px);
+    letter-spacing: 0.2em;
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    letter-spacing: 0.12em;
+  }
+}
+
+@keyframes intro-montage-subline {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes intro-montage-static {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(-2%, 1%);
+  }
+}
+
+@keyframes intro-montage-scan {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(6px);
+  }
+}
+
+@keyframes intro-montage-live {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes intro-radar-ring {
+  from {
+    transform: scale(0.6);
+    opacity: 0.6;
+  }
+  to {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+@keyframes intro-terminal-shot {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@keyframes intro-terminal-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes intro-screen-flicker {
+  0%,
+  92%,
+  100% {
+    opacity: 0.85;
+  }
+  93% {
+    opacity: 0.6;
+  }
+  94% {
+    opacity: 0.9;
+  }
+}
+
+@keyframes intro-title-prelude {
+  from {
+    opacity: 0;
+    letter-spacing: 0.7em;
+  }
+  to {
+    opacity: 1;
+    letter-spacing: 0.5em;
+  }
+}
+
+@keyframes intro-title-main {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(20px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes intro-title-divider {
+  from {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes intro-title-tagline {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes intro-begin-prompt {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes intro-skip-btn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 /* The Burning Cities hallucination */
 .hallucination-burning-cities .hallucination-glitch {
   animation: burning-cities-glitch 0.1s infinite;

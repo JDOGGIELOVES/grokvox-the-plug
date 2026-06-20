@@ -30,7 +30,7 @@ export function calculateChapterProgress(
     };
   }
 
-  if (input.phase === "opening") {
+  if (input.phase === "cinematic-intro" || input.phase === "opening") {
     return { percent: 0, label: "Infiltration", detail: "Briefing" };
   }
 

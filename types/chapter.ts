@@ -2,7 +2,11 @@ import type { GroknetMood } from "@/lib/groknet";
 import type { GroknetTone } from "@/types/dialogue";
 import type { RunSummary } from "@/types/run";
 
-export type ChapterPhase = "opening" | "playing" | "complete";
+export type ChapterPhase =
+  | "cinematic-intro"
+  | "opening"
+  | "playing"
+  | "complete";
 
 export type ChapterStage =
   | "outer-perimeter"

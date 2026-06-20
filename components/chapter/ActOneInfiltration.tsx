@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GameHeader } from "@/components/chapter/GameHeader";
 import { GameShell } from "@/components/chapter/GameShell";
+import { CinematicIntro } from "@/components/chapter/CinematicIntro";
 import { OpeningScene } from "@/components/chapter/OpeningScene";
 import { DataArchivesSection } from "@/components/chapter/DataArchivesSection";
 import { OuterPerimeterSection } from "@/components/chapter/OuterPerimeterSection";
@@ -157,7 +158,7 @@ function toCheckpointState(state: RunState): ActOneCheckpointState {
 
 function createInitialRunState(): RunState {
   return {
-    phase: "opening",
+    phase: "cinematic-intro",
     stage: "outer-perimeter",
     runStart: Date.now(),
     gameKey: 0,
@@ -590,6 +591,10 @@ export function ActOneInfiltration() {
     }, 450);
   }, [setGroknetWhisper, state.finalMood]);
 
+  const handleCinematicIntroComplete = useCallback(() => {
+    setState((s) => ({ ...s, phase: "opening" }));
+  }, []);
+
   const handleOpeningComplete = useCallback(() => {
     setState((s) => ({
       ...s,
@@ -703,6 +708,10 @@ export function ActOneInfiltration() {
 
   return (
     <GameShell shaking={state.screenShaking} variant="act-1">
+      {state.phase === "cinematic-intro" ? (
+        <CinematicIntro onComplete={handleCinematicIntroComplete} />
+      ) : null}
+
       {state.phase === "opening" ? (
         <OpeningScene onComplete={handleOpeningComplete} />
       ) : null}
