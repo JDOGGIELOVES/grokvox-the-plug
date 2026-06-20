@@ -11,9 +11,15 @@ import { cn } from "@/lib/utils";
 
 type HowToPlayScreenProps = {
   onComplete: () => void;
+  onSkipIntro?: () => void;
+  showSkipIntro?: boolean;
 };
 
-export function HowToPlayScreen({ onComplete }: HowToPlayScreenProps) {
+export function HowToPlayScreen({
+  onComplete,
+  onSkipIntro,
+  showSkipIntro = false,
+}: HowToPlayScreenProps) {
   const [exiting, setExiting] = useState(false);
 
   const handleBegin = useCallback(() => {
@@ -23,6 +29,13 @@ export function HowToPlayScreen({ onComplete }: HowToPlayScreenProps) {
     window.setTimeout(onComplete, 650);
   }, [exiting, onComplete]);
 
+  const handleSkipIntro = useCallback(() => {
+    if (exiting || !onSkipIntro) return;
+    setExiting(true);
+    playInteractSound();
+    window.setTimeout(onSkipIntro, 320);
+  }, [exiting, onSkipIntro]);
+
   return (
     <div
       className={cn(
@@ -30,6 +43,15 @@ export function HowToPlayScreen({ onComplete }: HowToPlayScreenProps) {
         exiting && "how-to-play-screen-out",
       )}
     >
+      {showSkipIntro && onSkipIntro && !exiting ? (
+        <button
+          type="button"
+          onClick={handleSkipIntro}
+          className="intro-skip-btn absolute right-4 top-4 z-40 font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-500 transition-colors hover:text-zinc-300 sm:right-6 sm:top-6"
+        >
+          Skip Intro
+        </button>
+      ) : null}
       <div className="pointer-events-none absolute inset-0 landing-vignette" />
       <div className="pointer-events-none absolute inset-0 landing-scanlines opacity-15" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_65%_55%_at_50%_42%,rgba(249,115,22,0.1),transparent_70%)]" />

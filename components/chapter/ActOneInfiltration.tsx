@@ -5,7 +5,7 @@ import { GameHeader } from "@/components/chapter/GameHeader";
 import { GameShell } from "@/components/chapter/GameShell";
 import { CinematicIntro } from "@/components/chapter/CinematicIntro";
 import { HowToPlayScreen } from "@/components/chapter/HowToPlayScreen";
-import { OpeningScene } from "@/components/chapter/OpeningScene";
+import { MissionDeployOverlay } from "@/components/chapter/MissionDeployOverlay";
 import { DataArchivesSection } from "@/components/chapter/DataArchivesSection";
 import { OuterPerimeterSection } from "@/components/chapter/OuterPerimeterSection";
 import { SecurityHubSection } from "@/components/chapter/SecurityHubSection";
@@ -42,6 +42,13 @@ import {
   type ActOneCheckpointState,
 } from "@/lib/save-progress";
 import { CHAPTER_TIME_BUDGET_MS } from "@/lib/chapter/act-1";
+import {
+  ACT_ONE_MISSION_START_WHISPER,
+  ACT_ONE_RETURNING_WHISPER,
+  cancelIntroSpeech,
+  hasSeenIntro,
+  markIntroSeen,
+} from "@/lib/chapter/intro-persistence";
 import {
   playHallucinationPeakSound,
   playTensionPulseSound,
@@ -212,6 +219,12 @@ export function ActOneInfiltration() {
   );
   const [progressSaved, setProgressSaved] = useState(false);
   const [showFinaleCinematic, setShowFinaleCinematic] = useState(false);
+  const [missionDeploying, setMissionDeploying] = useState(false);
+  const [missionDeployed, setMissionDeployed] = useState(false);
+  const [returningPlayer, setReturningPlayer] = useState(false);
+  const missionDeployTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
   const [areaTransition, setAreaTransition] = useState<{
     from: ChapterStage;
     to: ChapterStage;
@@ -270,6 +283,8 @@ export function ActOneInfiltration() {
   const clock = useGameClock(state.phase === "playing", clockInitialMs);
 
   useEffect(() => {
+    setReturningPlayer(hasSeenIntro());
+
     const save = loadGameSave();
     const checkpoint = loadActOneCheckpoint();
 
@@ -280,9 +295,16 @@ export function ActOneInfiltration() {
 
     if (!checkpoint) return;
 
+    const restoredPhase =
+      checkpoint.state.phase === "playing" ||
+      checkpoint.state.phase === "complete"
+        ? checkpoint.state.phase
+        : "playing";
+
     setState((s) => ({
       ...s,
       ...checkpoint.state,
+      phase: restoredPhase,
       hubExchanges: checkpoint.state.hubExchanges ?? 0,
       archivesExchanges: checkpoint.state.archivesExchanges ?? 0,
       finaleExchanges: checkpoint.state.finaleExchanges ?? 0,
@@ -290,9 +312,18 @@ export function ActOneInfiltration() {
       screenShaking: false,
     }));
     setClockInitialMs(checkpoint.clockRemainingMs);
+    setMissionDeployed(restoredPhase === "playing");
     setResumeWhisper(
       "Checkpoint restored. I remember where you left off — and what you chose.",
     );
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (missionDeployTimeoutRef.current) {
+        clearTimeout(missionDeployTimeoutRef.current);
+      }
+    };
   }, []);
 
   const aggression = useMemo(
@@ -592,22 +623,49 @@ export function ActOneInfiltration() {
     }, 450);
   }, [setGroknetWhisper, state.finalMood]);
 
+  const beginMission = useCallback(
+    (options?: { returning?: boolean }) => {
+      if (missionDeployTimeoutRef.current) {
+        clearTimeout(missionDeployTimeoutRef.current);
+      }
+
+      cancelIntroSpeech();
+      markIntroSeen();
+      setReturningPlayer(true);
+      setMissionDeploying(true);
+      setMissionDeployed(false);
+
+      missionDeployTimeoutRef.current = setTimeout(() => {
+        setState((s) => ({
+          ...s,
+          phase: "playing",
+          stage: "outer-perimeter",
+          runStart: Date.now(),
+          playerPosition: INITIAL_PLAYER_POSITION,
+          moveCount: 0,
+          groknetWhisper: options?.returning
+            ? ACT_ONE_RETURNING_WHISPER
+            : ACT_ONE_MISSION_START_WHISPER,
+        }));
+        setMissionDeploying(false);
+        setMissionDeployed(true);
+        missionDeployTimeoutRef.current = null;
+      }, 820);
+    },
+    [],
+  );
+
   const handleCinematicIntroComplete = useCallback(() => {
     setState((s) => ({ ...s, phase: "how-to-play" }));
   }, []);
 
-  const handleHowToPlayComplete = useCallback(() => {
-    setState((s) => ({ ...s, phase: "opening" }));
-  }, []);
+  const handleSkipIntro = useCallback(() => {
+    beginMission({ returning: returningPlayer || hasSeenIntro() });
+  }, [beginMission, returningPlayer]);
 
-  const handleOpeningComplete = useCallback(() => {
-    setState((s) => ({
-      ...s,
-      phase: "playing",
-      groknetWhisper:
-        "You're on the outer grid. Slip past S-04, reach the Security Hub east of the lane — then we'll talk properly.",
-    }));
-  }, []);
+  const handleHowToPlayComplete = useCallback(() => {
+    beginMission({ returning: false });
+  }, [beginMission]);
 
   const handleEnterSecurityHub = useCallback(() => {
     beginAreaTransition("outer-perimeter", "security-hub");
@@ -695,6 +753,8 @@ export function ActOneInfiltration() {
     setProgressSaved(false);
     setShowFinaleCinematic(false);
     setAreaTransition(null);
+    setMissionDeploying(false);
+    setMissionDeployed(true);
     setState((s) => ({
       ...createInitialRunState(),
       phase: "playing",
@@ -703,9 +763,12 @@ export function ActOneInfiltration() {
     }));
   }, []);
 
+  const preMission =
+    state.phase === "cinematic-intro" || state.phase === "how-to-play";
   const playing = state.phase === "playing";
   const controlsLocked =
     !playing ||
+    missionDeploying ||
     active ||
     state.disorientation.active ||
     areaTransition !== null ||
@@ -714,20 +777,30 @@ export function ActOneInfiltration() {
   return (
     <GameShell shaking={state.screenShaking} variant="act-1">
       {state.phase === "cinematic-intro" ? (
-        <CinematicIntro onComplete={handleCinematicIntroComplete} />
+        <CinematicIntro
+          onComplete={handleCinematicIntroComplete}
+          onSkipIntro={handleSkipIntro}
+          skipAvailableMs={returningPlayer ? 0 : undefined}
+        />
       ) : null}
 
       {state.phase === "how-to-play" ? (
-        <HowToPlayScreen onComplete={handleHowToPlayComplete} />
+        <HowToPlayScreen
+          onComplete={handleHowToPlayComplete}
+          onSkipIntro={handleSkipIntro}
+          showSkipIntro={returningPlayer}
+        />
       ) : null}
 
-      {state.phase === "opening" ? (
-        <OpeningScene onComplete={handleOpeningComplete} />
-      ) : null}
+      {missionDeploying ? <MissionDeployOverlay /> : null}
 
       <div
         className={cn(
-          "animate-page-in flex flex-1 flex-col",
+          "flex flex-1 flex-col transition-opacity duration-700",
+          preMission || missionDeploying
+            ? "pointer-events-none opacity-0"
+            : "opacity-100",
+          playing && missionDeployed && "mission-game-in",
           active && "hallucination-active",
           active && "hallucination-loss-of-control",
           active && phase === "peak" && "hallucination-peak",

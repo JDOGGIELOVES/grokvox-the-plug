@@ -21,6 +21,8 @@ import { cn } from "@/lib/utils";
 
 type CinematicIntroProps = {
   onComplete: () => void;
+  onSkipIntro?: () => void;
+  skipAvailableMs?: number;
 };
 
 function montageVariantClass(variant: MontageFrame["variant"]) {
@@ -269,7 +271,11 @@ function VoiceoverSubtitle({ text, visible }: { text: string; visible: boolean }
   );
 }
 
-export function CinematicIntro({ onComplete }: CinematicIntroProps) {
+export function CinematicIntro({
+  onComplete,
+  onSkipIntro,
+  skipAvailableMs = INTRO_SKIP_DELAY_MS,
+}: CinematicIntroProps) {
   const [sceneIndex, setSceneIndex] = useState(0);
   const [montageIndex, setMontageIndex] = useState(0);
   const [exiting, setExiting] = useState(false);
@@ -290,6 +296,8 @@ export function CinematicIntro({ onComplete }: CinematicIntroProps) {
   }, [onComplete]);
 
   const handleSkip = useCallback(() => {
+    if (completedRef.current) return;
+    completedRef.current = true;
     if (montageTimeoutRef.current) {
       window.clearTimeout(montageTimeoutRef.current);
       montageTimeoutRef.current = null;
@@ -297,13 +305,22 @@ export function CinematicIntro({ onComplete }: CinematicIntroProps) {
     if (typeof window !== "undefined" && window.speechSynthesis) {
       window.speechSynthesis.cancel();
     }
+    if (onSkipIntro) {
+      setExiting(true);
+      window.setTimeout(onSkipIntro, 320);
+      return;
+    }
     finish();
-  }, [finish]);
+  }, [finish, onSkipIntro]);
 
   useEffect(() => {
-    const skipTimeout = window.setTimeout(() => setCanSkip(true), INTRO_SKIP_DELAY_MS);
+    if (skipAvailableMs <= 0) {
+      setCanSkip(true);
+      return;
+    }
+    const skipTimeout = window.setTimeout(() => setCanSkip(true), skipAvailableMs);
     return () => window.clearTimeout(skipTimeout);
-  }, []);
+  }, [skipAvailableMs]);
 
   useEffect(() => {
     if (sceneIndex === 0) {
@@ -420,7 +437,7 @@ export function CinematicIntro({ onComplete }: CinematicIntroProps) {
             Begin
           </button>
           <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-zinc-500">
-            Or wait — the clock is already running
+            Continue to briefing
           </p>
         </div>
       ) : null}

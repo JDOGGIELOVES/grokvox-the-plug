@@ -986,6 +986,22 @@ body {
   animation: how-to-play-action-in 0.55s ease-out 0.55s both;
 }
 
+.mission-deploy-overlay {
+  animation: mission-deploy-overlay-in 0.45s ease-out both;
+}
+
+.mission-deploy-overlay-out {
+  animation: mission-deploy-overlay-out 0.55s ease-in both;
+}
+
+.mission-deploy-content {
+  animation: mission-deploy-content-in 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.mission-game-in {
+  animation: mission-game-in 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 @keyframes opening-scene-in {
   from {
     opacity: 0;
@@ -1083,6 +1099,48 @@ body {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes mission-deploy-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes mission-deploy-overlay-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes mission-deploy-content-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes mission-game-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
   }
 }
 
