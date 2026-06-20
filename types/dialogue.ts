@@ -33,6 +33,10 @@ export type DialogueState = {
   lastTone: GroknetTone | null;
   /** Tracks dominant personality across the session */
   dominantPersonality: GroknetPersonality | null;
+  /** Recent intent sequence for streak / oscillation memory */
+  intentHistory?: PlayerIntent[];
+  /** How many times each topic node was hit this session */
+  nodeVisits?: Partial<Record<DialogueNodeId, number>>;
 };
 
 export const INITIAL_DIALOGUE_STATE: DialogueState = {
@@ -41,6 +45,8 @@ export const INITIAL_DIALOGUE_STATE: DialogueState = {
   lastIntent: null,
   lastTone: null,
   dominantPersonality: null,
+  intentHistory: [],
+  nodeVisits: {},
 };
 
 export type ToneResponses = Record<GroknetTone, string[]>;

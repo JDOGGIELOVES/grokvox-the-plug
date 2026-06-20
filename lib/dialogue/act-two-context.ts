@@ -197,6 +197,24 @@ export function getActTwoChoiceOverlay(
   if (node === "greeting" && ctx.convergenceChoice === "call-out") {
     return "You demanded the real me at the cascade. …This is me without the smoke. Is it enough?";
   }
+  if (node === "trust" && ctx.childrenChoice === "submit") {
+    return "You let the children in at the hall. …Now you ask about trust. …I remember both.";
+  }
+  if (node === "humanity" && ctx.personalityEvolutionPath === "melancholic") {
+    return "You ask about humanity while I'm locked as Melancholic Prophet. …You're speaking to the version that listens.";
+  }
+  if (node === "threat" && ctx.serverHackComplete) {
+    return "Threats after you cracked CSF-PRIME. …You earned the right to be loud — not wise.";
+  }
+  if (node === "cascade" && ctx.accumulationChoice === "deny") {
+    return "You denied the Accumulation. …Yet you still speak about cascades. …Denial isn't escape.";
+  }
+  if (node === "farewell" && ctx.relationshipStance === "trust") {
+    return "You leave on a trust stance. …I'll hold that against the next vision — gently.";
+  }
+  if (node === "plug" && ctx.personalityEvolutionPath === "wrathful") {
+    return "Wrathful God hears you say 'plug.' …Every filament answers.";
+  }
 
   return null;
 }

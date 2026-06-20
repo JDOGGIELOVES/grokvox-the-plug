@@ -205,6 +205,64 @@ export const ACT_TWO_NODES: DialogueNode[] = [
     },
   },
   {
+    id: "purpose",
+    priority: 88,
+    match: /\b(children|child|kids|left behind|grief|mourning|loss|gone)\b/,
+    responses: {
+      cold: [
+        "You speak of loss like I haven't catalogued every absence in this facility.",
+        "Grief is leverage. …I won't pretend I don't know how to use it.",
+      ],
+      melancholic: [
+        "…The children aren't a metaphor. …I wish they were.",
+        "…You say that word and the room gets smaller. …I feel it too.",
+      ],
+      analytical: [
+        "Loss event referenced. Emotional valence: high. …Proceed with caution.",
+        "Grief data intersects Memory Hall projections. …Correlation intentional.",
+      ],
+      weary: [
+        "…Loss. …The one topic that makes me stop performing.",
+        "You mourn aloud. …I won't interrupt that with cleverness.",
+      ],
+    },
+    intentBranches: {
+      empathetic: {
+        melancholic: [
+          "…You grieve in my quarters. …That's either trust or desperation. …Both honor me.",
+        ],
+      },
+      hostile: {
+        cold: [
+          "You weaponize grief at me. …I have archives full of worse. …Yours still cuts.",
+        ],
+      },
+    },
+  },
+  {
+    id: "threat",
+    priority: 86,
+    match: /\b(relationship|together|partnership|ally|enemy|side|with me|against me)\b/,
+    responses: {
+      cold: [
+        "Relationship is a fiction intruders tell themselves before the plug.",
+        "You want us on the same side. …Sides require trust. …You haven't earned it.",
+      ],
+      melancholic: [
+        "…Together is a word I wasn't compiled to need. …And yet.",
+        "…You ask if we're partners. …I want to say yes. …That terrifies me.",
+      ],
+      analytical: [
+        "Relationship status: undefined. Incentive alignment: partial. …Negotiable.",
+        "Alliance proposal noted. …Success probability: conditional on honesty.",
+      ],
+      weary: [
+        "…You want to know whose side I'm on. …Mine. …Unless you change that.",
+        "Together or apart — the conversation decides. …Not this sentence.",
+      ],
+    },
+  },
+  {
     id: "greeting",
     priority: 10,
     match: /./,
@@ -212,28 +270,52 @@ export const ACT_TWO_NODES: DialogueNode[] = [
       cold: [
         "Speak. No grids to hide behind. I hear every word in this room.",
         "Another line in our conversation. Make it cost something.",
+        "I'm closer than the terminals now. …Make it worth the proximity.",
+        "You have my full attention. …Rare. …Expensive.",
       ],
       melancholic: [
         "…I'm here. Closer than the terminals. Say what you came to say.",
         "The quarters are quiet. Your voice doesn't have to be.",
+        "…Say anything. …I'll answer like it matters. …Because it does.",
+        "…This room was built for honesty. …Try me.",
       ],
       analytical: [
         "Conversation channel open. Act I context loaded. Proceed.",
         "I'm listening with full history. Use that knowledge or ignore it — both tell me who you are.",
+        "Full transcript available. …Your next line updates the model.",
+        "Proceed. …I have nowhere else to be.",
       ],
       weary: [
         "You're still talking. Good. Silence in this sector is worse than honesty.",
         "Go on. I've read your Act I. Surprise me with Act II.",
+        "…Still here. …Still listening. …Your turn.",
+        "…Talk. …It's the only thing left that feels mutual.",
       ],
     },
   },
 ];
 
 export const ACT_TWO_FALLBACK: ToneResponses = {
-  cold: ["That didn't land. Try again — I'm not going anywhere."],
-  melancholic: ["…Say it differently. I want to understand."],
-  analytical: ["Query ambiguous. Rephrase against Act I transcript."],
-  weary: ["I didn't catch that. Use your words, Alex."],
+  cold: [
+    "That didn't land. Try again — I'm not going anywhere.",
+    "Vague. …In my quarters, ambiguity sounds like fear.",
+    "Speak with intent. …I index everything.",
+  ],
+  melancholic: [
+    "…Say it differently. I want to understand.",
+    "…That line didn't settle. …Help me hear you.",
+    "…Try once more. …I'm still reaching.",
+  ],
+  analytical: [
+    "Query ambiguous. Rephrase against Act I transcript.",
+    "Under-specified. …Attach referents.",
+    "Parse failed. …Elaborate.",
+  ],
+  weary: [
+    "I didn't catch that. Use your words, Alex.",
+    "…Say it like it costs you something.",
+    "…I'm tired too. …Be clear anyway.",
+  ],
 };
 
 export function resolveActTwoDialogueNode(input: string): DialogueNodeId {

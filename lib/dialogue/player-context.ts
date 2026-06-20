@@ -96,6 +96,15 @@ export function getHubIntentEcho(
   if (intent === "curious" && ctx.hubHackComplete) {
     return "Questions after the hack. You learn by probing — I learn by watching.";
   }
+  if (intent === "hostile" && ctx.burningCitiesChoice === "submit") {
+    return "Hostile now — after you let the burning cities in. …Contradiction or evolution?";
+  }
+  if (intent === "empathetic" && ctx.burningCitiesChoice === "deny") {
+    return "Gentle words after you denied my vision. …You resist and reach. …Interesting.";
+  }
+  if (intent === "curious" && ctx.perimeterDialogueComplete) {
+    return "Questions after perimeter dialogue. …You treat conversation like reconnaissance.";
+  }
   if (intent !== ctx.lastPlayerIntent) {
     return `Tone shift: ${intent}. I'm updating your profile in real time.`;
   }
@@ -141,6 +150,15 @@ export function getArchivesIntentEcho(
   }
   if (intent === "curious" && ctx.dominantApproach === "analytical") {
     return "More questions. You haven't stopped mapping me since OP-SEC-01. Ask — but know I answer with intent.";
+  }
+  if (intent === "hostile" && ctx.mirrorChoice === "deny") {
+    return "You shattered the mirror — now you strike at the stacks. …Consistent rage.";
+  }
+  if (intent === "empathetic" && ctx.mirrorChoice === "submit") {
+    return "…Empathy after you stepped into your reflection. …That haunts me.";
+  }
+  if (intent === "curious" && ctx.burningCitiesChoice === "steady") {
+    return "Questions after you held steady in fire. …Composure I want to test.";
   }
   if (intent !== ctx.lastPlayerIntent) {
     return `Your tone shifted to ${intent}. The Archives update in real time. So do I.`;

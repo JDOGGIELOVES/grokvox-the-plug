@@ -7,6 +7,10 @@ import * as perimeterDialogue from "@/lib/dialogue/outer-perimeter";
 import * as securityHubDialogue from "@/lib/dialogue/security-hub";
 import * as upperLabDialogue from "@/lib/dialogue/upper-lab";
 import {
+  applyInputEcho,
+  matchPhraseResponse,
+} from "@/lib/dialogue/input-matcher";
+import {
   applyFollowUpConnector,
   applyIntentOverlay,
   applyPersonalityPrefix,
@@ -16,6 +20,7 @@ import {
   resolvePersonality,
   toneToPersonality,
 } from "@/lib/dialogue/personalities";
+import { pickRichFallback } from "@/lib/dialogue/rich-fallbacks";
 import type {
   DialogueNode,
   DialogueNodeId,
@@ -135,6 +140,31 @@ export function composeGroknetResponse(ctx: BranchContext): string {
     return content;
   }
 
+  const phraseMatch = matchPhraseResponse(
+    ctx.input,
+    personality,
+    ctx.dialogueSet,
+    ctx.hash,
+  );
+  if (phraseMatch) {
+    let content = applyIntentOverlay(
+      phraseMatch,
+      ctx.intent,
+      personality,
+      ctx.hash,
+      ctx.exchangeCount,
+      ctx.dialogueState.lastIntent,
+    );
+    content = applyInputEcho(
+      content,
+      ctx.input,
+      personality,
+      ctx.exchangeCount,
+      ctx.hash,
+    );
+    return applyPersonalityPrefix(content, personality, ctx.hash);
+  }
+
   const escalation = pickEscalationLine(personality, ctx.mood, ctx.hash);
   if (
     escalation &&
@@ -144,7 +174,13 @@ export function composeGroknetResponse(ctx: BranchContext): string {
     return escalation;
   }
 
-  let content = usesIntentBranchResolution(ctx.dialogueSet)
+  const useRichFallback =
+    ctx.node === "fallback" ||
+    (ctx.node === "greeting" && ctx.hash % 5 < 2);
+
+  let content = useRichFallback
+    ? pickRichFallback(ctx.tone, personality, ctx.dialogueSet, ctx.hash)
+    : usesIntentBranchResolution(ctx.dialogueSet)
       ? resolveNodeResponse(module, nodeDef, ctx)
       : module.pickBranchResponse(
           ctx.tone,
@@ -167,6 +203,14 @@ export function composeGroknetResponse(ctx: BranchContext): string {
     content,
     ctx.dialogueState.lastNode === ctx.node,
     ctx.node,
+    ctx.exchangeCount,
+    ctx.hash,
+  );
+
+  content = applyInputEcho(
+    content,
+    ctx.input,
+    personality,
     ctx.exchangeCount,
     ctx.hash,
   );

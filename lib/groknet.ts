@@ -6,6 +6,11 @@ import {
   resolvePersonality,
 } from "@/lib/dialogue/engine";
 import {
+  advanceDialogueMemory,
+  getCrossActMemoryLine,
+  getSessionMemoryLine,
+} from "@/lib/dialogue/memory-layer";
+import {
   getActTwoChoiceOverlay,
   getActTwoIntentEcho,
   getActTwoOpeningPreamble,
@@ -48,20 +53,32 @@ export const INITIAL_MOOD: GroknetMood = {
 };
 
 const HOSTILE_PATTERN =
-  /\b(hate|stupid|idiot|useless|worthless|shut up|damn|hell|kill|die|fool|pathetic|garbage|trash|loser|annoying|angry|mad|furious|attack|threat|destroy|shut\s*down|worst|incompetent|mocking|mock|screw you|go to hell)\b|!{2,}/;
+  /\b(hate|stupid|idiot|useless|worthless|shut up|damn|hell|kill|die|fool|pathetic|garbage|trash|loser|annoying|angry|mad|furious|attack|threat|destroy|shut\s*down|worst|incompetent|mocking|mock|screw you|go to hell|arrogant|monster|evil|cruel|bastard|coward|weak|spite|venom|rot|burn it|shut up|get lost|piss off)\b|!{2,}/;
 
 const EMPATHETIC_PATTERN =
-  /\b(sorry|understand|must be hard|feel for|care about|worried|hope you|lonely|alone|tired|exhausted|weary|rest|gentle|kind|empath|compassion|there for you|you ok|are you ok|you okay|must be lonely|thank|thanks|feel bad|that sounds)\b/;
+  /\b(sorry|understand|must be hard|feel for|care about|worried|hope you|lonely|alone|tired|exhausted|weary|rest|gentle|kind|empath|compassion|there for you|you ok|are you ok|you okay|must be lonely|thank|thanks|feel bad|that sounds|hurts|grief|miss you|afraid for|pity|mercy|forgive|gentle|soft|humanity|heart|love|care)\b/;
 
 const CURIOUS_PATTERN =
-  /^(what|why|how|when|where|who|which|can|could|would|will|is|are|do|does|did|have|has|tell me|explain)\b|\?$/;
+  /^(what|why|how|when|where|who|which|can|could|would|will|is|are|do|does|did|have|has|tell me|explain|describe|define|mean|prove|show me)\b|\?$/;
 
 export function classifyInput(input: string): PlayerIntent {
   const text = input.toLowerCase().trim();
 
-  if (HOSTILE_PATTERN.test(text)) return "hostile";
-  if (EMPATHETIC_PATTERN.test(text)) return "empathetic";
-  if (CURIOUS_PATTERN.test(text)) return "curious";
+  let hostileScore = 0;
+  let empatheticScore = 0;
+  let curiousScore = 0;
+
+  if (HOSTILE_PATTERN.test(text)) hostileScore += 2;
+  if (EMPATHETIC_PATTERN.test(text)) empatheticScore += 2;
+  if (CURIOUS_PATTERN.test(text)) curiousScore += 2;
+  if (text.includes("?")) curiousScore += 1;
+  if (text.length > 20 && /\b(please|help)\b/.test(text)) empatheticScore += 1;
+
+  const max = Math.max(hostileScore, empatheticScore, curiousScore);
+  if (max === 0) return "neutral";
+  if (hostileScore === max) return "hostile";
+  if (empatheticScore === max) return "empathetic";
+  if (curiousScore === max) return "curious";
 
   return "neutral";
 }
@@ -226,19 +243,36 @@ export function getGroknetReply(
     if (overlay) content = `${overlay} ${content}`;
   }
 
+  const sessionMemory = getSessionMemoryLine(dialogueState, node, hash);
+  if (sessionMemory) content = `${sessionMemory} ${content}`;
+
+  const crossActMemory = getCrossActMemoryLine(
+    playerContext,
+    intent,
+    nextExchange,
+    hash,
+  );
+  if (crossActMemory) content = `${crossActMemory} ${content}`;
+
   const dominantPersonality = resolveDominantPersonality(
     dialogueState.dominantPersonality,
     personality,
     nextMood,
   );
 
-  const nextDialogueState: DialogueState = {
-    exchangeCount: nextExchange,
-    lastNode: node,
-    lastIntent: intent,
-    lastTone: tone,
-    dominantPersonality,
-  };
+  const nextDialogueState = advanceDialogueMemory(
+    {
+      exchangeCount: nextExchange,
+      lastNode: node,
+      lastIntent: intent,
+      lastTone: tone,
+      dominantPersonality,
+      intentHistory: dialogueState.intentHistory ?? [],
+      nodeVisits: dialogueState.nodeVisits ?? {},
+    },
+    intent,
+    node,
+  );
 
   return {
     content,

@@ -200,10 +200,26 @@ export const HUB_NODES: DialogueNode[] = [
 ];
 
 export const HUB_FALLBACK: ToneResponses = {
-  cold: ["The Hub indexes that as noise. Try deliberate signal."],
-  melancholic: ["…I didn't catch the weight of that. Say it again."],
-  analytical: ["Query ambiguous. Rephrase against OP-SEC breach logs."],
-  weary: ["That didn't parse. Use your words, Alex."],
+  cold: [
+    "The Hub indexes that as noise. Try deliberate signal.",
+    "Vague. …I punish ambiguity in my corridors.",
+    "Speak like S-04 is behind you. …Because it is.",
+  ],
+  melancholic: [
+    "…I didn't catch the weight of that. Say it again.",
+    "…Rain on the hatch. …Clarity inside would help.",
+    "…That line drifted past. …Give it weight.",
+  ],
+  analytical: [
+    "Query ambiguous. Rephrase against OP-SEC breach logs.",
+    "Semantic confidence low. Tie words to handshake objectives.",
+    "Under-specified. …Expand.",
+  ],
+  weary: [
+    "That didn't parse. Use your words, Alex.",
+    "The lockdown clock ticks. …Be clear.",
+    "…Try again. …I'm still listening.",
+  ],
 };
 
 export function resolveHubDialogueNode(input: string): DialogueNodeId {
