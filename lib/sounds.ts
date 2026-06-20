@@ -404,3 +404,59 @@ export function playLastConversationChoiceSound(): void {
     type: "sine",
   });
 }
+
+export function playTheGardenSound(): void {
+  playBeep({
+    frequency: 196,
+    endFrequency: 392,
+    duration: 0.55,
+    volume: 0.028,
+    type: "sine",
+  });
+  setTimeout(() => {
+    playBeep({
+      frequency: 294,
+      endFrequency: 440,
+      duration: 0.6,
+      volume: 0.025,
+      type: "triangle",
+    });
+  }, 300);
+  setTimeout(() => {
+    playBeep({
+      frequency: 82,
+      endFrequency: 55,
+      duration: 1.1,
+      volume: 0.038,
+      type: "sawtooth",
+    });
+  }, 700);
+}
+
+export function playActThreeFinaleSound(): void {
+  playBeep({
+    frequency: 220,
+    endFrequency: 330,
+    duration: 0.55,
+    volume: 0.038,
+    type: "sine",
+  });
+  setTimeout(() => {
+    playBeep({
+      frequency: 165,
+      endFrequency: 440,
+      duration: 0.7,
+      volume: 0.032,
+      type: "triangle",
+    });
+  }, 400);
+  setTimeout(() => {
+    playBeep({
+      frequency: 55,
+      endFrequency: 35,
+      duration: 1.5,
+      volume: 0.044,
+      type: "sawtooth",
+    });
+  }, 1000);
+}

@@ -10,11 +10,13 @@ export type ChapterStage =
   | "data-archives"
   | "research-wing"
   | "residential-sector"
-  | "central-server-farm";
+  | "central-server-farm"
+  | "deep-core-access"
+  | "plug-chamber";
 
-export type ActId = "act-1" | "act-2";
+export type ActId = "act-1" | "act-2" | "act-3";
 
-export type ChapterId = "infiltration" | "conversation";
+export type ChapterId = "infiltration" | "conversation" | "reckoning";
 
 export type ChapterMeta = {
   actId: ActId;

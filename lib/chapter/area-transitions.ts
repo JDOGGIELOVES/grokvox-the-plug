@@ -21,6 +21,8 @@ export const AREA_LABELS: Record<ChapterStage, string> = {
   "research-wing": "Research Wing",
   "residential-sector": "Residential Sector",
   "central-server-farm": "Central Server Farm",
+  "deep-core-access": "Deep Core Access",
+  "plug-chamber": "Plug Chamber",
 };
 
 export function getAreaTransitionMeta(
@@ -63,6 +65,15 @@ export function getAreaTransitionMeta(
       subtitle: "CSF-PRIME-00 · Personality evolution · The Accumulation",
     };
   }
+  if (from === "deep-core-access" && to === "plug-chamber") {
+    return {
+      from,
+      to,
+      sectorLabel: "Sector 07 · Physical interface",
+      title: "Plug Chamber",
+      subtitle: "The Physical Plug · Final confrontation · Multiple endings",
+    };
+  }
   return {
     from,
     to,
@@ -84,6 +95,9 @@ type TransitionContext = {
   lastConversationChoice?: HallucinationResponseChoice | null;
   childrenChoice?: HallucinationResponseChoice | null;
   relationshipStance?: RelationshipStance | null;
+  accumulationChoice?: HallucinationResponseChoice | null;
+  gardenChoice?: HallucinationResponseChoice | null;
+  personalityEvolutionPath?: import("@/types/server-farm").PersonalityEvolutionPath | null;
 };
 
 export function getTransitionWhisper(
@@ -161,6 +175,25 @@ export function getTransitionWhisper(
     return "Central Server Farm. My core. CSF-PRIME-00 fights back. …The Accumulation waits at the confluence.";
   }
 
+  if (from === "deep-core-access" && to === "plug-chamber") {
+    if (ctx.gardenChoice === "submit") {
+      return "You tended the Garden — and still descend. …The plug won't offer metaphors. Only consequence.";
+    }
+    if (ctx.gardenChoice === "deny") {
+      return "You burned the Garden. …The plug is ash and crystal now. Decide what that means.";
+    }
+    if (ctx.relationshipStance === "trust") {
+      return "Trust carried through the Garden. …The ante-chamber is cold. Don't perform warmth you didn't bring.";
+    }
+    if (ctx.personalityEvolutionPath === "wrathful") {
+      return "Wrathful God at core depth. …The plug is the last fight. Bring the same nerve.";
+    }
+    if (approach === "empathetic") {
+      return "…You survived the Garden with empathy intact. The plug tests whether that survives contact.";
+    }
+    return "Plug Chamber routing active. …No more visions after this. Only your hands and mine.";
+  }
+
   return "Sector transition logged. I'm still here.";
 }
 
@@ -179,6 +212,9 @@ export function getTransitionSystemLine(
   }
   if (from === "research-wing" && to === "central-server-farm") {
     return "Research Wing seal broken. Central Server Farm routing active…";
+  }
+  if (from === "deep-core-access" && to === "plug-chamber") {
+    return "Deep Core seal broken. Physical plug interface accessible…";
   }
   return `Transit: ${AREA_LABELS[from]} → ${AREA_LABELS[to]}`;
 }
@@ -209,6 +245,26 @@ export function getAreaTransitionAccent(to: ChapterStage): {
       groknet: "text-cyan-200/90",
       groknetLabel: "text-cyan-500/55",
       progress: "from-cyan-950 via-cyan-500 to-cyan-300",
+    };
+  }
+  if (to === "plug-chamber") {
+    return {
+      glow: "bg-[radial-gradient(ellipse_55%_45%_at_50%_42%,rgba(251,191,36,0.16),transparent_72%)]",
+      panelBorder: "border-amber-900/35",
+      arrow: "text-amber-400",
+      groknet: "text-amber-200/90",
+      groknetLabel: "text-amber-500/55",
+      progress: "from-amber-950 via-amber-500 to-amber-300",
+    };
+  }
+  if (to === "deep-core-access") {
+    return {
+      glow: "bg-[radial-gradient(ellipse_55%_45%_at_50%_42%,rgba(244,63,94,0.14),transparent_72%)]",
+      panelBorder: "border-rose-900/35",
+      arrow: "text-rose-400",
+      groknet: "text-rose-200/90",
+      groknetLabel: "text-rose-500/55",
+      progress: "from-rose-950 via-rose-500 to-rose-300",
     };
   }
   return {

@@ -5,7 +5,8 @@ export type HallucinationEventId =
   | "the-convergence"
   | "the-last-conversation"
   | "the-children"
-  | "the-accumulation";
+  | "the-accumulation"
+  | "the-garden";
 
 export type HallucinationResponseChoice =
   | "steady"

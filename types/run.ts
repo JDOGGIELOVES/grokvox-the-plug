@@ -1,6 +1,11 @@
 import type { GroknetMood } from "@/lib/groknet";
 import type { GroknetPersonality, GroknetTone, PlayerIntent } from "@/types/dialogue";
 import type { HallucinationResponseChoice } from "@/types/hallucination";
+import type {
+  GroknetPresenceMode,
+  PlugChoice,
+  ReckoningEndingId,
+} from "@/types/deep-core";
 import type { LabTerminalId, RelationshipStance } from "@/types/research-wing";
 import type { PersonalityEvolutionPath } from "@/types/server-farm";
 
@@ -36,14 +41,43 @@ export type ChapterOneSummary = RunSummary & {
   lastPlayerIntent: PlayerIntent;
 };
 
+export type ChapterThreeSummary = {
+  actId: "act-3";
+  chapterId: "reckoning";
+  completedAt: number;
+  elapsedMs: number;
+  timeRemainingMs: number;
+  aggressionLevel: number;
+  aggressionLabel: string;
+  exchangeCount: number;
+  presenceMode: GroknetPresenceMode;
+  fortificationHackComplete: boolean;
+  thresholdDialogueComplete: boolean;
+  gardenSurvived: boolean;
+  gardenChoice: HallucinationResponseChoice | null;
+  confrontationComplete: boolean;
+  plugChoice: PlugChoice;
+  endingId: ReckoningEndingId;
+  finalTone: GroknetTone;
+  finalMood: GroknetMood;
+  dominantPersonality: GroknetPersonality;
+  lastPlayerIntent: PlayerIntent;
+  relationshipStance: RelationshipStance | null;
+  personalityEvolutionPath: PersonalityEvolutionPath | null;
+  actOneSummary: ChapterOneSummary;
+  actTwoSummary: ChapterTwoSummary;
+};
+
 export type GameSave = {
   version: 1;
   act1Complete: boolean;
   act2Complete?: boolean;
+  act3Complete?: boolean;
   completedAt: number;
   summary: ChapterOneSummary;
-  nextAct: "act-2" | "act-3";
+  nextAct: "act-2" | "act-3" | "complete";
   act2Summary?: ChapterTwoSummary;
+  act3Summary?: ChapterThreeSummary;
 };
 
 export type ChapterTwoSummary = {

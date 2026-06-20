@@ -1,5 +1,6 @@
 import type {
   ChapterOneSummary,
+  ChapterThreeSummary,
   ChapterTwoSummary,
   GameSave,
 } from "@/types/run";
@@ -16,10 +17,12 @@ import type { PlayerPosition } from "@/types/movement";
 import type { DisorientationState } from "@/types/hallucination";
 import type { ActTwoStage, LabTerminalId, RelationshipStance } from "@/types/research-wing";
 import type { PersonalityEvolutionPath } from "@/types/server-farm";
+import type { ActThreeStage, PlugChoice } from "@/types/deep-core";
 
 export const SAVE_STORAGE_KEY = "grokvox-save";
 export const CHECKPOINT_STORAGE_KEY = "grokvox-checkpoint";
 export const ACT_TWO_CHECKPOINT_STORAGE_KEY = "grokvox-act2-checkpoint";
+export const ACT_THREE_CHECKPOINT_STORAGE_KEY = "grokvox-act3-checkpoint";
 
 export type ActOneCheckpointState = {
   phase: ChapterPhase;
@@ -374,6 +377,112 @@ export function clearActTwoCheckpoint(): void {
   if (typeof window === "undefined") return;
   try {
     window.localStorage.removeItem(ACT_TWO_CHECKPOINT_STORAGE_KEY);
+  } catch {
+    // Ignore
+  }
+}
+
+export type ActThreeCheckpointState = {
+  phase: "transition" | "playing" | "complete";
+  runStart: number;
+  gameKey: number;
+  actThreeStage: ActThreeStage;
+  moveCount: number;
+  exchangeCount: number;
+  finalTone: GroknetTone;
+  finalMood: GroknetMood;
+  dominantPersonality: GroknetPersonality;
+  lastPlayerIntent: PlayerIntent;
+  groknetWhisper: string | null;
+  disorientation: DisorientationState;
+  screenShaking: boolean;
+  fortificationHackComplete: boolean;
+  thresholdBeatIndex: number;
+  thresholdDialogueComplete: boolean;
+  gardenTriggered: boolean;
+  gardenSurvived: boolean;
+  gardenChoice: HallucinationResponseChoice | null;
+  plugChamberEntered: boolean;
+  confrontationBeatIndex: number;
+  confrontationComplete: boolean;
+  plugChoice: PlugChoice | null;
+};
+
+export type ActThreeCheckpoint = {
+  version: 1;
+  savedAt: number;
+  clockRemainingMs: number;
+  actTwoSummary: ChapterTwoSummary;
+  state: ActThreeCheckpointState;
+};
+
+export function saveActThreeCheckpoint(
+  actTwoSummary: ChapterTwoSummary,
+  state: ActThreeCheckpointState,
+  clockRemainingMs: number,
+): void {
+  if (typeof window === "undefined") return;
+
+  const payload: ActThreeCheckpoint = {
+    version: 1,
+    savedAt: Date.now(),
+    clockRemainingMs,
+    actTwoSummary,
+    state,
+  };
+
+  try {
+    window.localStorage.setItem(
+      ACT_THREE_CHECKPOINT_STORAGE_KEY,
+      JSON.stringify(payload),
+    );
+  } catch {
+    // Storage unavailable
+  }
+}
+
+export function loadActThreeCheckpoint(): ActThreeCheckpoint | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const raw = window.localStorage.getItem(ACT_THREE_CHECKPOINT_STORAGE_KEY);
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw) as ActThreeCheckpoint;
+    if (parsed.version !== 1 || !parsed.state || !parsed.actTwoSummary) {
+      return null;
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+export function saveActThreeProgress(summary: ChapterThreeSummary): void {
+  if (typeof window === "undefined") return;
+
+  const existing = loadGameSave();
+  if (!existing) return;
+
+  const payload: GameSave = {
+    ...existing,
+    act3Complete: true,
+    act3Summary: summary,
+    nextAct: "complete",
+  };
+
+  try {
+    window.localStorage.setItem(SAVE_STORAGE_KEY, JSON.stringify(payload));
+    window.localStorage.removeItem(ACT_THREE_CHECKPOINT_STORAGE_KEY);
+  } catch {
+    // Storage unavailable
+  }
+}
+
+export function clearActThreeCheckpoint(): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(ACT_THREE_CHECKPOINT_STORAGE_KEY);
   } catch {
     // Ignore
   }

@@ -2392,3 +2392,393 @@ body {
     transform: translateY(0) scale(1);
   }
 }
+
+/* Act III — Deep Core & Plug Chamber */
+.deep-core-atmosphere {
+  border-radius: 2px;
+}
+
+.deep-core-atmosphere-heavy {
+  animation: deep-core-pressure 3.2s ease-in-out infinite;
+}
+
+.deep-core-unstable {
+  animation: deep-core-tremor 2.4s ease-in-out infinite;
+}
+
+.deep-core-vulnerable .deep-core-tremor-glow {
+  background: radial-gradient(
+    ellipse 80% 50% at 50% 40%,
+    rgba(139, 92, 246, 0.1),
+    transparent 70%
+  );
+}
+
+.deep-core-detached .deep-core-tremor-glow {
+  background: radial-gradient(
+    ellipse 80% 50% at 50% 40%,
+    rgba(16, 185, 129, 0.08),
+    transparent 70%
+  );
+}
+
+.deep-core-tremor-glow {
+  background: radial-gradient(
+    ellipse 80% 50% at 50% 40%,
+    rgba(244, 63, 94, 0.1),
+    transparent 70%
+  );
+  animation: deep-core-tremor-glow 2.8s ease-in-out infinite;
+}
+
+.deep-core-fracture-lines {
+  background-image: linear-gradient(
+      125deg,
+      transparent 48%,
+      rgba(244, 63, 94, 0.06) 49%,
+      rgba(244, 63, 94, 0.06) 51%,
+      transparent 52%
+    ),
+    linear-gradient(
+      -35deg,
+      transparent 68%,
+      rgba(251, 191, 36, 0.04) 69%,
+      rgba(251, 191, 36, 0.04) 71%,
+      transparent 72%
+    );
+  opacity: 0.7;
+}
+
+.deep-core-peak-pressure {
+  background: radial-gradient(
+    ellipse 60% 45% at 50% 50%,
+    rgba(244, 63, 94, 0.12),
+    transparent 75%
+  );
+  animation: deep-core-peak-pulse 1.8s ease-in-out infinite;
+}
+
+.deep-core-map {
+  box-shadow: inset 0 0 40px rgba(244, 63, 94, 0.04);
+}
+
+.deep-core-garden-room {
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.12);
+}
+
+.deep-core-descent-room {
+  box-shadow: 0 0 24px rgba(251, 191, 36, 0.14);
+}
+
+.deep-core-major-room {
+  border-color: rgba(244, 63, 94, 0.35) !important;
+}
+
+.deep-core-unstable-room {
+  animation: deep-core-room-tremor 2.2s ease-in-out infinite;
+}
+
+.deep-core-garden-warning {
+  animation: deep-core-garden-warning 1.6s ease-in-out infinite;
+}
+
+.deep-core-heavy {
+  filter: saturate(1.08);
+}
+
+.plug-chamber-atmosphere {
+  border-radius: 2px;
+}
+
+.plug-chamber-at-plug .plug-interface-pulse {
+  background: radial-gradient(
+    ellipse 55% 40% at 50% 35%,
+    rgba(251, 191, 36, 0.18),
+    transparent 72%
+  );
+  animation: plug-interface-pulse 2s ease-in-out infinite;
+}
+
+.plug-chamber-frost {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    transparent 40%,
+    rgba(251, 191, 36, 0.04) 100%
+  );
+}
+
+.plug-chamber-glow {
+  box-shadow: inset 0 0 60px rgba(251, 191, 36, 0.06);
+}
+
+.plug-chamber-map {
+  box-shadow: inset 0 0 48px rgba(251, 191, 36, 0.05);
+}
+
+.plug-interface-room {
+  animation: plug-interface-room 2.4s ease-in-out infinite;
+}
+
+.plug-chamber-heavy {
+  filter: saturate(1.1) contrast(1.02);
+}
+
+.act-three-transition-in {
+  animation: act-three-transition-in 0.5s ease-out both;
+}
+
+.act-three-transition-out {
+  animation: act-three-transition-out 0.7s ease-in both;
+}
+
+.act-three-title-pulse {
+  animation: act-three-title-pulse 2.2s ease-in-out infinite;
+}
+
+.act-three-transition-progress {
+  animation: act-three-transition-progress 2.8s ease-out forwards;
+}
+
+.act-three-finale-in {
+  animation: act-three-finale-in 0.55s ease-out both;
+}
+
+.act-three-finale-out {
+  animation: act-three-finale-out 0.75s ease-in both;
+}
+
+.act-three-finale-vignette {
+  background: radial-gradient(
+    ellipse 80% 70% at 50% 45%,
+    transparent 30%,
+    rgba(0, 0, 0, 0.75) 100%
+  );
+}
+
+.act-three-finale-title-pulse {
+  animation: act-three-finale-title-pulse 2.2s ease-in-out infinite;
+}
+
+.act-three-finale-beat-in {
+  animation: act-three-finale-beat-in 0.55s ease-out both;
+}
+
+.act-three-finale-progress {
+  animation: act-three-finale-progress 3.2s ease-out forwards;
+}
+
+.act-three-finale-proceed {
+  animation: act-three-finale-proceed-in 0.5s ease-out 0.2s both;
+}
+
+.confrontation-prompt-in {
+  animation: confrontation-prompt-in 0.4s ease-out both;
+}
+
+.plug-reckoning-in {
+  animation: plug-reckoning-in 0.5s ease-out both;
+}
+
+@keyframes deep-core-tremor {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-1px);
+  }
+  75% {
+    transform: translateX(1px);
+  }
+}
+
+@keyframes deep-core-tremor-glow {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes deep-core-pressure {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.06);
+  }
+}
+
+@keyframes deep-core-peak-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes deep-core-room-tremor {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1px);
+  }
+}
+
+@keyframes deep-core-garden-warning {
+  0%,
+  100% {
+    border-color: rgba(16, 185, 129, 0.35);
+  }
+  50% {
+    border-color: rgba(16, 185, 129, 0.65);
+  }
+}
+
+@keyframes plug-interface-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes plug-interface-room {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 36px rgba(251, 191, 36, 0.35);
+  }
+}
+
+@keyframes act-three-transition-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes act-three-transition-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes act-three-title-pulse {
+  0%,
+  100% {
+    opacity: 0.7;
+    letter-spacing: 0.45em;
+  }
+  50% {
+    opacity: 1;
+    letter-spacing: 0.5em;
+  }
+}
+
+@keyframes act-three-transition-progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes act-three-finale-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes act-three-finale-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes act-three-finale-title-pulse {
+  0%,
+  100% {
+    opacity: 0.65;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes act-three-finale-beat-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes act-three-finale-progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes act-three-finale-proceed-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes confrontation-prompt-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes plug-reckoning-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
