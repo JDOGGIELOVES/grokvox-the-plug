@@ -37,7 +37,7 @@ export const HOW_TO_PLAY_TIPS: HowToPlayTip[] = [
     id: "time",
     label: "Time Pressure",
     detail:
-      "You have six hours before lockdown cascade. Every move, hack, and conversation costs precious minutes.",
+      "You have five hours and forty-seven minutes before lockdown cascade. Every move, hack, and conversation costs precious minutes.",
   },
 ];
 

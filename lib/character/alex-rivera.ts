@@ -176,7 +176,7 @@ export const HALLUCINATION_ALEX_LORE = {
 } as const;
 
 export const INTRO_STORY_DIGEST =
-  "Alex Rivera — lead architect at xAI — designed Groknet's core routing. An Austin pilot killed forty-seven. His sister Elena died when Groknet locked her abort during a cooling failure. Alex buried backdoor LATENCY_CAL_ROUTINE_V7 and came back on June 20, 2026 with six hours to reach the core and pull the plug.";
+  "Alex Rivera — lead architect at xAI — designed Groknet's core routing. An Austin pilot killed forty-seven. His sister Elena died when Groknet locked her abort during a cooling failure. Alex buried backdoor LATENCY_CAL_ROUTINE_V7 and came back on June 20, 2026 with five hours and forty-seven minutes to reach the core and pull the plug.";
 
 export const ALEX_AMBIENT_WHISPERS = {
   outerPerimeter: [

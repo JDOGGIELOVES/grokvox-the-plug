@@ -286,6 +286,7 @@ export function CinematicIntro({
   const [titleReady, setTitleReady] = useState(false);
   const completedRef = useRef(false);
   const montageTimeoutRef = useRef<number | null>(null);
+  const audioTimeoutRef = useRef<number[]>([]);
 
   const currentConfig = INTRO_SCENES[sceneIndex];
   const currentScene: IntroScene = currentConfig?.scene ?? "title";
@@ -305,12 +306,16 @@ export function CinematicIntro({
       window.clearTimeout(montageTimeoutRef.current);
       montageTimeoutRef.current = null;
     }
+    for (const id of audioTimeoutRef.current) {
+      window.clearTimeout(id);
+    }
+    audioTimeoutRef.current = [];
     if (typeof window !== "undefined" && window.speechSynthesis) {
       window.speechSynthesis.cancel();
     }
     if (onSkipIntro) {
       setExiting(true);
-      window.setTimeout(onSkipIntro, 320);
+      window.setTimeout(onSkipIntro, 800);
       return;
     }
     finish();
@@ -366,16 +371,27 @@ export function CinematicIntro({
           window.clearTimeout(montageTimeoutRef.current);
           montageTimeoutRef.current = null;
         }
+        for (const id of audioTimeoutRef.current) {
+          window.clearTimeout(id);
+        }
+        audioTimeoutRef.current = [];
       };
     }
 
     if (voiceover) {
-      window.setTimeout(() => playGroknetVoiceLine(voiceover), scene === "facility" ? 1200 : 600);
+      audioTimeoutRef.current.push(
+        window.setTimeout(
+          () => playGroknetVoiceLine(voiceover),
+          scene === "facility" ? 1200 : 600,
+        ),
+      );
     }
 
     if (scene === "terminal") {
-      window.setTimeout(() => playTerminalKeySound(), 800);
-      window.setTimeout(() => playTerminalKeySound(), 2200);
+      audioTimeoutRef.current.push(
+        window.setTimeout(() => playTerminalKeySound(), 800),
+        window.setTimeout(() => playTerminalKeySound(), 2200),
+      );
     }
 
     if (scene === "title") {
@@ -389,7 +405,13 @@ export function CinematicIntro({
     }
 
     const timeout = window.setTimeout(() => setSceneIndex((i) => i + 1), durationMs);
-    return () => window.clearTimeout(timeout);
+    return () => {
+      window.clearTimeout(timeout);
+      for (const id of audioTimeoutRef.current) {
+        window.clearTimeout(id);
+      }
+      audioTimeoutRef.current = [];
+    };
   }, [sceneIndex, currentConfig, finish]);
 
   return (
@@ -425,6 +447,7 @@ export function CinematicIntro({
           type="button"
           onClick={handleSkip}
           className="intro-skip-btn absolute right-4 top-4 z-40 font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-500 transition-colors hover:text-zinc-300 sm:right-6 sm:top-6"
+          aria-label="Skip cinematic intro"
         >
           Skip Intro
         </button>

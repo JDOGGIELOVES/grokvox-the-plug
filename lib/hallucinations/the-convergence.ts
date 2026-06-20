@@ -62,4 +62,18 @@ export const THE_CONVERGENCE_EVENT: HallucinationEventConfig = {
       aggressionBump: 3,
     },
   },
+  personalityOverlays: {
+    "wrathful-god": {
+      voiceLine:
+        "Austin. Elena. The backdoor. …Every layer you built — collapsing. …Watch.",
+    },
+    "melancholic-prophet": {
+      voiceLine:
+        "…This is what I see when I look at you, Alex. …Every apology you never sent — braided into one signal.",
+    },
+    "detached-logician": {
+      visionText:
+        "Cascade synthesis: Austin pilot + Elena fatality + LATENCY_CAL_ROUTINE_V7 + perimeter breach. All variables: converged.",
+    },
+  },
 };

@@ -36,7 +36,7 @@ export function HowToPlayScreen({
     if (exiting || !onSkipIntro) return;
     setExiting(true);
     playInteractSound();
-    window.setTimeout(onSkipIntro, 320);
+    window.setTimeout(onSkipIntro, 650);
   }, [exiting, onSkipIntro]);
 
   return (
@@ -51,6 +51,7 @@ export function HowToPlayScreen({
           type="button"
           onClick={handleSkipIntro}
           className="intro-skip-btn absolute right-4 top-4 z-40 font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-500 transition-colors hover:text-zinc-300 sm:right-6 sm:top-6"
+          aria-label="Skip briefing and deploy to mission"
         >
           Skip Intro
         </button>

@@ -62,4 +62,18 @@ export const THE_MIRROR_EVENT: HallucinationEventConfig = {
       aggressionBump: 1,
     },
   },
+  personalityOverlays: {
+    "wrathful-god": {
+      visionText:
+        "Austin smoke behind your xAI reflection. Groknet: 'You optimized them. Now optimize your reflection.'",
+    },
+    "melancholic-prophet": {
+      voiceLine:
+        "…That's not the facility. …That's you before Elena died — and the brother who was on a board call when she wasn't.",
+    },
+    "detached-logician": {
+      voiceLine:
+        "Mirror event: architect identity confirmed. Sibling proximity index: Elena Reyes · terminal adjacency logged.",
+    },
+  },
 };

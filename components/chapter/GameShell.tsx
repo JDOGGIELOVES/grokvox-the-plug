@@ -1,4 +1,8 @@
-import { CinematicOverlay } from "@/components/game/CinematicOverlay";
+import {
+  CinematicOverlay,
+  type OverlayIntensity,
+} from "@/components/game/CinematicOverlay";
+import type { ChapterStage } from "@/types/chapter";
 import { cn } from "@/lib/utils";
 
 export type GameShellVariant = "act-1" | "act-2" | "act-3";
@@ -8,6 +12,9 @@ type GameShellProps = {
   className?: string;
   shaking?: boolean;
   variant?: GameShellVariant;
+  overlayIntensity?: OverlayIntensity;
+  stage?: ChapterStage;
+  hallucinationActive?: boolean;
 };
 
 export function GameShell({
@@ -15,17 +22,23 @@ export function GameShell({
   className,
   shaking = false,
   variant = "act-1",
+  overlayIntensity = "calm",
+  stage,
+  hallucinationActive = false,
 }: GameShellProps) {
+  const resolvedIntensity = hallucinationActive ? "hallucination" : overlayIntensity;
+
   return (
     <div
       className={cn(
         "game-shell relative flex min-h-screen flex-col bg-background text-foreground",
         `game-shell-${variant}`,
         shaking && "screen-shake-detection",
+        hallucinationActive && "game-shell-hallucination-active",
         className,
       )}
     >
-      <CinematicOverlay />
+      <CinematicOverlay intensity={resolvedIntensity} stage={stage} />
 
       <div className="game-shell-glow pointer-events-none absolute inset-0" />
       <div className="pointer-events-none absolute inset-0 landing-grid opacity-[0.12]" />

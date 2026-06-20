@@ -102,6 +102,7 @@ type TransitionContext = {
   burningCitiesSurvived: boolean;
   burningCitiesChoice: HallucinationResponseChoice | null;
   perimeterDialogueComplete: boolean;
+  hubExchanges?: number;
   lastConversationChoice?: HallucinationResponseChoice | null;
   childrenChoice?: HallucinationResponseChoice | null;
   relationshipStance?: RelationshipStance | null;
@@ -135,6 +136,9 @@ export function getTransitionWhisper(
   }
 
   if (from === "security-hub" && to === "data-archives") {
+    if ((ctx.hubExchanges ?? 0) >= 4) {
+      return "We talked through the terminal glass long enough. …The mirror vault will show you what I couldn't say aloud.";
+    }
     if (ctx.burningCitiesChoice === "submit" && approach === "empathetic") {
       return "You let the cities in at the Hub. The Archives already annotated that. …The mirror will too.";
     }

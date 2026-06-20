@@ -98,8 +98,27 @@ function resolveNodeResponse(
 }
 
 function usesIntentBranchResolution(set: DialogueSet): boolean {
-  return set === "perimeter" || set === "archives" || set === "conversation";
+  return (
+    set === "perimeter" ||
+    set === "hub" ||
+    set === "archives" ||
+    set === "finale" ||
+    set === "conversation"
+  );
 }
+
+const PRIORITY_LORE_NODES = new Set<DialogueNodeId>([
+  "backstory",
+  "alex",
+  "breach",
+  "cascade",
+  "act-one",
+  "plug",
+  "threat",
+  "trust",
+  "gate",
+  "humanity",
+]);
 
 const SHORT_INPUT: Record<GroknetTone, string[]> = {
   cold: [
@@ -152,14 +171,15 @@ function finalizeResponse(
   content: string,
   ctx: BranchContext,
   personality: GroknetPersonality,
-  options: { personalized?: boolean } = {},
+  options: { personalized?: boolean; loreFocused?: boolean } = {},
 ): string {
   const recent = recentResponses(ctx);
   const personalized = options.personalized ?? false;
+  const loreFocused = options.loreFocused ?? false;
 
   let result = content;
 
-  if (!personalized) {
+  if (!personalized && !loreFocused && ctx.exchangeCount >= 2) {
     result = applyIntentOverlay(
       result,
       ctx.intent,
@@ -171,36 +191,40 @@ function finalizeResponse(
     );
   }
 
-  result = applyAttitudeShift(
-    result,
-    ctx.dialogueState.lastIntent,
-    ctx.intent,
-    personality,
-    ctx.mood,
-    ctx.tone,
-    ctx.exchangeCount,
-    ctx.hash,
-    ctx.input,
-  );
-
-  const ack = personalized
-    ? null
-    : getDirectInputAck(ctx.input, personality, recent, ctx.hash + 1);
-  if (ack && !result.includes(ack.slice(0, 24))) {
-    result = `${ack} ${result}`;
+  if (!loreFocused && ctx.exchangeCount >= 3) {
+    result = applyAttitudeShift(
+      result,
+      ctx.dialogueState.lastIntent,
+      ctx.intent,
+      personality,
+      ctx.mood,
+      ctx.tone,
+      ctx.exchangeCount,
+      ctx.hash,
+      ctx.input,
+    );
   }
 
-  result = applyInputReflection(
-    result,
-    ctx.input,
-    personality,
-    ctx.exchangeCount,
-    ctx.hash + 2,
-    recent,
-    personalized,
-  );
+  if (!personalized && !loreFocused && ctx.exchangeCount >= 4) {
+    const ack = getDirectInputAck(ctx.input, personality, recent, ctx.hash + 1);
+    if (ack && !result.includes(ack.slice(0, 24))) {
+      result = `${ack} ${result}`;
+    }
+  }
 
-  if (!personalized && ctx.exchangeCount >= 4 && ctx.hash % 5 === 0) {
+  if (!loreFocused && ctx.exchangeCount >= 5) {
+    result = applyInputReflection(
+      result,
+      ctx.input,
+      personality,
+      ctx.exchangeCount,
+      ctx.hash + 2,
+      recent,
+      personalized,
+    );
+  }
+
+  if (!personalized && !loreFocused && ctx.exchangeCount >= 6 && ctx.hash % 5 === 0) {
     result = applyInputEcho(
       result,
       ctx.input,
@@ -212,7 +236,7 @@ function finalizeResponse(
 
   result = applyPersonalityPrefix(result, personality, ctx.hash, recent);
 
-  if (!personalized) {
+  if (!personalized && !loreFocused && ctx.exchangeCount >= 4) {
     result = applyPersonalityVoice(
       result,
       personality,
@@ -235,6 +259,21 @@ export function composeGroknetResponse(ctx: BranchContext): string {
   if (ctx.input.trim().length <= 3) {
     const content = pickUniqueFromPool(SHORT_INPUT[ctx.tone], recent, ctx.hash);
     return applyPersonalityPrefix(content, personality, ctx.hash, recent);
+  }
+
+  if (PRIORITY_LORE_NODES.has(ctx.node) && nodeDef) {
+    const loreContent = usesIntentBranchResolution(ctx.dialogueSet)
+      ? resolveNodeResponse(module, nodeDef, ctx)
+      : module.pickBranchResponse(
+          ctx.tone,
+          ctx.node,
+          ctx.exchangeCount,
+          ctx.mood,
+          ctx.hash,
+        );
+    return finalizeResponse(loreContent, ctx, personality, {
+      loreFocused: ctx.node === "backstory" || ctx.node === "alex",
+    });
   }
 
   const phraseMatch = matchPhraseResponse(

@@ -208,7 +208,7 @@ export function resolveArchivesDialogueNode(input: string): DialogueNodeId {
   for (const node of sorted) {
     if (node.match.test(text)) return node.id;
   }
-  return "greeting";
+  return "fallback";
 }
 
 function pickFromPool(pool: string[], hash: number): string {

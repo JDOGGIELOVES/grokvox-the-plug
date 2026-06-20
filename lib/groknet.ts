@@ -81,9 +81,15 @@ export function classifyInput(input: string): PlayerIntent {
   let empatheticScore = 0;
   let curiousScore = 0;
 
-  if (HOSTILE_PATTERN.test(text)) hostileScore += 2;
-  if (EMPATHETIC_PATTERN.test(text)) empatheticScore += 2;
+  const negated =
+    /\b(don't|dont|do not|not|never|no longer|isn't|aren't|won't|can't)\b/i.test(
+      text,
+    );
+
+  if (HOSTILE_PATTERN.test(text) && !negated) hostileScore += 2;
+  if (EMPATHETIC_PATTERN.test(text) && !negated) empatheticScore += 2;
   if (CURIOUS_PATTERN.test(text)) curiousScore += 2;
+  if (negated && EMPATHETIC_PATTERN.test(text)) curiousScore += 1;
   if (text.includes("?")) curiousScore += 1;
   if (text.length > 20 && /\b(please|help)\b/.test(text)) empatheticScore += 1;
   if (/\b(lol|haha|sure|whatever|yeah right|as if)\b/.test(text)) hostileScore += 1;

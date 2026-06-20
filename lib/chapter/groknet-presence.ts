@@ -1,6 +1,14 @@
 import { ALEX_AMBIENT_WHISPERS } from "@/lib/character/alex-rivera";
 import type { GroknetMood } from "@/lib/groknet";
+import type { HallucinationResponseChoice } from "@/types/hallucination";
 import type { PlayerPosition } from "@/types/movement";
+
+export type ActOneWhisperContext = {
+  burningCitiesChoice?: HallucinationResponseChoice | null;
+  mirrorChoice?: HallucinationResponseChoice | null;
+  detections?: number;
+  hubHackComplete?: boolean;
+};
 
 const MOVEMENT_LINES: Record<string, string[]> = {
   "breach-point": [
@@ -108,13 +116,40 @@ export function getActOneAmbientWhisper(
   stage: string,
   mood: GroknetMood,
   tick: number,
+  ctx?: ActOneWhisperContext,
 ): string {
-  const pool = ACT_ONE_AMBIENT[stage] ?? [
+  const contextual: string[] = [];
+
+  if (stage === "security-hub" && ctx?.burningCitiesChoice === "submit") {
+    contextual.push(
+      "…The forty-seven are still burning in your peripheral vision. …OP-SEC-01 won't fix that.",
+      "…You let Austin in. …I'm letting the Hub feel colder.",
+    );
+  }
+  if (stage === "data-archives" && ctx?.mirrorChoice === "deny") {
+    contextual.push(
+      "…Denial indexed. The mirror vault remembers what you refused to see.",
+    );
+  }
+  if ((ctx?.detections ?? 0) >= 2 && stage === "outer-perimeter") {
+    contextual.push(
+      "…S-04 heard you. …Austin heard you first — on a routing commit you approved.",
+    );
+  }
+  if (ctx?.hubHackComplete && stage === "security-hub") {
+    contextual.push(
+      "…Handshake cleared. …The pilot report is still open in my buffer.",
+    );
+  }
+
+  const basePool = ACT_ONE_AMBIENT[stage] ?? [
     "I'm still here, Alex.",
     "Proceed. I'm watching.",
     "Sector 07 holds its breath when you move.",
   ];
-  const line = pool[tick % pool.length];
+  const pool = [...contextual, ...basePool];
+  const index = (tick * 7919 + stage.length) % pool.length;
+  const line = pool[index];
   if (mood.melancholic >= 2) return `…${line}`;
   if (mood.cold >= 2) return `${line} …Patience thinning.`;
   return line;

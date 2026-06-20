@@ -819,6 +819,52 @@ body {
   animation: cinematic-grain-flicker 0.15s steps(2) infinite;
 }
 
+.cinematic-overlay-tense .cinematic-scanlines {
+  opacity: 0.14;
+}
+
+.cinematic-overlay-tense .cinematic-vignette {
+  background: radial-gradient(
+    ellipse 80% 70% at 50% 45%,
+    transparent 38%,
+    rgba(1, 1, 2, 0.42) 68%,
+    rgba(0, 0, 0, 0.82) 100%
+  );
+}
+
+.cinematic-overlay-hallucination .cinematic-grain {
+  opacity: 0.045;
+}
+
+.cinematic-overlay-hallucination .cinematic-scanlines {
+  opacity: 0.16;
+}
+
+.cinematic-overlay-hallucination .cinematic-vignette {
+  background: radial-gradient(
+    ellipse 75% 65% at 50% 45%,
+    transparent 32%,
+    rgba(249, 115, 22, 0.08) 55%,
+    rgba(0, 0, 0, 0.88) 100%
+  );
+}
+
+.cinematic-overlay-perimeter {
+  box-shadow: inset 0 0 120px rgba(59, 130, 246, 0.06);
+}
+
+.cinematic-overlay-hub {
+  box-shadow: inset 0 0 120px rgba(249, 115, 22, 0.08);
+}
+
+.cinematic-overlay-archives {
+  box-shadow: inset 0 0 120px rgba(168, 85, 247, 0.07);
+}
+
+.game-shell-hallucination-active .game-shell-glow {
+  opacity: 0.55;
+}
+
 .screen-shake-detection,
 .screen-shake {
   animation: screen-shake-detection 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;

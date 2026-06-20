@@ -182,27 +182,38 @@ function toCheckpointState(state: RunState): ActOneCheckpointState {
   };
 }
 
-type IntroBootstrap = {
-  phase: ChapterPhase;
-  startMissionDeploy: boolean;
+type ActOneInitial = {
+  state: RunState;
+  clockMs: number;
+  missionDeploying: boolean;
+  missionDeployed: boolean;
   returning: boolean;
+  startMissionDeploy: boolean;
+  skippedBriefing: boolean;
+  resumeWhisper: string | null;
 };
 
-function getIntroBootstrap(): IntroBootstrap {
-  const fallback: IntroBootstrap = {
-    phase: "cinematic-intro",
-    startMissionDeploy: false,
+function createActOneInitialState(): ActOneInitial {
+  const fallback: ActOneInitial = {
+    state: createInitialRunState("cinematic-intro"),
+    clockMs: CHAPTER_TIME_BUDGET_MS,
+    missionDeploying: false,
+    missionDeployed: false,
     returning: false,
+    startMissionDeploy: false,
+    skippedBriefing: false,
+    resumeWhisper: null,
   };
 
   if (typeof window === "undefined") return fallback;
 
   const returning = hasSeenIntro();
+  const skippedBriefing = getIntroSkipLevel() >= 1;
   const save = loadGameSave();
   const checkpoint = loadActOneCheckpoint();
 
   if (save?.act1Complete) {
-    return { ...fallback, returning };
+    return { ...fallback, returning, skippedBriefing };
   }
 
   if (checkpoint) {
@@ -211,30 +222,50 @@ function getIntroBootstrap(): IntroBootstrap {
       checkpoint.state.phase === "complete"
         ? checkpoint.state.phase
         : "playing";
+
     return {
-      phase: restoredPhase,
-      startMissionDeploy: false,
+      ...fallback,
       returning,
+      skippedBriefing,
+      state: {
+        ...createInitialRunState(restoredPhase),
+        ...checkpoint.state,
+        phase: restoredPhase,
+        hubExchanges: checkpoint.state.hubExchanges ?? 0,
+        archivesExchanges: checkpoint.state.archivesExchanges ?? 0,
+        finaleExchanges: checkpoint.state.finaleExchanges ?? 0,
+        showLevelComplete: false,
+        screenShaking: false,
+      },
+      clockMs: checkpoint.clockRemainingMs,
+      missionDeployed: restoredPhase === "playing",
+      resumeWhisper:
+        "Checkpoint restored. I remember where you left off — and what you chose.",
     };
   }
 
   if (shouldAutoSkipToMission()) {
     return {
-      phase: "playing",
-      startMissionDeploy: true,
+      ...fallback,
       returning,
+      skippedBriefing,
+      state: createInitialRunState("playing"),
+      missionDeploying: true,
+      missionDeployed: false,
+      startMissionDeploy: true,
     };
   }
 
   if (shouldAutoSkipCinematic()) {
     return {
-      phase: "how-to-play",
-      startMissionDeploy: false,
+      ...fallback,
       returning,
+      skippedBriefing,
+      state: createInitialRunState("how-to-play"),
     };
   }
 
-  return { ...fallback, returning };
+  return { ...fallback, returning, skippedBriefing };
 }
 
 function buildActOneHallucinationContext(
@@ -307,27 +338,31 @@ function createInitialRunState(phase: ChapterPhase = "cinematic-intro"): RunStat
 }
 
 export function ActOneInfiltration() {
-  const introBootstrapRef = useRef(getIntroBootstrap());
-  const [state, setState] = useState(() =>
-    createInitialRunState(introBootstrapRef.current.phase),
+  const initialRef = useRef(createActOneInitialState());
+  const [state, setState] = useState(() => initialRef.current.state);
+  const [clockInitialMs, setClockInitialMs] = useState(
+    () => initialRef.current.clockMs,
   );
-  const [clockInitialMs, setClockInitialMs] = useState(CHAPTER_TIME_BUDGET_MS);
-  const [resumeWhisper, setResumeWhisper] = useState<string | null>(null);
+  const [resumeWhisper, setResumeWhisper] = useState(
+    () => initialRef.current.resumeWhisper,
+  );
   const [chapterSummary, setChapterSummary] = useState<ChapterOneSummary | null>(
     null,
   );
   const [progressSaved, setProgressSaved] = useState(false);
   const [showFinaleCinematic, setShowFinaleCinematic] = useState(false);
   const [missionDeploying, setMissionDeploying] = useState(
-    () => introBootstrapRef.current.startMissionDeploy,
+    () => initialRef.current.missionDeploying,
   );
+  const [missionDeployExiting, setMissionDeployExiting] = useState(false);
   const [missionDeployed, setMissionDeployed] = useState(
-    () =>
-      !introBootstrapRef.current.startMissionDeploy &&
-      introBootstrapRef.current.phase === "playing",
+    () => initialRef.current.missionDeployed,
   );
   const [returningPlayer, setReturningPlayer] = useState(
-    () => introBootstrapRef.current.returning,
+    () => initialRef.current.returning,
+  );
+  const [skippedBriefing, setSkippedBriefing] = useState(
+    () => initialRef.current.skippedBriefing,
   );
   const missionDeployTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
@@ -417,7 +452,10 @@ export function ActOneInfiltration() {
     },
   });
 
-  const clock = useGameClock(state.phase === "playing", clockInitialMs);
+  const clock = useGameClock(
+    state.phase === "playing" && missionDeployed,
+    clockInitialMs,
+  );
 
   const triggerHallucinationWithContext = useCallback(
     (options: Parameters<typeof triggerHallucination>[0]) => {
@@ -437,36 +475,7 @@ export function ActOneInfiltration() {
   useEffect(() => {
     const save = loadGameSave();
     const checkpoint = loadActOneCheckpoint();
-
-    if (save?.act1Complete) {
-      if (checkpoint) clearActOneCheckpoint();
-      return;
-    }
-
-    if (checkpoint) {
-      const restoredPhase =
-        checkpoint.state.phase === "playing" ||
-        checkpoint.state.phase === "complete"
-          ? checkpoint.state.phase
-          : "playing";
-
-      setState((s) => ({
-        ...s,
-        ...checkpoint.state,
-        phase: restoredPhase,
-        hubExchanges: checkpoint.state.hubExchanges ?? 0,
-        archivesExchanges: checkpoint.state.archivesExchanges ?? 0,
-        finaleExchanges: checkpoint.state.finaleExchanges ?? 0,
-        showLevelComplete: false,
-        screenShaking: false,
-      }));
-      setClockInitialMs(checkpoint.clockRemainingMs);
-      setMissionDeployed(restoredPhase === "playing");
-      setMissionDeploying(false);
-      setResumeWhisper(
-        "Checkpoint restored. I remember where you left off — and what you chose.",
-      );
-    }
+    if (save?.act1Complete && checkpoint) clearActOneCheckpoint();
   }, []);
 
   useEffect(() => {
@@ -533,7 +542,14 @@ export function ActOneInfiltration() {
   }, [resumeWhisper, setGroknetWhisper]);
 
   useEffect(() => {
-    if (state.phase !== "playing" || state.showLevelComplete || active) return;
+    if (
+      state.phase !== "playing" ||
+      missionDeploying ||
+      state.showLevelComplete ||
+      active
+    ) {
+      return;
+    }
 
     const interval = window.setInterval(() => {
       const s = stateRef.current;
@@ -549,7 +565,12 @@ export function ActOneInfiltration() {
       }
       const tick = ambientTickRef.current++;
       setGroknetWhisper(
-        getActOneAmbientWhisper(s.stage, s.finalMood, tick),
+        getActOneAmbientWhisper(s.stage, s.finalMood, tick, {
+          burningCitiesChoice: s.burningCitiesChoice,
+          mirrorChoice: s.mirrorChoice,
+          detections: s.detections,
+          hubHackComplete: s.hubHackComplete,
+        }),
         5500,
       );
     }, ACT_ONE_AMBIENT_WHISPER_MS);
@@ -564,14 +585,21 @@ export function ActOneInfiltration() {
   ]);
 
   useEffect(() => {
-    if (state.phase !== "playing" || state.showLevelComplete) return;
+    if (
+      state.phase !== "playing" ||
+      missionDeploying ||
+      !missionDeployed ||
+      state.showLevelComplete
+    ) {
+      return;
+    }
 
     const timeout = window.setTimeout(() => {
       saveActOneCheckpoint(toCheckpointState(state), clock.remainingMs);
     }, 900);
 
     return () => window.clearTimeout(timeout);
-  }, [state, clock.remainingMs]);
+  }, [state, clock.remainingMs, missionDeploying, missionDeployed]);
 
   const chapterProgress = useMemo(
     () =>
@@ -619,6 +647,7 @@ export function ActOneInfiltration() {
         burningCitiesSurvived: state.burningCitiesSurvived,
         burningCitiesChoice: state.burningCitiesChoice,
         perimeterDialogueComplete: state.perimeterTerminalComplete,
+        hubExchanges: state.hubExchanges,
       });
       setAreaTransition({ from, to, groknetLine });
     },
@@ -851,17 +880,21 @@ export function ActOneInfiltration() {
             ? ACT_ONE_RETURNING_WHISPER
             : ACT_ONE_MISSION_START_WHISPER,
         }));
-        setMissionDeploying(false);
-        setMissionDeployed(true);
-        missionDeployTimeoutRef.current = null;
+        setMissionDeployExiting(true);
+        missionDeployTimeoutRef.current = setTimeout(() => {
+          setMissionDeploying(false);
+          setMissionDeployExiting(false);
+          setMissionDeployed(true);
+          missionDeployTimeoutRef.current = null;
+        }, 550);
       }, 820);
     },
     [],
   );
 
   useEffect(() => {
-    if (!introBootstrapRef.current.startMissionDeploy) return;
-    beginMission({ returning: introBootstrapRef.current.returning });
+    if (!initialRef.current.startMissionDeploy) return;
+    beginMission({ returning: initialRef.current.returning });
   }, [beginMission]);
 
   const handleCinematicIntroComplete = useCallback(() => {
@@ -871,6 +904,7 @@ export function ActOneInfiltration() {
   const handleSkipCinematic = useCallback(() => {
     markCinematicSkipped();
     cancelIntroSpeech();
+    setSkippedBriefing(true);
     setState((s) => ({ ...s, phase: "how-to-play" }));
   }, []);
 
@@ -880,8 +914,8 @@ export function ActOneInfiltration() {
   }, [beginMission, returningPlayer]);
 
   const handleHowToPlayComplete = useCallback(() => {
-    beginMission({ returning: false });
-  }, [beginMission]);
+    beginMission({ returning: returningPlayer || hasSeenIntro() });
+  }, [beginMission, returningPlayer]);
 
   const handleEnterSecurityHub = useCallback(() => {
     beginAreaTransition("outer-perimeter", "security-hub");
@@ -982,6 +1016,12 @@ export function ActOneInfiltration() {
   const preMission =
     state.phase === "cinematic-intro" || state.phase === "how-to-play";
   const playing = state.phase === "playing";
+  const overlayIntensity =
+    clock.isCritical || active
+      ? "tense"
+      : state.detections > 0
+        ? "tense"
+        : "calm";
   const controlsLocked =
     !playing ||
     missionDeploying ||
@@ -991,7 +1031,13 @@ export function ActOneInfiltration() {
     showFinaleCinematic;
 
   return (
-    <GameShell shaking={state.screenShaking} variant="act-1">
+    <GameShell
+      shaking={state.screenShaking || (active && (profile?.screenShake ?? false))}
+      variant="act-1"
+      stage={playing ? state.stage : undefined}
+      overlayIntensity={overlayIntensity}
+      hallucinationActive={active}
+    >
       {state.phase === "cinematic-intro" ? (
         <CinematicIntro
           onComplete={handleCinematicIntroComplete}
@@ -1005,11 +1051,13 @@ export function ActOneInfiltration() {
           onComplete={handleHowToPlayComplete}
           onSkipIntro={handleSkipToMission}
           showSkipIntro={returningPlayer}
-          showSkippedBriefing={getIntroSkipLevel() >= 1}
+          showSkippedBriefing={skippedBriefing}
         />
       ) : null}
 
-      {missionDeploying ? <MissionDeployOverlay /> : null}
+      {missionDeploying ? (
+        <MissionDeployOverlay exiting={missionDeployExiting} />
+      ) : null}
 
       <div
         className={cn(

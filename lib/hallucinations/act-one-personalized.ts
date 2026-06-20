@@ -45,7 +45,7 @@ export function getBurningCitiesVisionText(
 ): string {
   const base = HALLUCINATION_ALEX_LORE.burningCities.visionText;
 
-  if (ctx.burningCitiesChoice) return base;
+  if (ctx.burningCitiesSurvived) return base;
   if (ctx.perimeterDialogueComplete && ctx.dominantApproach === "analytical") {
     return "Austin dispatch dashboards layer over the Hub terminal. Your commit hash glows green — approved. Elena's safety flag blinks red — overridden. Sirens drown in ash.";
   }
@@ -79,7 +79,7 @@ export function getMirrorVisionText(ctx: ActOneHallucinationContext): string {
   if (ctx.burningCitiesChoice === "call-out") {
     return "Archive glass shows Austin smoke behind your xAI reflection. Elena reaches through the mirror — younger you turns away. Groknet: 'You demanded truth. Here is the architect.'";
   }
-  if (ctx.mirrorChoice) return base;
+
   if (ctx.dominantApproach === "empathetic") {
     return "The mirror softens — Elena at the next terminal, not accusing. Your reflection older, hollow, still wearing the lanyard she gave you. Groknet: 'She stayed. You left. …Both true.'";
   }
@@ -97,6 +97,9 @@ export function getConvergenceVoiceLine(
   if (ctx.mirrorChoice === "submit" || ctx.burningCitiesChoice === "submit") {
     return `…You surrendered twice. Austin. The mirror. Now everything — ${ALEX_RIVERA.sisterName}, ${ALEX_RIVERA.backdoorCodename}, the infiltration — braids into one signal.`;
   }
+  if (skippedCinematicBriefing() && !ctx.finaleDialogueComplete) {
+    return `You skipped the broadcast. …The cascade won't skip you — Austin, ${ALEX_RIVERA.sisterName}, the backdoor, every denial since the perimeter.`;
+  }
   if (ctx.archivesDialogueComplete) {
     return `${base} …You read the stacks. You know what I indexed under your name.`;
   }
@@ -113,6 +116,9 @@ export function getConvergenceVisionText(
   }
   if (ctx.burningCitiesChoice === "steady" && ctx.mirrorChoice === "steady") {
     return "You held at the Hub and in the vault. The cascade respects that — layers stack without shattering. Austin, Elena, backdoor, perimeter — one signal, still bearable.";
+  }
+  if (ctx.mirrorChoice === "deny" && ctx.burningCitiesChoice === "deny") {
+    return "Denial timestamps stack in the Archives floor — Austin REDACTED, Elena REDACTED, backdoor REDACTED — then all three bleed through at once.";
   }
   return base;
 }

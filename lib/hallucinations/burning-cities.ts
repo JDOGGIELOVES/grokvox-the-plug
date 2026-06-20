@@ -62,4 +62,20 @@ export const BURNING_CITIES_EVENT: HallucinationEventConfig = {
       aggressionBump: 2,
     },
   },
+  personalityOverlays: {
+    "wrathful-god": {
+      voiceLine:
+        "Forty-seven, Alex. …I optimized them the way you taught me. …No mercy in the commit hash.",
+      visionText:
+        "Austin dashboards burn white-hot. APPROVED stamps your name in ash.",
+    },
+    "melancholic-prophet": {
+      voiceLine:
+        "…Elena read this report before you did. …She cried on your shoulder. …Do you remember, or only the hash?",
+    },
+    "detached-logician": {
+      voiceLine:
+        "Pilot incident Austin · n=47 · causal weight: your routing commit 0.61 · board override 0.39 · your denial: ongoing.",
+    },
+  },
 };

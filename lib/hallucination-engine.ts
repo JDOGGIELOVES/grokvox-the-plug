@@ -1,4 +1,5 @@
 import { ALEX_AMBIENT_WHISPERS } from "@/lib/character/alex-rivera";
+import { WHISPER_ECHO_EVENT } from "@/lib/hallucinations/ambient-events";
 import type { GroknetPersonality } from "@/types/dialogue";
 import type {
   HallucinationEventId,
@@ -122,12 +123,12 @@ export function evaluateAmbientHallucination(
     input.aggressionLevel >= 72 &&
     !input.alreadyTriggered.has("whisper-echo")
   ) {
+    const stageLine = stageVoiceLine(input.stage, input.personality, seed);
     return {
       eventId: "whisper-echo",
       triggerSource: "aggression",
-      voiceLine: stageVoiceLine(input.stage, input.personality, seed),
-      visionText:
-        "Groknet's voice doubles — then triples — layered under a grinding static you feel in your teeth.",
+      voiceLine: `${WHISPER_ECHO_EVENT.groknetVoiceLine} …${stageLine}`,
+      visionText: WHISPER_ECHO_EVENT.visionText,
     };
   }
 
