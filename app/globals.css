@@ -302,6 +302,239 @@ body {
   animation: hallucination-warning-pulse 1s ease-in-out infinite;
 }
 
+/* Hallucination system — types, personality, ambient */
+.hallucination-intensity-high .hallucination-tint {
+  opacity: 0.92;
+}
+
+.hallucination-intensity-medium .hallucination-tint {
+  opacity: 0.72;
+}
+
+.hallucination-intensity-low .hallucination-tint {
+  opacity: 0.48;
+}
+
+.hallucination-color-shift {
+  mix-blend-mode: screen;
+  opacity: 0.08;
+  animation: hallucination-color-shift 0.35s infinite alternate;
+}
+
+.hallucination-effect-shake.hallucination-event {
+  animation: hallucination-effect-shake 0.18s infinite;
+}
+
+.hallucination-effect-lag button,
+.hallucination-effect-lag a,
+.hallucination-effect-lag [role="button"] {
+  transition-delay: 0.12s !important;
+  filter: blur(0.4px);
+}
+
+.hallucination-effect-false-ui {
+  filter: hue-rotate(-8deg) saturate(1.15);
+}
+
+.hallucination-effect-invert .hallucination-overlay {
+  filter: invert(0.08) hue-rotate(180deg);
+}
+
+.hallucination-personality-wrathful .hallucination-tint {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(220, 38, 38, 0.32) 0%,
+    rgba(69, 10, 10, 0.45) 100%
+  ) !important;
+}
+
+.hallucination-personality-melancholic .hallucination-tint {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(244, 63, 94, 0.22) 0%,
+    rgba(76, 29, 49, 0.38) 100%
+  ) !important;
+}
+
+.hallucination-personality-logician .hallucination-tint {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(34, 211, 238, 0.16) 0%,
+    rgba(15, 23, 42, 0.42) 100%
+  ) !important;
+}
+
+.hallucination-whisper-tint {
+  background: radial-gradient(
+    ellipse at 50% 30%,
+    rgba(244, 63, 94, 0.2) 0%,
+    rgba(10, 10, 14, 0.55) 70%
+  ) !important;
+}
+
+.hallucination-corridor-tint {
+  background: linear-gradient(
+    135deg,
+    rgba(24, 24, 27, 0.65) 0%,
+    rgba(249, 115, 22, 0.12) 50%,
+    rgba(10, 10, 12, 0.7) 100%
+  ) !important;
+}
+
+.hallucination-directive-tint {
+  background: radial-gradient(
+    ellipse at 50% 20%,
+    rgba(249, 115, 22, 0.28) 0%,
+    rgba(10, 10, 12, 0.6) 65%
+  ) !important;
+}
+
+.hallucination-auditory-waves {
+  background: repeating-radial-gradient(
+    circle at 50% 50%,
+    transparent 0,
+    transparent 24px,
+    rgba(244, 63, 94, 0.06) 25px,
+    transparent 26px
+  );
+  animation: hallucination-auditory-waves 1.2s ease-out infinite;
+}
+
+.hallucination-auditory-echo {
+  opacity: 0.12;
+  background: repeating-linear-gradient(
+    -12deg,
+    transparent,
+    transparent 18px,
+    rgba(255, 255, 255, 0.04) 18px,
+    rgba(255, 255, 255, 0.04) 19px
+  );
+  animation: hallucination-auditory-echo 0.25s steps(2) infinite;
+}
+
+.hallucination-corridor-warp {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(249, 115, 22, 0.08) 45%,
+    rgba(255, 255, 255, 0.04) 50%,
+    rgba(249, 115, 22, 0.08) 55%,
+    transparent 100%
+  );
+  animation: hallucination-corridor-warp 0.6s ease-in-out infinite alternate;
+}
+
+.hallucination-corridor-labels {
+  opacity: 0.15;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 80px,
+    rgba(249, 115, 22, 0.15) 80px,
+    rgba(249, 115, 22, 0.15) 81px
+  );
+}
+
+.hallucination-directive-scan {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(249, 115, 22, 0.12) 50%,
+    transparent 100%
+  );
+  animation: hallucination-directive-scan 1.8s linear infinite;
+}
+
+.hallucination-resist-in {
+  animation: hallucination-resist-in 0.35s ease-out both;
+}
+
+.hallucination-false-objective-panel {
+  animation: hallucination-false-objective-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes hallucination-color-shift {
+  from {
+    background: rgba(249, 115, 22, 0.06);
+  }
+  to {
+    background: rgba(139, 92, 246, 0.08);
+  }
+}
+
+@keyframes hallucination-effect-shake {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-2px, 1px);
+  }
+  75% {
+    transform: translate(2px, -1px);
+  }
+}
+
+@keyframes hallucination-auditory-waves {
+  from {
+    transform: scale(1);
+    opacity: 0.35;
+  }
+  to {
+    transform: scale(1.08);
+    opacity: 0.65;
+  }
+}
+
+@keyframes hallucination-auditory-echo {
+  from {
+    transform: translateX(-2%);
+  }
+  to {
+    transform: translateX(2%);
+  }
+}
+
+@keyframes hallucination-corridor-warp {
+  from {
+    transform: skewX(-1deg) scale(1.02);
+  }
+  to {
+    transform: skewX(1deg) scale(1.04);
+  }
+}
+
+@keyframes hallucination-directive-scan {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes hallucination-resist-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hallucination-false-objective-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 /* Distort only vision overlay text — not gameplay UI underneath */
 .hallucination-active .hallucination-vision,
 .hallucination-active .hallucination-message,

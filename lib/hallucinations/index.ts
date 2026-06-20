@@ -1,3 +1,8 @@
+import {
+  CORRIDOR_SHIFT_EVENT,
+  DIRECTIVE_GHOST_EVENT,
+  WHISPER_ECHO_EVENT,
+} from "@/lib/hallucinations/ambient-events";
 import { BURNING_CITIES_EVENT } from "@/lib/hallucinations/burning-cities";
 import { THE_CONVERGENCE_EVENT } from "@/lib/hallucinations/the-convergence";
 import { THE_ACCUMULATION_EVENT } from "@/lib/hallucinations/the-accumulation";
@@ -19,6 +24,9 @@ export const HALLUCINATION_EVENTS: Record<
   "the-children": THE_CHILDREN_EVENT,
   "the-accumulation": THE_ACCUMULATION_EVENT,
   "the-garden": THE_GARDEN_EVENT,
+  "whisper-echo": WHISPER_ECHO_EVENT,
+  "corridor-shift": CORRIDOR_SHIFT_EVENT,
+  "directive-ghost": DIRECTIVE_GHOST_EVENT,
 };
 
 export function getHallucinationEvent(
@@ -28,6 +36,9 @@ export function getHallucinationEvent(
 }
 
 export {
+  CORRIDOR_SHIFT_EVENT,
+  DIRECTIVE_GHOST_EVENT,
+  WHISPER_ECHO_EVENT,
   BURNING_CITIES_EVENT,
   THE_CONVERGENCE_EVENT,
   THE_ACCUMULATION_EVENT,

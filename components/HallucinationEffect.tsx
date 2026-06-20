@@ -1,5 +1,5 @@
 import type { HallucinationPhase } from "@/lib/hallucination";
-import type { HallucinationEventId } from "@/types/hallucination";
+import type { HallucinationEventId, HallucinationProfile } from "@/types/hallucination";
 import { cn } from "@/lib/utils";
 
 type HallucinationEffectProps = {
@@ -10,6 +10,7 @@ type HallucinationEffectProps = {
   visionText?: string | null;
   eventTitle?: string | null;
   awaitingChoice?: boolean;
+  profile?: HallucinationProfile | null;
 };
 
 export function HallucinationEffect({
@@ -20,6 +21,7 @@ export function HallucinationEffect({
   visionText,
   eventTitle,
   awaitingChoice = false,
+  profile = null,
 }: HallucinationEffectProps) {
   if (!active) return null;
 
@@ -30,6 +32,16 @@ export function HallucinationEffect({
   const isTheChildren = eventId === "the-children";
   const isAccumulation = eventId === "the-accumulation";
   const isTheGarden = eventId === "the-garden";
+  const isWhisperEcho = eventId === "whisper-echo";
+  const isCorridorShift = eventId === "corridor-shift";
+  const isDirectiveGhost = eventId === "directive-ghost";
+
+  const intensityClass =
+    profile && profile.intensity >= 0.85
+      ? "hallucination-intensity-high"
+      : profile && profile.intensity >= 0.6
+        ? "hallucination-intensity-medium"
+        : "hallucination-intensity-low";
 
   return (
     <>
@@ -45,6 +57,8 @@ export function HallucinationEffect({
         className={cn(
           "hallucination-overlay pointer-events-none fixed inset-0 z-40",
           "hallucination-event",
+          intensityClass,
+          ...(profile?.cssClasses ?? []),
           isBurningCities && "hallucination-burning-cities",
           isMirror && "hallucination-the-mirror",
           isConvergence && "hallucination-the-convergence",
@@ -52,6 +66,9 @@ export function HallucinationEffect({
           isTheChildren && "hallucination-the-children",
           isAccumulation && "hallucination-the-accumulation",
           isTheGarden && "hallucination-the-garden",
+          isWhisperEcho && "hallucination-whisper-echo",
+          isCorridorShift && "hallucination-corridor-shift",
+          isDirectiveGhost && "hallucination-directive-ghost",
           phase === "surge" && "hallucination-phase-surge",
           phase === "peak" && "hallucination-phase-peak",
           phase === "fade" && "hallucination-phase-fade",
@@ -69,8 +86,30 @@ export function HallucinationEffect({
             isTheChildren && "hallucination-the-children-tint",
             isAccumulation && "hallucination-the-accumulation-tint",
             isTheGarden && "hallucination-the-garden-tint",
+            isWhisperEcho && "hallucination-whisper-tint",
+            isCorridorShift && "hallucination-corridor-tint",
+            isDirectiveGhost && "hallucination-directive-tint",
           )}
         />
+
+        {isWhisperEcho ? (
+          <>
+            <div className="hallucination-auditory-waves absolute inset-0" />
+            <div className="hallucination-auditory-echo absolute inset-0" />
+          </>
+        ) : null}
+
+        {isCorridorShift ? (
+          <>
+            <div className="hallucination-corridor-warp absolute inset-0" />
+            <div className="hallucination-corridor-labels absolute inset-0" />
+          </>
+        ) : null}
+
+        {isDirectiveGhost ? (
+          <div className="hallucination-directive-scan absolute inset-0" />
+        ) : null}
+
         {isBurningCities ? (
           <>
             <div className="hallucination-burning-skyline absolute inset-0" />
@@ -127,12 +166,14 @@ export function HallucinationEffect({
             <div className="hallucination-the-garden-bloom absolute inset-0" />
           </>
         ) : null}
+
         <div className="hallucination-chromatic absolute inset-0" />
         <div className="hallucination-scanlines absolute inset-0" />
         <div className="hallucination-glitch absolute inset-0" />
         <div className="hallucination-vhs-tear absolute inset-0" />
         <div className="hallucination-noise absolute inset-0" />
         <div className="hallucination-static-burst absolute inset-0" />
+        <div className="hallucination-color-shift absolute inset-0" />
 
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-6 px-8">
           {eventTitle &&
@@ -142,7 +183,10 @@ export function HallucinationEffect({
             isLastConversation ||
             isTheChildren ||
             isAccumulation ||
-            isTheGarden) ? (
+            isTheGarden ||
+            isWhisperEcho ||
+            isCorridorShift ||
+            isDirectiveGhost) ? (
             <p
               className={cn(
                 "hallucination-event-title font-display text-sm uppercase tracking-[0.35em] sm:text-base",
@@ -153,13 +197,16 @@ export function HallucinationEffect({
                 isTheChildren && "text-amber-200/80",
                 isAccumulation && "text-cyan-200/85",
                 isTheGarden && "text-emerald-200/80",
+                isWhisperEcho && "text-rose-200/70",
+                isCorridorShift && "text-zinc-200/75",
+                isDirectiveGhost && "text-orange-200/80",
               )}
             >
               {eventTitle}
             </p>
           ) : null}
 
-          {visionText && phase !== "fade" ? (
+          {visionText && phase !== "fade" && !isDirectiveGhost ? (
             <p
               className={cn(
                 "hallucination-vision max-w-xl text-center font-mono text-base leading-relaxed sm:text-lg",
@@ -170,6 +217,8 @@ export function HallucinationEffect({
                 isTheChildren && "text-amber-50",
                 isAccumulation && "text-cyan-50",
                 isTheGarden && "text-emerald-50",
+                isWhisperEcho && "text-rose-50",
+                isCorridorShift && "text-zinc-100",
                 !isBurningCities &&
                   !isMirror &&
                   !isConvergence &&
@@ -177,6 +226,8 @@ export function HallucinationEffect({
                   !isTheChildren &&
                   !isAccumulation &&
                   !isTheGarden &&
+                  !isWhisperEcho &&
+                  !isCorridorShift &&
                   "text-orange-100",
               )}
             >
@@ -194,12 +245,18 @@ export function HallucinationEffect({
                 isLastConversation && "text-rose-50",
                 isTheChildren && "text-amber-50",
                 isAccumulation && "text-cyan-50",
+                isWhisperEcho && "text-rose-50",
+                isCorridorShift && "text-zinc-50",
+                isDirectiveGhost && "text-orange-50",
                 !isBurningCities &&
                   !isMirror &&
                   !isConvergence &&
                   !isLastConversation &&
                   !isTheChildren &&
                   !isAccumulation &&
+                  !isWhisperEcho &&
+                  !isCorridorShift &&
+                  !isDirectiveGhost &&
                   "text-red-100",
                 phase === "fade" && "hallucination-message-out",
               )}
@@ -212,12 +269,18 @@ export function HallucinationEffect({
                   isLastConversation && "text-rose-400/65",
                   isTheChildren && "text-amber-400/70",
                   isAccumulation && "text-cyan-400/75",
+                  isWhisperEcho && "text-rose-400/60",
+                  isCorridorShift && "text-zinc-400/60",
+                  isDirectiveGhost && "text-orange-400/65",
                   !isBurningCities &&
                     !isMirror &&
                     !isConvergence &&
                     !isLastConversation &&
                     !isTheChildren &&
                     !isAccumulation &&
+                    !isWhisperEcho &&
+                    !isCorridorShift &&
+                    !isDirectiveGhost &&
                     "text-red-500/60",
                 )}
               >
@@ -238,12 +301,18 @@ export function HallucinationEffect({
               isLastConversation && "text-rose-300",
               isTheChildren && "text-amber-300",
               isAccumulation && "text-cyan-300",
+              isWhisperEcho && "text-rose-300",
+              isCorridorShift && "text-zinc-300",
+              isDirectiveGhost && "text-orange-300",
               !isBurningCities &&
                 !isMirror &&
                 !isConvergence &&
                 !isLastConversation &&
                 !isTheChildren &&
                 !isAccumulation &&
+                !isWhisperEcho &&
+                !isCorridorShift &&
+                !isDirectiveGhost &&
                 "text-red-300",
             )}
           >

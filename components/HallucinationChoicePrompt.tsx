@@ -3,6 +3,7 @@
 import { getHallucinationEvent } from "@/lib/hallucinations";
 import type {
   HallucinationEventId,
+  HallucinationProfile,
   HallucinationResponseChoice,
 } from "@/types/hallucination";
 import { cn } from "@/lib/utils";
@@ -10,31 +11,56 @@ import { cn } from "@/lib/utils";
 type HallucinationChoicePromptProps = {
   eventId: HallucinationEventId;
   onChoose: (choice: HallucinationResponseChoice) => void;
+  profile?: HallucinationProfile | null;
 };
 
 export function HallucinationChoicePrompt({
   eventId,
   onChoose,
+  profile = null,
 }: HallucinationChoicePromptProps) {
   const event = getHallucinationEvent(eventId);
   if (!event) return null;
 
   const isMirror = eventId === "the-mirror";
+  const isWrathful = profile?.personality === "wrathful-god";
+  const isMelancholic = profile?.personality === "melancholic-prophet";
+  const isLogician = profile?.personality === "detached-logician";
 
   return (
     <div className="hallucination-choice-in game-readable fixed inset-x-0 bottom-0 z-[48] flex justify-center px-4 pb-6 sm:pb-10">
       <div
         className={cn(
           "w-full max-w-2xl rounded-sm border bg-zinc-950/95 p-4 backdrop-blur-md sm:p-6",
-          isMirror
-            ? "border-violet-900/50 shadow-[0_0_40px_rgba(139,92,246,0.2)]"
-            : "border-red-900/50 shadow-[0_0_40px_rgba(220,38,38,0.2)]",
+          isMirror && "border-violet-900/50 shadow-[0_0_40px_rgba(139,92,246,0.2)]",
+          isWrathful &&
+            !isMirror &&
+            "border-red-900/50 shadow-[0_0_40px_rgba(220,38,38,0.2)]",
+          isMelancholic &&
+            !isMirror &&
+            "border-rose-900/45 shadow-[0_0_40px_rgba(244,63,94,0.18)]",
+          isLogician &&
+            !isMirror &&
+            "border-cyan-900/45 shadow-[0_0_40px_rgba(34,211,238,0.15)]",
+          !isMirror &&
+            !isWrathful &&
+            !isMelancholic &&
+            !isLogician &&
+            "border-red-900/50 shadow-[0_0_40px_rgba(220,38,38,0.2)]",
         )}
       >
         <p
           className={cn(
             "font-mono text-xs uppercase tracking-[0.35em]",
-            isMirror ? "text-violet-300" : "text-red-300",
+            isMirror && "text-violet-300",
+            isWrathful && !isMirror && "text-red-300",
+            isMelancholic && !isMirror && "text-rose-300",
+            isLogician && !isMirror && "text-cyan-300",
+            !isMirror &&
+              !isWrathful &&
+              !isMelancholic &&
+              !isLogician &&
+              "text-red-300",
           )}
         >
           {event.title} · Respond

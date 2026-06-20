@@ -15,6 +15,8 @@ import { ChapterEnding } from "@/components/chapter/ChapterEnding";
 import { getTransitionWhisper } from "@/lib/chapter/area-transitions";
 import { HallucinationChoicePrompt } from "@/components/HallucinationChoicePrompt";
 import { HallucinationEffect } from "@/components/HallucinationEffect";
+import { HallucinationFalseObjective } from "@/components/HallucinationFalseObjective";
+import { HallucinationResistPrompt } from "@/components/HallucinationResistPrompt";
 import { Terminal } from "@/components/Terminal";
 import { useGameClock } from "@/hooks/useGameClock";
 import { calculateAggression } from "@/lib/aggression";
@@ -55,6 +57,8 @@ import {
 } from "@/lib/sounds";
 import { INITIAL_PLAYER_POSITION } from "@/lib/movement/act-1";
 import { useHallucination } from "@/hooks/useHallucination";
+import { useHallucinationTriggers } from "@/hooks/useHallucinationTriggers";
+import { buildHallucinationProfile } from "@/lib/hallucination-profiles";
 import type { ChapterPhase, ChapterStage } from "@/types/chapter";
 import type {
   GroknetPersonality,
@@ -247,6 +251,9 @@ export function ActOneInfiltration() {
   );
   const shakeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const whisperTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const groknetWhisperRef = useRef<(line: string, persistMs?: number) => void>(
+    () => {},
+  );
 
   const {
     active,
@@ -256,17 +263,44 @@ export function ActOneInfiltration() {
     awaitingChoice,
     visionText,
     eventTitle,
+    profile,
+    falseObjective,
+    resistWindowOpen,
+    resistProgress,
     triggerHallucination,
     resolveChoice,
+    resistHallucination,
   } = useHallucination({
-    onStart: () =>
+    onStart: (startedEventId) => {
+      const event = getHallucinationEvent(startedEventId);
+      const startedProfile = buildHallucinationProfile(
+        event,
+        startedEventId,
+        stateRef.current.dominantPersonality,
+      );
       setState((s) => ({
         ...s,
         isTerminalOpen: false,
         isPerimeterTerminalOpen: false,
         isArchivesTerminalOpen: false,
         isFinaleTerminalOpen: false,
-      })),
+        hallucinationTriggered: true,
+        screenShaking: startedProfile.screenShake || s.screenShaking,
+      }));
+    },
+    onResistSuccess: (_id, line) => {
+      groknetWhisperRef.current(line, 5500);
+      setState((s) => ({
+        ...s,
+        finalMood: {
+          ...s.finalMood,
+          melancholic: Math.min(3, s.finalMood.melancholic + 1),
+        },
+      }));
+    },
+    onResistFailure: (line) => {
+      groknetWhisperRef.current(line, 4500);
+    },
     onEnd: (endedEventId) => {
       if (endedEventId === "burning-cities") {
         setState((s) => ({ ...s, burningCitiesSurvived: true }));
@@ -281,6 +315,21 @@ export function ActOneInfiltration() {
   });
 
   const clock = useGameClock(state.phase === "playing", clockInitialMs);
+
+  const triggerHallucinationWithContext = useCallback(
+    (options: Parameters<typeof triggerHallucination>[0]) => {
+      const payload =
+        typeof options === "string"
+          ? options
+          : {
+              ...options,
+              personality:
+                options?.personality ?? stateRef.current.dominantPersonality,
+            };
+      triggerHallucination(payload);
+    },
+    [triggerHallucination],
+  );
 
   useEffect(() => {
     setReturningPlayer(hasSeenIntro());
@@ -337,6 +386,19 @@ export function ActOneInfiltration() {
     [state.finalMood, state.detections, state.exchangeCount, active],
   );
 
+  useHallucinationTriggers({
+    enabled: state.phase === "playing",
+    playing: state.phase === "playing",
+    hallucinationActive: active,
+    aggressionLevel: aggression.level,
+    timeCritical: clock.isCritical,
+    timeRemainingMs: clock.remainingMs,
+    detections: state.detections,
+    personality: state.dominantPersonality,
+    stage: state.stage,
+    triggerHallucination: triggerHallucinationWithContext,
+  });
+
   const setGroknetWhisper = useCallback((line: string, persistMs = 5000) => {
     if (whisperTimeoutRef.current) clearTimeout(whisperTimeoutRef.current);
     setState((s) => ({ ...s, groknetWhisper: line }));
@@ -345,6 +407,7 @@ export function ActOneInfiltration() {
       whisperTimeoutRef.current = null;
     }, persistMs);
   }, []);
+  groknetWhisperRef.current = setGroknetWhisper;
 
   const handlePlayerIntent = useCallback(
     (intent: PlayerIntent, line: string) => {
@@ -498,13 +561,16 @@ export function ActOneInfiltration() {
 
       burningDelayRef.current = setTimeout(() => {
         playTensionPulseSound();
-        triggerHallucination({ eventId: "burning-cities" });
+        triggerHallucinationWithContext({
+          eventId: "burning-cities",
+          triggerSource: "story",
+        });
         burningDelayRef.current = null;
       }, 900);
 
       return { ...s, burningCitiesTriggered: true };
     });
-  }, [triggerHallucination]);
+  }, [triggerHallucinationWithContext]);
 
   const scheduleConvergence = useCallback(() => {
     setState((s) => {
@@ -516,7 +582,10 @@ export function ActOneInfiltration() {
 
       convergenceDelayRef.current = setTimeout(() => {
         playHallucinationPeakSound();
-        triggerHallucination({ eventId: "the-convergence" });
+        triggerHallucinationWithContext({
+          eventId: "the-convergence",
+          triggerSource: "story",
+        });
         convergenceDelayRef.current = null;
       }, 1400);
 
@@ -528,7 +597,7 @@ export function ActOneInfiltration() {
       setState((s) => ({ ...s, screenShaking: false }));
       shakeTimeoutRef.current = null;
     }, 1200);
-  }, [triggerHallucination]);
+  }, [triggerHallucinationWithContext]);
 
   const scheduleMirror = useCallback(() => {
     setState((s) => {
@@ -538,13 +607,16 @@ export function ActOneInfiltration() {
 
       mirrorDelayRef.current = setTimeout(() => {
         playTensionPulseSound();
-        triggerHallucination({ eventId: "the-mirror" });
+        triggerHallucinationWithContext({
+          eventId: "the-mirror",
+          triggerSource: "story",
+        });
         mirrorDelayRef.current = null;
       }, 1100);
 
       return { ...s, mirrorTriggered: true };
     });
-  }, [triggerHallucination]);
+  }, [triggerHallucinationWithContext]);
 
   const handleHallucinationChoice = useCallback(
     (choice: HallucinationResponseChoice) => {
@@ -575,6 +647,7 @@ export function ActOneInfiltration() {
         disorientation: {
           active: true,
           invertMovement: consequence.invertMovement,
+          controlLag: profile?.controlEffect === "lag",
           endsAt: Date.now() + consequence.disorientationMs,
         },
         screenShaking: choice === "deny",
@@ -591,7 +664,7 @@ export function ActOneInfiltration() {
         }, 500);
       }
     },
-    [eventId, resolveChoice, setGroknetWhisper],
+    [eventId, profile, resolveChoice, setGroknetWhisper],
   );
 
   useEffect(() => {
@@ -826,6 +899,10 @@ export function ActOneInfiltration() {
             active && "hallucination-content-distort",
             active && phase === "peak" && !awaitingChoice && "hallucination-controls-off",
             state.disorientation.active && "disorientation-blur",
+            state.disorientation.controlLag && "hallucination-effect-lag",
+            profile?.controlEffect === "false-ui" &&
+              active &&
+              "hallucination-effect-false-ui",
           )}
         >
           {state.stage === "outer-perimeter" ? (
@@ -896,12 +973,28 @@ export function ActOneInfiltration() {
         visionText={visionText}
         eventTitle={eventTitle}
         awaitingChoice={awaitingChoice}
+        profile={profile}
       />
+
+      <HallucinationFalseObjective
+        text={falseObjective ?? ""}
+        personalityClass={profile?.cssClasses.join(" ")}
+        visible={active && Boolean(falseObjective) && phase !== "fade"}
+      />
+
+      {active && resistWindowOpen && !awaitingChoice ? (
+        <HallucinationResistPrompt
+          progress={resistProgress}
+          onResist={resistHallucination}
+          personalityClass={profile?.cssClasses.join(" ")}
+        />
+      ) : null}
 
       {active && awaitingChoice ? (
         <HallucinationChoicePrompt
           eventId={eventId}
           onChoose={handleHallucinationChoice}
+          profile={profile}
         />
       ) : null}
 
