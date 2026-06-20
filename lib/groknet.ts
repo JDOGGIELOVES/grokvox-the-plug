@@ -5,11 +5,17 @@ import {
   resolveDominantPersonality,
   resolvePersonality,
 } from "@/lib/dialogue/engine";
+import {
+  getBehaviorFlavorLine,
+  resolveAccumulatedTone,
+} from "@/lib/dialogue/behavior-tone";
 import { getDecisionMemoryLine } from "@/lib/dialogue/choice-memory";
+import { composeMemoryPrefix } from "@/lib/dialogue/memory-coordinator";
 import {
   advanceDialogueMemory,
   getConversationDepthLine,
   getCrossActMemoryLine,
+  getLastInputCallback,
   getRepeatInputLine,
   getSessionMemoryLine,
 } from "@/lib/dialogue/memory-layer";
@@ -190,7 +196,8 @@ export function getGroknetReply(
 ): GroknetReply {
   const intent = classifyInput(input);
   const nextMood = updateMood(mood, intent);
-  const tone = resolveTone(intent, nextMood);
+  const intentHistory = dialogueState.intentHistory ?? [];
+  const tone = resolveAccumulatedTone(intent, nextMood, intentHistory);
   const tonePersonality = resolvePersonality(tone, nextMood);
   const personality =
     dialogueState.dominantPersonality && dialogueState.dominantPersonality !== "baseline"
@@ -267,35 +274,28 @@ export function getGroknetReply(
     if (overlay) content = `${overlay} ${content}`;
   }
 
-  const repeatMemory = getRepeatInputLine(dialogueState, input, hash);
-  if (repeatMemory) content = `${repeatMemory} ${content}`;
-
-  const sessionMemory = getSessionMemoryLine(dialogueState, node, hash);
-  if (sessionMemory) content = `${sessionMemory} ${content}`;
-
-  const depthMemory = getConversationDepthLine(
-    dialogueState,
+  const behaviorFlavor = getBehaviorFlavorLine(
+    [...intentHistory, intent],
+    tone,
     nextExchange,
-    hash + 11,
+    hash + 9,
   );
-  if (depthMemory) content = `${depthMemory} ${content}`;
 
-  const decisionMemory = getDecisionMemoryLine(
-    playerContext,
-    node,
-    intent,
-    nextExchange,
-    hash + 3,
-  );
-  if (decisionMemory) content = `${decisionMemory} ${content}`;
-
-  const crossActMemory = getCrossActMemoryLine(
-    playerContext,
-    intent,
-    nextExchange,
+  const memoryPrefix = composeMemoryPrefix(
+    [
+      getRepeatInputLine(dialogueState, input, hash),
+      getLastInputCallback(dialogueState, input, hash),
+      behaviorFlavor,
+      getSessionMemoryLine(dialogueState, node, hash),
+      getConversationDepthLine(dialogueState, nextExchange, hash + 11),
+      getDecisionMemoryLine(playerContext, node, intent, nextExchange, hash + 3),
+      getCrossActMemoryLine(playerContext, intent, nextExchange, hash),
+    ],
+    dialogueState.recentResponses ?? [],
     hash,
+    2,
   );
-  if (crossActMemory) content = `${crossActMemory} ${content}`;
+  if (memoryPrefix) content = `${memoryPrefix} ${content}`;
 
   const dominantPersonality = resolveDominantPersonality(
     dialogueState.dominantPersonality,
@@ -313,10 +313,13 @@ export function getGroknetReply(
       intentHistory: dialogueState.intentHistory ?? [],
       nodeVisits: dialogueState.nodeVisits ?? {},
       recentInputs: dialogueState.recentInputs ?? [],
+      recentResponses: dialogueState.recentResponses ?? [],
+      lastPlayerInput: dialogueState.lastPlayerInput ?? null,
     },
     intent,
     node,
     input,
+    content,
   );
 
   return {

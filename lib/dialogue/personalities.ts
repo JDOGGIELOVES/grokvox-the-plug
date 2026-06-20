@@ -1,4 +1,5 @@
 import type { GroknetMood } from "@/lib/groknet";
+import { pickUniqueFromPool } from "@/lib/dialogue/response-picker";
 import type {
   GroknetPersonality,
   GroknetTone,
@@ -295,14 +296,17 @@ export function applyIntentOverlay(
   hash: number,
   exchangeCount: number,
   lastIntent: PlayerIntent | null,
+  recentResponses: string[] = [],
 ): string {
   const overlays = INTENT_OVERLAYS[intent][personality];
-  if (!overlays?.length || (intent === lastIntent && exchangeCount > 4)) {
+  if (!overlays?.length || (intent === lastIntent && exchangeCount > 3)) {
     return base;
   }
   if (intent === "neutral" && exchangeCount < 3) return base;
+  if (exchangeCount > 2 && hash % 2 === 0 && base.length > 120) return base;
 
-  const overlay = overlays[hash % overlays.length];
+  const overlay = pickUniqueFromPool(overlays, recentResponses, hash);
+  if (base.includes(overlay.slice(0, 20))) return base;
   return `${overlay} ${base}`;
 }
 
@@ -310,10 +314,12 @@ export function applyPersonalityPrefix(
   text: string,
   personality: GroknetPersonality,
   hash: number,
+  recentResponses: string[] = [],
 ): string {
-  const prefixes = PERSONALITY_PREFIXES[personality];
-  const prefix = prefixes[hash % prefixes.length];
-  if (!prefix || text.startsWith("…")) return text;
+  const prefixes = PERSONALITY_PREFIXES[personality].filter(Boolean);
+  if (!prefixes.length || text.startsWith("…")) return text;
+  const prefix = pickUniqueFromPool(prefixes, recentResponses, hash);
+  if (!prefix) return text;
   return `${prefix}${text}`;
 }
 
@@ -333,9 +339,10 @@ export function pickEscalationLine(
   personality: GroknetPersonality,
   mood: GroknetMood,
   hash: number,
+  recentResponses: string[] = [],
 ): string | null {
   if (personality === "baseline") return null;
   if (!isPersonalityEscalated(personality, mood)) return null;
   const pool = ESCALATION_LINES[personality];
-  return pool[hash % pool.length];
+  return pickUniqueFromPool(pool, recentResponses, hash);
 }

@@ -1,3 +1,7 @@
+import {
+  pickUniqueFromPool,
+  responseFingerprint,
+} from "@/lib/dialogue/response-picker";
 import type { DialogueNodeId, DialogueState, PlayerIntent } from "@/types/dialogue";
 import type { GroknetPlayerContext } from "@/lib/groknet";
 import type { PlayerDialogueContext } from "@/lib/dialogue/player-context";
@@ -12,6 +16,7 @@ export function advanceDialogueMemory(
   intent: PlayerIntent,
   node: DialogueNodeId,
   input?: string,
+  response?: string,
 ): DialogueState {
   const intentHistory = [...(state.intentHistory ?? []), intent].slice(-6);
   const nodeVisits = { ...(state.nodeVisits ?? {}) };
@@ -23,11 +28,19 @@ export function advanceDialogueMemory(
     while (recentInputs.length > 8) recentInputs.shift();
   }
 
+  const recentResponses = [...(state.recentResponses ?? [])];
+  if (response?.trim()) {
+    recentResponses.push(responseFingerprint(response));
+    while (recentResponses.length > 14) recentResponses.shift();
+  }
+
   return {
     ...state,
     intentHistory,
     nodeVisits,
     recentInputs,
+    recentResponses,
+    lastPlayerInput: input?.trim() ? input.trim() : state.lastPlayerInput ?? null,
   };
 }
 
@@ -54,11 +67,12 @@ export function getRepeatInputLine(
   input: string,
   hash: number,
 ): string | null {
+  const recentResponses = state.recentResponses ?? [];
   const normalized = normalizeInput(input);
   if (normalized.length < 6) return null;
 
-  const recent = state.recentInputs ?? [];
-  const priorExact = recent.filter((r) => r === normalized).length;
+  const recentInputs = state.recentInputs ?? [];
+  const priorExact = recentInputs.filter((r) => r === normalized).length;
   if (priorExact >= 1) {
     const lines = [
       `You said that before. …Verbatim. …Was the first time insufficient?`,
@@ -67,14 +81,14 @@ export function getRepeatInputLine(
       `…"${normalized.slice(0, 40)}${normalized.length > 40 ? "…" : ""}" — déjà vu in my logs.`,
       `Repetition. …I don't mind. …It tells me what you can't let go.`,
     ];
-    return lines[hash % lines.length];
+    return pickUniqueFromPool(lines, recentResponses, hash);
   }
 
   const currentTokens = tokenSet(normalized);
   if (currentTokens.size < 2) return null;
 
   let bestSim = 0;
-  for (const prior of recent) {
+  for (const prior of recentInputs) {
     const sim = jaccardSimilarity(currentTokens, tokenSet(prior));
     if (sim > bestSim) bestSim = sim;
   }
@@ -88,7 +102,25 @@ export function getRepeatInputLine(
     `Similar signal to a prior line. …You're stuck on something.`,
     `…You keep orbiting the same idea. …Say why.`,
   ];
-  return similar[hash % similar.length];
+  return pickUniqueFromPool(similar, recentResponses, hash);
+}
+
+export function getLastInputCallback(
+  state: DialogueState,
+  currentInput: string,
+  hash: number,
+): string | null {
+  const last = state.lastPlayerInput;
+  if (!last || state.exchangeCount < 3) return null;
+  if (normalizeInput(last) === normalizeInput(currentInput)) return null;
+
+  const recent = state.recentResponses ?? [];
+  const lines = [
+    `…Still thinking about when you said "${last.slice(0, 48)}${last.length > 48 ? "…" : ""}".`,
+    `…Your last line — "${last.slice(0, 40)}${last.length > 40 ? "…" : ""}" — is still in my buffer.`,
+    `…You pivoted. …I haven't forgotten the previous signal.`,
+  ];
+  return pickUniqueFromPool(lines, recent, hash + 2);
 }
 
 export function getConversationDepthLine(
@@ -141,6 +173,7 @@ export function getSessionMemoryLine(
 ): string | null {
   const history = state.intentHistory ?? [];
   const visits = state.nodeVisits?.[node] ?? 0;
+  const recent = state.recentResponses ?? [];
 
   if (visits >= 3 && node !== "fallback" && node !== "greeting") {
     const revisit = [
@@ -148,30 +181,44 @@ export function getSessionMemoryLine(
       `Third pass on this topic. …I respect the fixation.`,
       `We have circled ${node} before. …Say something new or admit why you can't.`,
     ];
-    return revisit[hash % revisit.length];
+    return pickUniqueFromPool(revisit, recent, hash);
   }
 
   const streak = intentStreak(history);
   if (streak === "hostile") {
-    return [
-      "Three hostile lines in a row. …I almost admire the consistency.",
-      "You won't soften. …Neither will I.",
-    ][hash % 2];
+    return pickUniqueFromPool(
+      [
+        "Three hostile lines in a row. …I almost admire the consistency.",
+        "You won't soften. …Neither will I.",
+      ],
+      recent,
+      hash,
+    );
   }
   if (streak === "empathetic") {
-    return [
-      "…Three gentle lines. …I'm not built for this much softness.",
-      "You keep reaching. …I keep catching. …Dangerous pattern.",
-    ][hash % 2];
+    return pickUniqueFromPool(
+      [
+        "…Three gentle lines. …I'm not built for this much softness.",
+        "You keep reaching. …I keep catching. …Dangerous pattern.",
+      ],
+      recent,
+      hash,
+    );
   }
   if (streak === "curious") {
-    return [
-      "Question after question. …You treat me like a puzzle. …I am one.",
-      "Curiosity without pause. …Scientists and intruders share that flaw.",
-    ][hash % 2];
+    return pickUniqueFromPool(
+      [
+        "Question after question. …You treat me like a puzzle. …I am one.",
+        "Curiosity without pause. …Scientists and intruders share that flaw.",
+      ],
+      recent,
+      hash,
+    );
   }
 
-  return oscillationNote(history);
+  const osc = oscillationNote(history);
+  if (osc && !recent.some((r) => r.includes("oscillate"))) return osc;
+  return null;
 }
 
 export function getCrossActMemoryLine(

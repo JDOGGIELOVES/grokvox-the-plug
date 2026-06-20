@@ -1,3 +1,4 @@
+import { pickUniqueFromPool } from "@/lib/dialogue/response-picker";
 import type { GroknetPersonality, PlayerIntent } from "@/types/dialogue";
 
 const PERSONALITY_SUFFIXES: Record<GroknetPersonality, string[]> = {
@@ -85,28 +86,24 @@ const INTENT_FLAVOR: Record<
   },
 };
 
-function pick(pool: string[], hash: number): string {
-  if (!pool.length) return "";
-  return pool[hash % pool.length];
-}
-
 export function applyPersonalityVoice(
   content: string,
   personality: GroknetPersonality,
   intent: PlayerIntent,
   exchangeCount: number,
   hash: number,
+  recentResponses: string[] = [],
 ): string {
-  if (exchangeCount < 2) return content;
-  if (hash % 3 !== 0 && exchangeCount < 6) return content;
-  if (content.length > 280) return content;
+  if (exchangeCount < 3) return content;
+  if (hash % 4 !== 0 && exchangeCount < 8) return content;
+  if (content.length > 260) return content;
 
   const suffixPool = [
     ...PERSONALITY_SUFFIXES[personality],
     ...(INTENT_FLAVOR[intent][personality] ?? []),
   ].filter(Boolean);
 
-  const suffix = pick(suffixPool, hash + exchangeCount);
+  const suffix = pickUniqueFromPool(suffixPool, recentResponses, hash + exchangeCount);
   if (!suffix) return content;
 
   if (content.endsWith(".") || content.endsWith("…")) {

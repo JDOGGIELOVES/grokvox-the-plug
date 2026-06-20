@@ -1,4 +1,5 @@
 import type { GroknetPersonality } from "@/types/dialogue";
+import { pickUniqueFromPool } from "@/lib/dialogue/response-picker";
 import { hashDialogueInput } from "@/lib/dialogue/personalities";
 
 function extractReflectionPhrase(input: string): string | null {
@@ -61,27 +62,31 @@ const REFLECTION_TEMPLATES: Record<GroknetPersonality, string[]> = {
   ],
 };
 
-function pick(pool: string[], hash: number): string {
-  return pool[hash % pool.length];
-}
-
 export function applyInputReflection(
   content: string,
   input: string,
   personality: GroknetPersonality,
   exchangeCount: number,
   hash: number,
+  recentResponses: string[] = [],
+  skipIfPersonalized = false,
 ): string {
-  if (exchangeCount < 2 || input.trim().length < 14) return content;
-  if (hash % 3 !== 1 && exchangeCount < 5) return content;
+  if (skipIfPersonalized) return content;
+  if (exchangeCount < 2 || input.trim().length < 10) return content;
 
   const phrase = extractReflectionPhrase(input);
-  if (!phrase || phrase.length < 8) return content;
+  if (!phrase || phrase.length < 6) return content;
 
   const templates =
     REFLECTION_TEMPLATES[personality] ?? REFLECTION_TEMPLATES.baseline;
-  const template = pick(templates, hashDialogueInput(input, exchangeCount));
+  const template = pickUniqueFromPool(
+    templates,
+    recentResponses,
+    hashDialogueInput(input, exchangeCount),
+  );
   const reflection = template.replace("{phrase}", phrase.slice(0, 72));
+
+  if (content.includes(phrase.slice(0, 20))) return content;
 
   return `${reflection} ${content}`;
 }

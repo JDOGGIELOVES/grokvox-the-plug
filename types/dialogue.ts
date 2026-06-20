@@ -39,6 +39,10 @@ export type DialogueState = {
   nodeVisits?: Partial<Record<DialogueNodeId, number>>;
   /** Recent raw player inputs for repeat-detection memory */
   recentInputs?: string[];
+  /** Recent Groknet response fingerprints — anti-repetition */
+  recentResponses?: string[];
+  /** Last raw player line for immediate callback */
+  lastPlayerInput?: string | null;
 };
 
 export const INITIAL_DIALOGUE_STATE: DialogueState = {
@@ -50,6 +54,8 @@ export const INITIAL_DIALOGUE_STATE: DialogueState = {
   intentHistory: [],
   nodeVisits: {},
   recentInputs: [],
+  recentResponses: [],
+  lastPlayerInput: null,
 };
 
 export type ToneResponses = Record<GroknetTone, string[]>;

@@ -1,4 +1,5 @@
 import type { DialogueSet } from "@/lib/groknet";
+import { pickUniqueFromPool } from "@/lib/dialogue/response-picker";
 import type { GroknetPersonality } from "@/types/dialogue";
 import { hashDialogueInput } from "@/lib/dialogue/personalities";
 
@@ -509,6 +510,7 @@ export function matchPhraseResponse(
   personality: GroknetPersonality,
   dialogueSet: DialogueSet,
   hash: number,
+  recentResponses: string[] = [],
 ): string | null {
   const text = input.toLowerCase().trim();
   if (text.length < 4) return null;
@@ -524,7 +526,7 @@ export function matchPhraseResponse(
       rule.responses.baseline ??
       Object.values(rule.responses).find((p) => p?.length);
 
-    if (pool?.length) return pick(pool, hash);
+    if (pool?.length) return pickUniqueFromPool(pool, recentResponses, hash);
   }
 
   return null;
@@ -705,6 +707,7 @@ export function matchSemanticResponse(
   personality: GroknetPersonality,
   dialogueSet: DialogueSet,
   hash: number,
+  recentResponses: string[] = [],
 ): string | null {
   const text = input.toLowerCase().trim();
   if (text.length < 8) return null;
@@ -731,7 +734,7 @@ export function matchSemanticResponse(
     Object.values(best.rule.responses).find((p) => p?.length);
 
   if (!pool?.length) return null;
-  return pick(pool, hash);
+  return pickUniqueFromPool(pool, recentResponses, hash);
 }
 
 const STOPWORDS = new Set([

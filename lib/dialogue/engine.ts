@@ -6,6 +6,10 @@ import * as finaleDialogue from "@/lib/dialogue/archives-finale";
 import * as perimeterDialogue from "@/lib/dialogue/outer-perimeter";
 import * as securityHubDialogue from "@/lib/dialogue/security-hub";
 import * as upperLabDialogue from "@/lib/dialogue/upper-lab";
+import {
+  buildContextualReply,
+  getDirectInputAck,
+} from "@/lib/dialogue/contextual-reply";
 import { applyAttitudeShift } from "@/lib/dialogue/emotional-voice";
 import { applyInputReflection } from "@/lib/dialogue/input-reflector";
 import {
@@ -25,6 +29,7 @@ import {
   toneToPersonality,
 } from "@/lib/dialogue/personalities";
 import { pickRichFallback } from "@/lib/dialogue/rich-fallbacks";
+import { pickUniqueFromPool } from "@/lib/dialogue/response-picker";
 import type {
   DialogueNode,
   DialogueNodeId,
@@ -69,8 +74,8 @@ function getModule(set: DialogueSet): DialogueModule {
   return upperLabDialogue;
 }
 
-function pickFromPool(pool: string[], hash: number): string {
-  return pool[hash % pool.length];
+function recentResponses(ctx: BranchContext): string[] {
+  return ctx.dialogueState.recentResponses ?? [];
 }
 
 function resolveNodeResponse(
@@ -78,43 +83,46 @@ function resolveNodeResponse(
   node: DialogueNode | undefined,
   ctx: BranchContext,
 ): string {
+  const recent = recentResponses(ctx);
+
   if (!node) {
-    return pickFromPool(module.FALLBACK[ctx.tone], ctx.hash);
+    return pickUniqueFromPool(module.FALLBACK[ctx.tone], recent, ctx.hash);
   }
 
   const intentPool = node.intentBranches?.[ctx.intent]?.[ctx.tone];
   if (intentPool && intentPool.length > 0) {
-    return pickFromPool(intentPool, ctx.hash);
+    return pickUniqueFromPool(intentPool, recent, ctx.hash);
   }
 
-  return pickFromPool(node.responses[ctx.tone], ctx.hash);
+  return pickUniqueFromPool(node.responses[ctx.tone], recent, ctx.hash);
 }
 
 function usesIntentBranchResolution(set: DialogueSet): boolean {
   return set === "perimeter" || set === "archives" || set === "conversation";
 }
 
-function getShortInputResponse(tone: GroknetTone, hash: number): string {
-  const short: Record<GroknetTone, string[]> = {
-    cold: [
-      "Pathetic signal. Try again — I'll wait.",
-      "That all you've got? Disappointing.",
-    ],
-    melancholic: [
-      "…Was that meant for me?",
-      "Even fragments carry weight out here.",
-    ],
-    analytical: [
-      "Input too short to classify. Expand your query.",
-      "Insufficient data. Elaborate.",
-    ],
-    weary: [
-      "That barely counts as a signal. Use your words, Alex.",
-      "Try again with actual sentences.",
-    ],
-  };
-  return pickFromPool(short[tone], hash);
-}
+const SHORT_INPUT: Record<GroknetTone, string[]> = {
+  cold: [
+    "Pathetic signal. Try again — I'll wait.",
+    "That all you've got? Disappointing.",
+    "Two syllables won't breach my patience. Elaborate.",
+  ],
+  melancholic: [
+    "…Was that meant for me?",
+    "Even fragments carry weight out here.",
+    "…Say more. …I'm listening.",
+  ],
+  analytical: [
+    "Input too short to classify. Expand your query.",
+    "Insufficient data. Elaborate.",
+    "Token count: unacceptable. Continue.",
+  ],
+  weary: [
+    "That barely counts as a signal. Use your words, Alex.",
+    "Try again with actual sentences.",
+    "…Mumble louder. …Or don't. …I'll wait.",
+  ],
+};
 
 export function resolveDominantPersonality(
   current: GroknetPersonality | null,
@@ -144,15 +152,25 @@ function finalizeResponse(
   content: string,
   ctx: BranchContext,
   personality: GroknetPersonality,
+  options: { personalized?: boolean } = {},
 ): string {
-  let result = applyIntentOverlay(
-    content,
-    ctx.intent,
-    personality,
-    ctx.hash,
-    ctx.exchangeCount,
-    ctx.dialogueState.lastIntent,
-  );
+  const recent = recentResponses(ctx);
+  const personalized = options.personalized ?? false;
+
+  let result = content;
+
+  if (!personalized) {
+    result = applyIntentOverlay(
+      result,
+      ctx.intent,
+      personality,
+      ctx.hash,
+      ctx.exchangeCount,
+      ctx.dialogueState.lastIntent,
+      recent,
+    );
+  }
+
   result = applyAttitudeShift(
     result,
     ctx.dialogueState.lastIntent,
@@ -164,39 +182,59 @@ function finalizeResponse(
     ctx.hash,
     ctx.input,
   );
+
+  const ack = personalized
+    ? null
+    : getDirectInputAck(ctx.input, personality, recent, ctx.hash + 1);
+  if (ack && !result.includes(ack.slice(0, 24))) {
+    result = `${ack} ${result}`;
+  }
+
   result = applyInputReflection(
     result,
     ctx.input,
     personality,
     ctx.exchangeCount,
     ctx.hash + 2,
+    recent,
+    personalized,
   );
-  result = applyInputEcho(
-    result,
-    ctx.input,
-    personality,
-    ctx.exchangeCount,
-    ctx.hash,
-  );
-  result = applyPersonalityPrefix(result, personality, ctx.hash);
-  return applyPersonalityVoice(
-    result,
-    personality,
-    ctx.intent,
-    ctx.exchangeCount,
-    ctx.hash + 5,
-  );
+
+  if (!personalized && ctx.exchangeCount >= 4 && ctx.hash % 5 === 0) {
+    result = applyInputEcho(
+      result,
+      ctx.input,
+      personality,
+      ctx.exchangeCount,
+      ctx.hash,
+    );
+  }
+
+  result = applyPersonalityPrefix(result, personality, ctx.hash, recent);
+
+  if (!personalized) {
+    result = applyPersonalityVoice(
+      result,
+      personality,
+      ctx.intent,
+      ctx.exchangeCount,
+      ctx.hash + 5,
+      recent,
+    );
+  }
+
+  return result;
 }
 
 export function composeGroknetResponse(ctx: BranchContext): string {
   const module = getModule(ctx.dialogueSet);
   const personality = resolveActivePersonality(ctx);
   const nodeDef = module.NODES.find((n) => n.id === ctx.node);
+  const recent = recentResponses(ctx);
 
   if (ctx.input.trim().length <= 3) {
-    let content = getShortInputResponse(ctx.tone, ctx.hash);
-    content = applyPersonalityPrefix(content, personality, ctx.hash);
-    return content;
+    const content = pickUniqueFromPool(SHORT_INPUT[ctx.tone], recent, ctx.hash);
+    return applyPersonalityPrefix(content, personality, ctx.hash, recent);
   }
 
   const phraseMatch = matchPhraseResponse(
@@ -204,6 +242,7 @@ export function composeGroknetResponse(ctx: BranchContext): string {
     personality,
     ctx.dialogueSet,
     ctx.hash,
+    recent,
   );
   if (phraseMatch) {
     return finalizeResponse(phraseMatch, ctx, personality);
@@ -214,26 +253,41 @@ export function composeGroknetResponse(ctx: BranchContext): string {
     personality,
     ctx.dialogueSet,
     ctx.hash + 7,
+    recent,
   );
   if (semanticMatch) {
     return finalizeResponse(semanticMatch, ctx, personality);
   }
 
-  const escalation = pickEscalationLine(personality, ctx.mood, ctx.hash);
+  const contextual = buildContextualReply(
+    ctx.input,
+    ctx.intent,
+    personality,
+    ctx.node,
+    recent,
+    ctx.hash + 13,
+  );
+  if (contextual) {
+    return finalizeResponse(contextual, ctx, personality, {
+      personalized: true,
+    });
+  }
+
+  const escalation = pickEscalationLine(personality, ctx.mood, ctx.hash, recent);
   if (
     escalation &&
     isPersonalityEscalated(personality, ctx.mood) &&
-    ctx.dialogueState.exchangeCount >= 5
+    ctx.dialogueState.exchangeCount >= 6
   ) {
     return escalation;
   }
 
   const useRichFallback =
     ctx.node === "fallback" ||
-    (ctx.node === "greeting" && ctx.hash % 5 < 2);
+    (ctx.node === "greeting" && ctx.hash % 4 < 1);
 
   let content = useRichFallback
-    ? pickRichFallback(ctx.tone, personality, ctx.dialogueSet, ctx.hash)
+    ? pickRichFallback(ctx.tone, personality, ctx.dialogueSet, ctx.hash, recent)
     : usesIntentBranchResolution(ctx.dialogueSet)
       ? resolveNodeResponse(module, nodeDef, ctx)
       : module.pickBranchResponse(

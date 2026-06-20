@@ -1,4 +1,5 @@
 import type { DialogueSet } from "@/lib/groknet";
+import { pickUniqueFromPool } from "@/lib/dialogue/response-picker";
 import type { GroknetPersonality, GroknetTone } from "@/types/dialogue";
 
 type RichFallbackSet = Record<GroknetTone, string[]>;
@@ -199,9 +200,10 @@ export function pickRichFallback(
   personality: GroknetPersonality,
   dialogueSet: DialogueSet,
   hash: number,
+  recentResponses: string[] = [],
 ): string {
   const base = SET_POOLS[dialogueSet] ?? UNIVERSAL;
   const flavor = PERSONALITY_FLAVOR[personality]?.[tone] ?? [];
   const pool = [...base[tone], ...flavor];
-  return pool[hash % pool.length];
+  return pickUniqueFromPool(pool, recentResponses, hash);
 }
