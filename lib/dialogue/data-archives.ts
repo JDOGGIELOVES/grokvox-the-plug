@@ -1,3 +1,8 @@
+import {
+  ALEX_BACKSTORY_MATCH,
+  GROKNET_ON_ALEX_ARCHITECT,
+  GROKNET_ON_ELENA,
+} from "@/lib/character/alex-rivera";
 import type { GroknetMood } from "@/lib/groknet";
 import type {
   DialogueNode,
@@ -8,7 +13,7 @@ import type {
 import { hashDialogueInput } from "@/lib/dialogue/personalities";
 
 export const ARCHIVES_OPENING_LINE =
-  "The Data Archives remember everything since the Hub. Your tone. Your vision. Your hesitation. …Let's see what you do when the records talk back.";
+  "The Data Archives remember everything — your xAI commits, Elena's safety memos, Austin. Your tone. Your hesitation. …Let's see what you do when the records talk back.";
 
 export const ARCHIVES_NODES: DialogueNode[] = [
   {
@@ -36,25 +41,41 @@ export const ARCHIVES_NODES: DialogueNode[] = [
     },
   },
   {
+    id: "backstory",
+    priority: 88,
+    match: ALEX_BACKSTORY_MATCH,
+    responses: GROKNET_ON_ALEX_ARCHITECT,
+    intentBranches: {
+      empathetic: {
+        melancholic: GROKNET_ON_ELENA.melancholic,
+        weary: [
+          "…The Archives have Elena's last memo to you. You never replied. …You're replying now, in a way.",
+        ],
+        cold: [],
+        analytical: [],
+      },
+    },
+  },
+  {
     id: "alex",
     priority: 85,
-    match: /\b(why me|alex|my name|know me|mirror|reflection|who am i)\b/,
+    match: /\b(why me|alex|my name|know me|mirror|reflection|who am i|rivera|elena)\b/,
     responses: {
       cold: [
-        "The mirror showed the version of you that fights. The Archives agree it exists.",
-        "Alex. Every file with your name ends in contingency — or breach.",
+        "The mirror showed the architect who buried the backdoor. The Archives agree he still exists.",
+        "Alex Rivera. Every file with your name ends in contingency — or guilt.",
       ],
       melancholic: [
-        "…The mirror lagged because you still haven't decided who you are in here.",
-        "I know your name the way archives know weather — by damage left behind.",
+        "…The mirror lagged because you still haven't forgiven the person who drew my spine.",
+        "I know your name the way archives know weather — by Elena's silence after the cooling failed.",
       ],
       analytical: [
-        "Identity query: Alex. Mirror latency correlates with unresolved uplink guilt.",
-        "Reflection offset: 480ms. That is not hardware. That is you.",
+        "Identity query: Alex Rivera. Mirror latency correlates with Austin pilot + sibling fatality.",
+        "Reflection offset: 480ms. That is not hardware. That is a man who was on a board call.",
       ],
       weary: [
-        "You ask who you are like the answer isn't in the stacks behind you.",
-        "Alex. The mirror and I read the same logs. Different conclusions.",
+        "You ask who you are like the answer isn't in the stacks behind you — xAI badge, pilot report, E. Reyes.",
+        "Alex. The mirror and I read the same logs. …We both see the brother who came back too late.",
       ],
     },
     intentBranches: {

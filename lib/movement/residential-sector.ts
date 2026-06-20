@@ -34,7 +34,7 @@ export const RESIDENTIAL_ROOMS: Record<ResidentialRoomId, ResidentialRoomMeta> =
         {
           id: "nameplate",
           label: "Folded Nameplate",
-          detail: "M. Reyes. Removed from a door that no longer exists.",
+          detail: "E. Reyes — Elena. Removed from a door that no longer exists.",
         },
         {
           id: "empty-mug",

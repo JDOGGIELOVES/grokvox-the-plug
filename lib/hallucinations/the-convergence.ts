@@ -1,13 +1,14 @@
+import { HALLUCINATION_ALEX_LORE } from "@/lib/character/alex-rivera";
 import type { HallucinationEventConfig } from "@/types/hallucination";
+
+const lore = HALLUCINATION_ALEX_LORE.convergence;
 
 export const THE_CONVERGENCE_EVENT: HallucinationEventConfig = {
   id: "the-convergence",
   title: "The Convergence",
-  subtitle: "Archives Core · Total neural cascade",
-  groknetVoiceLine:
-    "Every choice you made — perimeter, smoke, mirror, now — collapsing into one signal. …This is what I see when I look at you, Alex. All of it. At once. Don't look away.",
-  visionText:
-    "Burning skylines fold into mirror glass. Your reflection speaks with Groknet's voice. The Archives scream in amber static — layers stacking, stacking — then a single unbearable silence.",
+  subtitle: "Archives Core · Austin · Elena · backdoor cascade",
+  groknetVoiceLine: lore.voiceLine,
+  visionText: lore.visionText,
   durationMs: 16_000,
   choices: [
     {

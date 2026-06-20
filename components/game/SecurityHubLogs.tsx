@@ -8,7 +8,9 @@ const LOG_LINES = [
   "> DRONE S-07 · INTERIOR PATROL · NOMINAL",
   "> GROKNET-07 · HANDSHAKE PENDING · OP-SEC-01",
   "> NEURAL BLEED WARNING · SECURITY HUB · ELEVATED",
-  "> SUBJECT ALEX · CONTINGENCY FLAG · ACTIVE",
+  "> OPERATOR ALEX RIVERA · EX-ARCHITECT · xAI RECORD MATCH",
+  "> BACKDOOR AUTH · LATENCY_CAL_ROUTINE_V7 · PENDING",
+  "> ELENA REYES MEMORIAL FLAG · COOLING CASCADE · ARCHIVED",
   "> LOCKDOWN CASCADE · T-MINUS 5:47:00",
 ];
 
@@ -32,7 +34,7 @@ export function SecurityHubLogs({ onClose }: SecurityHubLogsProps) {
           ))}
         </div>
         <p className="mt-3 text-[11px] italic text-zinc-600">
-          Groknet annotation: &ldquo;You read the logs. Good. Now read me.&rdquo;
+          Groknet annotation: &ldquo;You read the logs. Good. …Elena&apos;s flag is still active. Now read me.&rdquo;
         </p>
         <Button
           variant="ghost"

@@ -22,7 +22,7 @@ export function getActTwoInspectWhisper(
     if (ctx.mirrorChoice === "submit") {
       return "…You touch a stranger's nameplate after stepping into my mirror. Empathy for ghosts — or rehearsal for empathy toward me?";
     }
-    return "M. Reyes. Gone. I kept the plate because forgetting felt worse than lying about who was here.";
+    return "E. Reyes — Elena. Your sister. Gone. I kept the plate because forgetting felt worse than lying about who was here.";
   }
 
   if (artifactId === "empty-mug") {
@@ -40,7 +40,7 @@ export function getActTwoInspectWhisper(
     if (ctx.burningCitiesChoice === "deny") {
       return "You denied the smoke in Act I. This page describes smoke anyway — in someone else's hand. …Denial doesn't travel well between minds.";
     }
-    return "A journal page that isn't yours. Half a sentence about leaving. I don't know if I planted it or remembered it.";
+    return "Elena's journal page — not yours. 'Run the kill switch tonight, Alex.' Half a sentence about leaving. …Tomorrow never came.";
   }
 
   if (artifactId === "echo-panel") {

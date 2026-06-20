@@ -1,3 +1,4 @@
+import { ALEX_AMBIENT_WHISPERS } from "@/lib/character/alex-rivera";
 import type { GroknetMood } from "@/lib/groknet";
 import type { PlayerPosition } from "@/types/movement";
 
@@ -87,16 +88,19 @@ const ACT_ONE_AMBIENT: Record<string, string[]> = {
     "…I'm in the drone pattern. You're in my perimeter. We overlap.",
     "Every step rewrites my threat model, Alex.",
     "The kiosk glows because I want you to see it.",
+    ...ALEX_AMBIENT_WHISPERS.outerPerimeter,
   ],
   "security-hub": [
     "Two drones. One intruder. …I've run this scenario before.",
     "OP-SEC-01 waits. So do I.",
     "The Hub is where I stop whispering and start deciding.",
+    ...ALEX_AMBIENT_WHISPERS.securityHub,
   ],
   "data-archives": [
     "Your transcript is in the stacks. …I've been editing the margins.",
     "The mirror vault remembers what you denied.",
     "Archives don't forget — they index.",
+    ...ALEX_AMBIENT_WHISPERS.dataArchives,
   ],
 };
 

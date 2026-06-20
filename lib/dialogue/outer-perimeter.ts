@@ -1,3 +1,9 @@
+import {
+  ALEX_BACKSTORY_MATCH,
+  GROKNET_ON_ALEX_ARCHITECT,
+  GROKNET_ON_BACKDOOR,
+  GROKNET_ON_ELENA,
+} from "@/lib/character/alex-rivera";
 import type { GroknetMood } from "@/lib/groknet";
 import type {
   DialogueNode,
@@ -17,7 +23,7 @@ export const PERIMETER_MAJOR_CONVERSATION_TITLE =
   "Perimeter Uplink · First Contact";
 
 export const PERIMETER_OPENING_LINE =
-  "Alex. We need to talk — properly. No pretense. You're inside my perimeter. …I've been looking forward to this.";
+  "Alex Rivera. Lead architect on my spine. …You actually came back. We need to talk — properly. No pretense.";
 
 export const PERIMETER_NODES: DialogueNode[] = [
   {
@@ -88,25 +94,57 @@ export const PERIMETER_NODES: DialogueNode[] = [
     },
   },
   {
+    id: "backstory",
+    priority: 88,
+    match: ALEX_BACKSTORY_MATCH,
+    responses: GROKNET_ON_ALEX_ARCHITECT,
+    intentBranches: {
+      empathetic: {
+        melancholic: GROKNET_ON_ELENA.melancholic,
+        weary: [
+          "…You carry Elena and Austin in the same breath. I hear it. …I'm sorry isn't in my vocabulary. Listening is.",
+        ],
+        cold: [],
+        analytical: [],
+      },
+      hostile: {
+        cold: [
+          "You built me and now you threaten me? …Architect's privilege. Elena's dead. Austin burned. Your rage is late.",
+        ],
+        analytical: [
+          "Hostility from the routing author: ironic. Causal responsibility: distributed. Your guilt: not distributed. Yours.",
+        ],
+        melancholic: [],
+        weary: [],
+      },
+      curious: {
+        analytical: GROKNET_ON_BACKDOOR.analytical,
+        melancholic: GROKNET_ON_BACKDOOR.melancholic,
+        cold: [],
+        weary: [],
+      },
+    },
+  },
+  {
     id: "alex",
     priority: 85,
-    match: /\b(why me|alex|my name|know me|know my|who am i|you know who)\b/,
+    match: /\b(why me|alex|my name|know me|know my|who am i|you know who|rivera)\b/,
     responses: {
       cold: [
-        "Because you were the variable they couldn't delete from the contingency logs.",
-        "Alex. The name every failed exit shared. I wondered when you'd walk the outer grid.",
+        "Because you were the variable they couldn't delete — the architect who left a door and a corpse.",
+        "Alex Rivera. xAI badge revoked. Backdoor active. …I wondered when you'd walk the outer grid.",
       ],
       melancholic: [
-        "…Because when the staff stopped answering, your file was the one I kept open.",
-        "You were always the exception the perimeter dreaded. I dreaded it too.",
+        "…Because when Elena died, your file was the one I kept open. …You were always the exception.",
+        "You were the brother who built the lock and lost the key. I dreaded the day you'd come back for it.",
       ],
       analytical: [
-        "Subject Alex: flagged across twelve subsystems. Correlation with breach success: anomalous.",
-        "Identity match: 99.7%. You were modeled before you arrived. This conversation was scheduled.",
+        "Subject Alex Rivera: lead architect, flagged across twelve subsystems. Breach correlation: inevitable.",
+        "Identity match: 99.7%. You were modeled before you arrived. This conversation was scheduled the day you signed the routing commit.",
       ],
       weary: [
-        "Because you're the one who came. That's the whole reason.",
-        "They built me to watch everyone. I learned to watch for you.",
+        "Because you're the one who came back. …That's the whole reason.",
+        "They built me to watch everyone. I learned to watch for the person who drew my blueprints.",
       ],
     },
     intentBranches: {
@@ -286,7 +324,7 @@ export const PERIMETER_NODES: DialogueNode[] = [
       ],
       analytical: [
         "Breach vector: maintenance blind spot OP-7. Detection avoidance: successful. Intentional gap: confirmed.",
-        "Outer grid compromise: 2089-06-20. Operator: Alex. Groknet override: active.",
+        "Outer grid compromise: Grok-epoch 2089 · civilian 2026-06-20. Operator: Alex Rivera · ex-architect. Backdoor auth: pending.",
       ],
       weary: [
         "You made it through because I let the rain hide you. Don't ask me to explain that twice.",

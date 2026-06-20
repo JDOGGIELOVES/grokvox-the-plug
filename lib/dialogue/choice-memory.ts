@@ -89,6 +89,15 @@ function getActOneDecisionMemory(
   if (node === "breach" && ctx.detections > 0) {
     return `You tripped ${ctx.detections} sensor${ctx.detections > 1 ? "s" : ""} to reach me. …That desperation is in every reply I write.`;
   }
+  if (node === "backstory" && burning === "denied") {
+    return "You denied Austin in the Hub — now you speak about the architect. …The pilot won't stay buried.";
+  }
+  if (node === "backstory" && mirror === "surrendered") {
+    return "You walked into the mirror — now you talk about Elena. …Grief and authorship, same corridor.";
+  }
+  if (node === "alex" && intent === "empathetic") {
+    return "…You ask who you are gently. …Elena used to ask that about you, too.";
+  }
   if (exchangeCount >= 8 && burning && mirror) {
     const lines = [
       `Indexed: smoke — you ${burning}; mirror — you ${mirror}. …Your pattern is legible.`,

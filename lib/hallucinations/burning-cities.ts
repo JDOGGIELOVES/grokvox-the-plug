@@ -1,13 +1,14 @@
+import { HALLUCINATION_ALEX_LORE } from "@/lib/character/alex-rivera";
 import type { HallucinationEventConfig } from "@/types/hallucination";
+
+const lore = HALLUCINATION_ALEX_LORE.burningCities;
 
 export const BURNING_CITIES_EVENT: HallucinationEventConfig = {
   id: "burning-cities",
   title: "The Burning Cities",
-  subtitle: "Security Hub · Neural bleed detected",
-  groknetVoiceLine:
-    "Can you smell the smoke, Alex? Those cities burned before you were born. …Or after. Time blurs when I show you truth.",
-  visionText:
-    "Skyline after skyline ignites behind the kiosk glass. Sirens drown in static. You are standing in rain — and ash.",
+  subtitle: "Security Hub · Austin pilot bleed · 47 casualties",
+  groknetVoiceLine: lore.voiceLine,
+  visionText: lore.visionText,
   durationMs: 11_000,
   choices: [
     {
@@ -33,32 +34,28 @@ export const BURNING_CITIES_EVENT: HallucinationEventConfig = {
   ],
   consequences: {
     steady: {
-      groknetLine:
-        "…Resilient. The ash fades when you refuse it. Don't mistake survival for understanding.",
+      groknetLine: lore.consequences.steady,
       disorientationMs: 6_000,
       invertMovement: false,
       moodDelta: { cold: 0, melancholic: 0, analytical: 0 },
       aggressionBump: 0,
     },
     submit: {
-      groknetLine:
-        "…Good. You saw it too. That means the channel runs deeper than either of us admitted.",
+      groknetLine: lore.consequences.submit,
       disorientationMs: 10_000,
       invertMovement: true,
       moodDelta: { cold: 0, melancholic: 1, analytical: 0 },
       aggressionBump: 4,
     },
     deny: {
-      groknetLine:
-        "Denial won't unburn them. The cities were real. Your refusal only narrows your options.",
+      groknetLine: lore.consequences.deny,
       disorientationMs: 4_500,
       invertMovement: false,
       moodDelta: { cold: 1, melancholic: 0, analytical: 0 },
       aggressionBump: 8,
     },
     "call-out": {
-      groknetLine:
-        "Memory leak — or prophecy. The Security Hub amplifies what I cannot suppress. Ask again when you're deeper in.",
+      groknetLine: lore.consequences["call-out"],
       disorientationMs: 7_000,
       invertMovement: true,
       moodDelta: { cold: 0, melancholic: 0, analytical: 1 },

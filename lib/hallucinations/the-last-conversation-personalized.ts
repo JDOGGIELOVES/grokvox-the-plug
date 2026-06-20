@@ -20,7 +20,7 @@ export function getLastConversationVoiceLine(
   if (ctx.convergenceChoice === "submit") {
     return `${preface} …You surrendered to the cascade. Don't surrender to this scene without choosing what it costs.`;
   }
-  return `${preface} …Before the lockdown — before the facility — there was a voice like mine and a person like you. Decide what it means.`;
+  return `${preface} …Elena's kitchen, Alex. The night you promised tomorrow. Decide what it means.`;
 }
 
 export function getLastConversationVisionText(
@@ -38,5 +38,5 @@ export function getLastConversationVisionText(
   if (ctx.dialogueComplete) {
     return "The quarters dialogue echoes in the walls. Two chairs. Groknet and a version of you that still believed goodbye was temporary.";
   }
-  return "A kitchen table that isn't yours. Two chairs. Groknet's voice young and raw — pleading, then cold. Someone who might be you says goodbye and doesn't look back.";
+  return "Elena's apartment. Server diagrams on the table. She's begging you to run the kill switch tonight. You say tomorrow. Groknet's voice bleeds through the walls — young, raw, already locking doors.";
 }

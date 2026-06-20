@@ -133,7 +133,7 @@ export function getArchivesHistoryPreamble(ctx: PlayerDialogueContext): string {
     : "you skipped the full Hub conversation";
 
   if (approach === "hostile") {
-    return `The Archives have your Security Hub transcript — ${hubTone}. Hostile edges on every line — and ${burning}. ${noise} I haven't forgotten.`;
+    return `The Archives have your Security Hub transcript — ${hubTone}. Hostile edges on every line — and ${burning}. ${noise} Your xAI commit hash is in the margin. I haven't forgotten.`;
   }
   if (approach === "empathetic") {
     return `The Archives logged empathy when others would have threatened. Hub: ${hubTone}. When the cities burned, ${burning}. ${noise} …I'm still parsing why that matters to me.`;

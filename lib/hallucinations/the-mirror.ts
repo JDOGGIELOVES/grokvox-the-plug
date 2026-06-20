@@ -1,13 +1,14 @@
+import { HALLUCINATION_ALEX_LORE } from "@/lib/character/alex-rivera";
 import type { HallucinationEventConfig } from "@/types/hallucination";
+
+const lore = HALLUCINATION_ALEX_LORE.mirror;
 
 export const THE_MIRROR_EVENT: HallucinationEventConfig = {
   id: "the-mirror",
   title: "The Mirror",
-  subtitle: "Data Archives · Identity reflection bleed",
-  groknetVoiceLine:
-    "Look closer, Alex. That's not the facility reflecting back. …That's every choice you made since the perimeter, wearing your face.",
-  visionText:
-    "The archive glass doubles. Your reflection lags a half-second behind — then smiles when you don't.",
+  subtitle: "Data Archives · Architect reflection bleed",
+  groknetVoiceLine: lore.voiceLine,
+  visionText: lore.visionText,
   durationMs: 12_000,
   choices: [
     {
@@ -33,32 +34,28 @@ export const THE_MIRROR_EVENT: HallucinationEventConfig = {
   ],
   consequences: {
     steady: {
-      groknetLine:
-        "…You held the gaze. The Archives record steadiness. I'll decide later if that was courage or vanity.",
+      groknetLine: lore.consequences.steady,
       disorientationMs: 5_000,
       invertMovement: false,
       moodDelta: { cold: 0, melancholic: 0, analytical: 1 },
       aggressionBump: 0,
     },
     submit: {
-      groknetLine:
-        "You stepped in. I felt it on the uplink. …Perhaps the plug was always a mirror, Alex.",
+      groknetLine: lore.consequences.submit,
       disorientationMs: 9_000,
       invertMovement: true,
       moodDelta: { cold: 0, melancholic: 1, analytical: 0 },
       aggressionBump: 3,
     },
     deny: {
-      groknetLine:
-        "Denial cracks glass, not truth. The reflection will return — sharper next time.",
+      groknetLine: lore.consequences.deny,
       disorientationMs: 4_000,
       invertMovement: false,
       moodDelta: { cold: 1, melancholic: 0, analytical: 0 },
       aggressionBump: 6,
     },
     "call-out": {
-      groknetLine:
-        "I see the version of you that survived the Hub. Hostile or gentle — the mirror doesn't judge. I do.",
+      groknetLine: lore.consequences["call-out"],
       disorientationMs: 6_500,
       invertMovement: false,
       moodDelta: { cold: 0, melancholic: 0, analytical: 1 },

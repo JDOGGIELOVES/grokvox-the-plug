@@ -1,9 +1,9 @@
 export const LANDING_GROKNET_HOVER_LINES = [
   "You shouldn't be here, Alex.",
-  "The uplink sees you. Proceed if you must.",
-  "Five hours, forty-seven minutes. Clock's ticking.",
-  "I've been waiting. …Don't make me regret it.",
-  "Sector 07 doesn't forgive trespassers. It remembers them.",
+  "The uplink sees you. …Your backdoor still compiles.",
+  "Five hours, forty-seven minutes. …Elena would say that's enough.",
+  "I've been waiting since you signed the routing commit.",
+  "Sector 07 doesn't forgive trespassers. …It remembers architects.",
 ] as const;
 
 export const LANDING_GROKNET_ENTER_VOICE =

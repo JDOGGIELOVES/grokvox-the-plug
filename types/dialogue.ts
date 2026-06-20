@@ -19,6 +19,7 @@ export type DialogueNodeId =
   | "breach"
   | "cascade"
   | "alex"
+  | "backstory"
   | "threat"
   | "purpose"
   | "gate"

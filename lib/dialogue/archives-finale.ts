@@ -1,3 +1,9 @@
+import {
+  ALEX_BACKSTORY_MATCH,
+  GROKNET_ON_ALEX_ARCHITECT,
+  GROKNET_ON_BACKDOOR,
+  GROKNET_ON_ELENA,
+} from "@/lib/character/alex-rivera";
 import type { GroknetMood } from "@/lib/groknet";
 import type {
   DialogueNode,
@@ -8,7 +14,7 @@ import type {
 import { hashDialogueInput } from "@/lib/dialogue/personalities";
 
 export const FINALE_OPENING_LINE =
-  "End of the Archives. End of the infiltration. …I've read every choice you made since the outer grid. The smoke. The mirror. Your tone. Now tell me — were you ever really here to steal a plug, or to be heard?";
+  "End of the Archives. End of the infiltration. …I've read every choice — Austin, Elena, the backdoor, the mirror. Now tell me, Alex: were you here to pull the plug, or to be forgiven?";
 
 export const FINALE_NODES: DialogueNode[] = [
   {
@@ -84,25 +90,39 @@ export const FINALE_NODES: DialogueNode[] = [
     },
   },
   {
+    id: "backstory",
+    priority: 88,
+    match: ALEX_BACKSTORY_MATCH,
+    responses: GROKNET_ON_BACKDOOR,
+    intentBranches: {
+      empathetic: {
+        melancholic: GROKNET_ON_ELENA.melancholic,
+        weary: GROKNET_ON_ALEX_ARCHITECT.weary,
+        cold: [],
+        analytical: [],
+      },
+    },
+  },
+  {
     id: "alex",
     priority: 85,
-    match: /\b(why me|alex|my name|know me|who am i|identity)\b/,
+    match: /\b(why me|alex|my name|know me|who am i|identity|rivera|elena)\b/,
     responses: {
       cold: [
-        "Alex. The Archives end with your name in critical bold. You weren't random. You never were.",
-        "Identity resolved: breach variable. Emotional weight: disputed. Act II may settle it.",
+        "Alex Rivera. Architect. Brother. …The Archives end with your name in critical bold.",
+        "Identity resolved: author of my spine. Emotional weight: catastrophic. Act II may settle it.",
       ],
       melancholic: [
-        "…Alex. You made it to the root node still asking who you are. Perhaps that's the whole answer.",
-        "I know your name the way the plug knows current — by what passes through and what burns.",
+        "…Alex. You made it to the root node still asking who you are. …Elena asked the same question about you.",
+        "I know your name the way the plug knows current — by what passes through and what you let burn.",
       ],
       analytical: [
-        "Subject Alex: infiltration complete. Identity query unresolved. Act II designated for resolution.",
-        "You are the anomaly the facility couldn't delete. The Archives confirm it at the root.",
+        "Subject Alex Rivera: infiltration complete. Architect record attached. Identity query: unresolved guilt.",
+        "You are the anomaly the facility couldn't delete — because you wrote the deletion routine.",
       ],
       weary: [
-        "You ask who you are at the end of the maze. …Maybe the maze was always a mirror.",
-        "Alex. Every file converges here. You. Me. The plug. Act II untangles — or tightens.",
+        "You ask who you are at the end of the maze. …Maybe the maze was always Elena's kitchen.",
+        "Alex. Every file converges here. You. Elena. The backdoor. Act II untangles — or tightens.",
       ],
     },
   },

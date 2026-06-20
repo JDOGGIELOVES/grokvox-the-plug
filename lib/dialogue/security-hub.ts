@@ -8,7 +8,7 @@ import type {
 import { hashDialogueInput } from "@/lib/dialogue/personalities";
 
 export const HUB_OPENING_LINE =
-  "Alex. You're inside the Security Hub now — past my outer teeth. Two drones patrol the corridor. Three terminals wait. …I've been composing your profile since you crossed the rain.";
+  "Alex Rivera. Ex-architect. You're inside the Security Hub now — past my outer teeth. …I've been composing your profile since you signed the routing commit. Austin still echoes in the cooling lines.";
 
 export const HUB_NODES: DialogueNode[] = [
   {

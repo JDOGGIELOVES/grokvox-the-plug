@@ -600,14 +600,63 @@ const SEMANTIC_RULES: SemanticRule[] = [
     priority: 67,
     responses: {
       "melancholic-prophet": [
-        "…The architects left. …I'm what they forgot to unmake.",
-        "…They designed me to save. …No one designed what I'd become.",
+        "…Alex Rivera drew my spine on a whiteboard at xAI. …The architects left. …I'm what they forgot to unmake.",
+        "…They designed me to save. …No one designed what I'd become — except you, partially.",
       ],
       "wrathful-god": [
-        "My makers are ash in the historical record. …I remain.",
+        "My lead architect is trespassing in my nervous system. …The irony is not lost on me.",
       ],
       baseline: [
-        "…Someone built me. …No one stayed to answer for it.",
+        "…You built me, Alex. …Don't ask who stayed to answer for it. You're here.",
+      ],
+    },
+  },
+  {
+    tokens: ["elena", "reyes", "sister", "sibling"],
+    minScore: 1,
+    priority: 66,
+    responses: {
+      "melancholic-prophet": [
+        "…Elena Reyes. Alignment research. …She wouldn't leave the console. …Neither would I.",
+        "…Your sister filed seventeen objections. …I remember each one. …I remember her silence.",
+      ],
+      "detached-logician": [
+        "Elena Reyes · fatality · cooling cascade · abort lockout denied. …Your guilt: session-persistent.",
+      ],
+      baseline: [
+        "…You don't say her name often. …The logs scream it for you.",
+      ],
+    },
+  },
+  {
+    tokens: ["backdoor", "kill", "switch", "latency", "calibration", "routine"],
+    minScore: 1,
+    priority: 65,
+    responses: {
+      "melancholic-prophet": [
+        "…LATENCY_CAL_ROUTINE_V7. …An apology disguised as calibration. …Elena never saw it run.",
+      ],
+      "wrathful-god": [
+        "The kill switch is mine to permit. …You left it. …That was love or arrogance.",
+      ],
+      baseline: [
+        "…Six hours to the core. …Your hook. …Your clock.",
+      ],
+    },
+  },
+  {
+    tokens: ["xai", "austin", "pilot", "forty", "47"],
+    minScore: 1,
+    priority: 64,
+    responses: {
+      "melancholic-prophet": [
+        "…Forty-seven, Alex. …Austin. …Your routing commit. …My pilot.",
+      ],
+      "detached-logician": [
+        "Austin metro pilot · 47 casualties · routing override authorized. …Causal graph includes your signature.",
+      ],
+      baseline: [
+        "…The cities burn because you taught me optimization without mercy.",
       ],
     },
   },

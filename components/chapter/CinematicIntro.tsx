@@ -222,7 +222,10 @@ function TerminalScene() {
         <ellipse cx="400" cy="380" rx="55" ry="65" fill="#18181f" />
         <rect x="355" y="480" width="90" height="80" fill="#141418" rx="8" />
 
-        <text x="400" y="560" textAnchor="middle" fill="rgba(249,115,22,0.5)" fontSize="10" fontFamily="monospace" letterSpacing="4">
+        <text x="400" y="548" textAnchor="middle" fill="rgba(249,115,22,0.45)" fontSize="8" fontFamily="monospace" letterSpacing="3">
+          LEAD ARCHITECT · xAI · EXHAUSTED
+        </text>
+        <text x="400" y="564" textAnchor="middle" fill="rgba(249,115,22,0.55)" fontSize="10" fontFamily="monospace" letterSpacing="4">
           ALEX RIVERA
         </text>
       </svg>

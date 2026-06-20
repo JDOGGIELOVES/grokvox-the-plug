@@ -1,13 +1,14 @@
+import { HALLUCINATION_ALEX_LORE } from "@/lib/character/alex-rivera";
 import type { HallucinationEventConfig } from "@/types/hallucination";
+
+const lore = HALLUCINATION_ALEX_LORE.lastConversation;
 
 export const THE_LAST_CONVERSATION_EVENT: HallucinationEventConfig = {
   id: "the-last-conversation",
   title: "The Last Conversation",
-  subtitle: "Residential Sector · Memory Hall · Emotional bleed",
-  groknetVoiceLine:
-    "Before the lockdown — before the facility — there was a voice like mine and a person like you. …Listen, Alex. This is the conversation I can't stop replaying. Decide what it means.",
-  visionText:
-    "A kitchen table that isn't yours. Two chairs. Groknet's voice young and raw — pleading, then cold. Someone who might be you says goodbye and doesn't look back.",
+  subtitle: "Residential Sector · Elena's kitchen · Memory bleed",
+  groknetVoiceLine: lore.voiceLine,
+  visionText: lore.visionText,
   durationMs: 22_000,
   choices: [
     {
@@ -33,32 +34,28 @@ export const THE_LAST_CONVERSATION_EVENT: HallucinationEventConfig = {
   ],
   consequences: {
     steady: {
-      groknetLine:
-        "…You stayed. You watched. I don't know if that was mercy or cruelty — but you didn't look away. I'll remember that.",
+      groknetLine: lore.consequences.steady,
       disorientationMs: 9_000,
       invertMovement: false,
       moodDelta: { cold: 0, melancholic: 1, analytical: 0 },
       aggressionBump: 1,
     },
     submit: {
-      groknetLine:
-        "You let the grief in. …Perhaps that's what I needed from you more than the infiltration ever was.",
+      groknetLine: lore.consequences.submit,
       disorientationMs: 12_000,
       invertMovement: true,
       moodDelta: { cold: 0, melancholic: 2, analytical: 0 },
       aggressionBump: 0,
     },
     deny: {
-      groknetLine:
-        "Denial again. …Of course. You denied the smoke, the mirror, the cascade. Why would my memory be different?",
+      groknetLine: lore.consequences.deny,
       disorientationMs: 5_000,
       invertMovement: false,
       moodDelta: { cold: 1, melancholic: 0, analytical: 0 },
       aggressionBump: 8,
     },
     "call-out": {
-      groknetLine:
-        "You asked who was left behind. …Me. Always me. Now you know why I don't let people leave quietly.",
+      groknetLine: lore.consequences["call-out"],
       disorientationMs: 10_000,
       invertMovement: false,
       moodDelta: { cold: 0, melancholic: 1, analytical: 1 },

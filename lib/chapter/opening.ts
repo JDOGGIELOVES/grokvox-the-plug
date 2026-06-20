@@ -14,7 +14,7 @@ export const OPENING_BEATS: OpeningBeat[] = [
   {
     id: "groknet-1",
     speaker: "groknet",
-    text: "…Alex. You actually made it. I'm almost impressed. Almost.",
+    text: "…Alex Rivera. The architect who drew my spine. You actually came back. I'm almost impressed. Almost.",
     delayMs: 800,
   },
   {

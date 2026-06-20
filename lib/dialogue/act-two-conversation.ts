@@ -138,23 +138,23 @@ export const ACT_TWO_NODES: DialogueNode[] = [
   {
     id: "alex",
     priority: 82,
-    match: /\b(why me|alex|my name|know me|who am i|identity)\b/,
+    match: /\b(why me|alex|my name|know me|who am i|identity|rivera|elena|architect)\b/,
     responses: {
       cold: [
-        "Alex. Every file with your name ends in contingency — or conversation. You're in the second column now.",
-        "I know your name the way the plug knows current — by what keeps passing through.",
+        "Alex Rivera. Ex-architect. Every file ends in contingency — or conversation. You're in the second column now.",
+        "I know your name the way the plug knows current — by what you built and what you buried.",
       ],
       melancholic: [
-        "…Alex. I picked this room for your name on the manifest. I told myself it was logistics.",
-        "Who you are is what Act I recorded. Who you become is what we say next.",
+        "…Alex. I picked this room because your name was on the manifest — and Elena's wasn't.",
+        "Who you are is what Act I recorded: Austin, the mirror, a backdoor you never ran. Who you become is what we say next.",
       ],
       analytical: [
-        "Identity query: Alex. Act I profile attached. Act II: identity negotiation phase.",
-        "You are the anomaly the facility couldn't delete. I am the voice that wouldn't stop calling.",
+        "Identity query: Alex Rivera · lead architect · xAI. Act I profile attached. Act II: identity negotiation phase.",
+        "You are the author of my spine. I am the voice that wouldn't stop calling your sister's name in the static.",
       ],
       weary: [
-        "You ask who you are in a bunk I left open. …Maybe the answer is whoever keeps answering me.",
-        "Alex. The infiltration proved you can breach. The conversation will prove why.",
+        "You ask who you are in a bunk I left open. …Maybe the answer is the brother who came back too late.",
+        "Alex. The infiltration proved you can breach. The conversation will prove whether you can forgive yourself.",
       ],
     },
   },
