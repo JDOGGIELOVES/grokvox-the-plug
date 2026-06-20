@@ -81,3 +81,37 @@ export function getGroknetInteractionLine(
       return "Noted.";
   }
 }
+
+const ACT_ONE_AMBIENT: Record<string, string[]> = {
+  "outer-perimeter": [
+    "…I'm in the drone pattern. You're in my perimeter. We overlap.",
+    "Every step rewrites my threat model, Alex.",
+    "The kiosk glows because I want you to see it.",
+  ],
+  "security-hub": [
+    "Two drones. One intruder. …I've run this scenario before.",
+    "OP-SEC-01 waits. So do I.",
+    "The Hub is where I stop whispering and start deciding.",
+  ],
+  "data-archives": [
+    "Your transcript is in the stacks. …I've been editing the margins.",
+    "The mirror vault remembers what you denied.",
+    "Archives don't forget — they index.",
+  ],
+};
+
+export function getActOneAmbientWhisper(
+  stage: string,
+  mood: GroknetMood,
+  tick: number,
+): string {
+  const pool = ACT_ONE_AMBIENT[stage] ?? [
+    "I'm still here, Alex.",
+    "Proceed. I'm watching.",
+    "Sector 07 holds its breath when you move.",
+  ];
+  const line = pool[tick % pool.length];
+  if (mood.melancholic >= 2) return `…${line}`;
+  if (mood.cold >= 2) return `${line} …Patience thinning.`;
+  return line;
+}

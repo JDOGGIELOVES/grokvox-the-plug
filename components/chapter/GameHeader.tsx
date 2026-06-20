@@ -43,6 +43,9 @@ export function GameHeader({
           <h1 className="font-display text-base font-semibold uppercase tracking-[0.08em] text-zinc-200 sm:text-xl">
             {chapter.subtitle}
           </h1>
+          <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-zinc-500">
+            {chapter.sector}
+          </p>
         </div>
         <div className="flex flex-col items-end gap-2">
           {chapterProgress ? (

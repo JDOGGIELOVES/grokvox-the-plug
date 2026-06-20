@@ -16,6 +16,8 @@ import { HallucinationEffect } from "@/components/HallucinationEffect";
 import { useGameClock } from "@/hooks/useGameClock";
 import { useHallucination } from "@/hooks/useHallucination";
 import { calculateAggression } from "@/lib/aggression";
+import { resolveHubHackComplete } from "@/lib/chapter/act-1";
+import { getConfrontationIntentReaction } from "@/lib/chapter/act-three-intent";
 import {
   ACT_THREE_AMBIENT_WHISPER_MS,
   ACT_THREE_CHAPTER,
@@ -226,8 +228,18 @@ export function ActThreeReckoning() {
   );
   const [showFinale, setShowFinale] = useState(false);
   const [corruptionLine, setCorruptionLine] = useState<string | null>(null);
+  const [resumeWhisper, setResumeWhisper] = useState<string | null>(null);
+  const [intentReaction, setIntentReaction] = useState<{
+    intent: PlayerIntent;
+    line: string;
+  } | null>(null);
 
   const whisperTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const intentReactionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const stateRef = useRef(state);
+  stateRef.current = state;
   const gardenDelayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const shakeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const ambientIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -272,7 +284,10 @@ export function ActThreeReckoning() {
     }
 
     const checkpoint = loadActThreeCheckpoint();
-    if (checkpoint && checkpoint.actTwoSummary) {
+    if (
+      checkpoint?.actTwoSummary &&
+      checkpoint.actTwoSummary.completedAt === save.act2Summary.completedAt
+    ) {
       setActTwo(checkpoint.actTwoSummary);
       setClockInitialMs(checkpoint.clockRemainingMs);
       setState({
@@ -294,6 +309,9 @@ export function ActThreeReckoning() {
         ambientTick: 0,
         lastActionAt: Date.now(),
       });
+      setResumeWhisper(
+        "Checkpoint restored. The core remembers your path — and what you refused to forget.",
+      );
       return;
     }
 
@@ -375,6 +393,49 @@ export function ActThreeReckoning() {
     [],
   );
 
+  const handlePlayerIntent = useCallback(
+    (intent: PlayerIntent, line: string) => {
+      if (intentReactionTimeoutRef.current) {
+        clearTimeout(intentReactionTimeoutRef.current);
+      }
+      setIntentReaction({ intent, line });
+      intentReactionTimeoutRef.current = setTimeout(() => {
+        setIntentReaction(null);
+        intentReactionTimeoutRef.current = null;
+      }, 5500);
+    },
+    [],
+  );
+
+  const noteConfrontationIntent = useCallback(
+    (choiceId: ConfrontationChoiceId) => {
+      if (!state) return;
+      const reaction = getConfrontationIntentReaction(
+        choiceId,
+        state.dominantPersonality,
+        state.exchangeCount,
+      );
+      if (reaction) handlePlayerIntent(reaction.intent, reaction.line);
+      setState((s) =>
+        s
+          ? {
+              ...s,
+              lastPlayerIntent: reaction?.intent ?? s.lastPlayerIntent,
+              exchangeCount: s.exchangeCount + 1,
+            }
+          : s,
+      );
+    },
+    [handlePlayerIntent, state],
+  );
+
+  useEffect(() => {
+    if (resumeWhisper) {
+      setGroknetWhisper(resumeWhisper, 6000, true);
+      setResumeWhisper(null);
+    }
+  }, [resumeWhisper, setGroknetWhisper]);
+
   const handleHallucinationChoice = useCallback(
     (choice: HallucinationResponseChoice) => {
       const event = getHallucinationEvent(eventId);
@@ -434,6 +495,11 @@ export function ActThreeReckoning() {
     setState((s) =>
       s ? { ...s, gardenTriggered: true, screenShaking: true } : s,
     );
+    if (shakeTimeoutRef.current) clearTimeout(shakeTimeoutRef.current);
+    shakeTimeoutRef.current = setTimeout(() => {
+      setState((s) => (s ? { ...s, screenShaking: false } : s));
+      shakeTimeoutRef.current = null;
+    }, 480);
     playTheGardenSound();
     playTensionPulseSound();
 
@@ -476,7 +542,7 @@ export function ActThreeReckoning() {
         finalTone: actTwo.finalTone,
         finalMood: actTwo.finalMood,
         lastPlayerIntent: actTwo.lastPlayerIntent,
-        hubHackComplete: actTwo.actOneSummary.perimeterTerminalComplete,
+        hubHackComplete: resolveHubHackComplete(actTwo.actOneSummary),
         burningCitiesSurvived: actTwo.actOneSummary.burningCitiesSurvived,
         burningCitiesChoice: actTwo.actOneSummary.burningCitiesChoice,
         perimeterDialogueComplete: true,
@@ -522,7 +588,7 @@ export function ActThreeReckoning() {
         finalTone: actTwo.finalTone,
         finalMood: actTwo.finalMood,
         lastPlayerIntent: actTwo.lastPlayerIntent,
-        hubHackComplete: actTwo.actOneSummary.perimeterTerminalComplete,
+        hubHackComplete: resolveHubHackComplete(actTwo.actOneSummary),
         burningCitiesSurvived: actTwo.actOneSummary.burningCitiesSurvived,
         burningCitiesChoice: actTwo.actOneSummary.burningCitiesChoice,
         perimeterDialogueComplete: true,
@@ -658,53 +724,71 @@ export function ActThreeReckoning() {
       : ACT_THREE_AMBIENT_WHISPER_MS;
 
     idleIntervalRef.current = setInterval(() => {
-      if (Date.now() - state.lastActionAt < idleMs) return;
+      const s = stateRef.current;
+      if (!s || s.phase !== "playing" || s.groknetWhisper) return;
+      if (Date.now() - s.lastActionAt < idleMs) return;
       const personalityLine = getPersonalityVariantWhisper(dialogueContext);
-      const historyLine = getHistoryAmbientWhisper(
-        dialogueContext,
-        state.ambientTick,
+      const historyLine = getHistoryAmbientWhisper(dialogueContext, s.ambientTick);
+      const line = s.ambientTick % 2 === 0 ? historyLine : personalityLine;
+      setGroknetWhisper(
+        line || getDeepCoreAmbientWhisper(dialogueContext),
+        5500,
+        true,
       );
-      const line = state.ambientTick % 2 === 0 ? historyLine : personalityLine;
-      setGroknetWhisper(line || getDeepCoreAmbientWhisper(dialogueContext), 5500, true);
-      setState((s) =>
-        s
-          ? { ...s, lastActionAt: Date.now(), ambientTick: s.ambientTick + 1 }
-          : s,
+      setState((prev) =>
+        prev
+          ? {
+              ...prev,
+              lastActionAt: Date.now(),
+              ambientTick: prev.ambientTick + 1,
+            }
+          : prev,
       );
     }, idleMs);
 
     ambientIntervalRef.current = setInterval(() => {
-      const tick = state.ambientTick;
+      const s = stateRef.current;
+      if (!s || s.phase !== "playing" || s.groknetWhisper) return;
+      const tick = s.ambientTick;
       const line =
-        state.actThreeStage === "plug-chamber"
+        s.actThreeStage === "plug-chamber"
           ? getPlugHistoryWhisper(dialogueContext)
           : getHistoryPersonalWhisper(dialogueContext);
       setGroknetWhisper(line, 4800, tick % 3 === 0);
-      setState((s) => (s ? { ...s, ambientTick: s.ambientTick + 1 } : s));
+      setState((prev) =>
+        prev ? { ...prev, ambientTick: prev.ambientTick + 1 } : prev,
+      );
     }, ambientMs);
 
     return () => {
       if (idleIntervalRef.current) clearInterval(idleIntervalRef.current);
       if (ambientIntervalRef.current) clearInterval(ambientIntervalRef.current);
     };
-  }, [dialogueContext, setGroknetWhisper, state]);
+  }, [
+    dialogueContext,
+    setGroknetWhisper,
+    state?.phase,
+    state?.actThreeStage,
+  ]);
 
   useEffect(() => {
     if (!dialogueContext || !state || state.phase !== "playing") return;
     if (state.actThreeStage !== "deep-core-access") return;
 
     const interval = window.setInterval(() => {
-      setCorruptionLine(
-        getCorruptedSystemLine(dialogueContext, state.ambientTick),
-      );
+      const tick = stateRef.current?.ambientTick ?? 0;
+      setCorruptionLine(getCorruptedSystemLine(dialogueContext, tick));
     }, ACT_THREE_CORRUPTION_TICK_MS);
 
     return () => window.clearInterval(interval);
-  }, [dialogueContext, state]);
+  }, [dialogueContext, state?.phase, state?.actThreeStage]);
 
   useEffect(() => {
     return () => {
       if (whisperTimeoutRef.current) clearTimeout(whisperTimeoutRef.current);
+      if (intentReactionTimeoutRef.current) {
+        clearTimeout(intentReactionTimeoutRef.current);
+      }
       if (gardenDelayRef.current) clearTimeout(gardenDelayRef.current);
       if (shakeTimeoutRef.current) clearTimeout(shakeTimeoutRef.current);
       if (ambientIntervalRef.current) clearInterval(ambientIntervalRef.current);
@@ -737,7 +821,7 @@ export function ActThreeReckoning() {
   const controlsLocked = active && phase === "peak" && !awaitingChoice;
 
   return (
-    <GameShell>
+    <GameShell shaking={state.screenShaking} variant="act-3">
       {state.phase === "transition" ? (
         <ActThreeTransition
           actTwo={actTwo}
@@ -756,7 +840,6 @@ export function ActThreeReckoning() {
           active && "hallucination-loss-of-control",
           active && phase === "peak" && "hallucination-peak",
           state.disorientation.active && "disorientation-active",
-          state.screenShaking && "screen-shake",
         )}
       >
         <GameHeader
@@ -780,6 +863,7 @@ export function ActThreeReckoning() {
           aggression={aggression}
           groknetWhisper={state.groknetWhisper}
           hallucinationActive={active}
+          intentReaction={intentReaction}
           chapterProgress={chapterProgress}
         />
 
@@ -815,7 +899,8 @@ export function ActThreeReckoning() {
                     : s,
                 )
               }
-              onThresholdChoice={(response) => {
+              onThresholdChoice={(choiceId, response) => {
+                noteConfrontationIntent(choiceId);
                 setGroknetWhisper(response, 6000, true);
                 setState((s) =>
                   s
@@ -994,6 +1079,7 @@ export function ActThreeReckoning() {
                 )
               }
               onConfrontationChoice={(choiceId, response, nextBeatId) => {
+                noteConfrontationIntent(choiceId);
                 setGroknetWhisper(response, 6000, true);
                 setState((s) => {
                   if (!s) return s;

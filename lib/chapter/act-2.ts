@@ -1,4 +1,5 @@
 import type { ChapterMeta } from "@/types/chapter";
+import type { ActTwoStage } from "@/types/research-wing";
 
 export const ACT_TWO_CHAPTER: ChapterMeta = {
   actId: "act-2",
@@ -19,3 +20,21 @@ export const ACT_TWO_IDLE_WHISPER_MS = 16_000;
 export const ACT_TWO_RESEARCH_IDLE_WHISPER_MS = 11_000;
 export const ACT_TWO_SERVER_CLOCK_TICK_MS = 5_000;
 export const ACT_TWO_SERVER_IDLE_WHISPER_MS = 7_000;
+
+export function getActTwoChapterMeta(stage: ActTwoStage): ChapterMeta {
+  if (stage === "research-wing") {
+    return {
+      ...ACT_TWO_CHAPTER,
+      subtitle: "Chapter 2 · Research Wing",
+      sector: "Experimental Labs",
+    };
+  }
+  if (stage === "central-server-farm") {
+    return {
+      ...ACT_TWO_CHAPTER,
+      subtitle: "Chapter 2 · Central Server Farm",
+      sector: "CSF-PRIME-00",
+    };
+  }
+  return ACT_TWO_CHAPTER;
+}

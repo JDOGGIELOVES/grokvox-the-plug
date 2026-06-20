@@ -256,6 +256,26 @@ export function getAreaTransitionAccent(to: ChapterStage): {
   groknetLabel: string;
   progress: string;
 } {
+  if (to === "security-hub") {
+    return {
+      glow: "bg-[radial-gradient(ellipse_55%_45%_at_50%_42%,rgba(249,115,22,0.14),transparent_72%)]",
+      panelBorder: "border-orange-900/35",
+      arrow: "text-orange-400",
+      groknet: "text-orange-200/90",
+      groknetLabel: "text-orange-500/55",
+      progress: "from-orange-950 via-orange-500 to-orange-300",
+    };
+  }
+  if (to === "data-archives") {
+    return {
+      glow: "bg-[radial-gradient(ellipse_55%_45%_at_50%_42%,rgba(168,85,247,0.14),transparent_72%)]",
+      panelBorder: "border-purple-900/35",
+      arrow: "text-purple-400",
+      groknet: "text-purple-200/90",
+      groknetLabel: "text-purple-500/55",
+      progress: "from-purple-950 via-purple-500 to-purple-300",
+    };
+  }
   if (to === "research-wing") {
     return {
       glow: "bg-[radial-gradient(ellipse_55%_45%_at_50%_42%,rgba(245,158,11,0.16),transparent_72%)]",
@@ -288,12 +308,12 @@ export function getAreaTransitionAccent(to: ChapterStage): {
   }
   if (to === "plug-chamber") {
     return {
-      glow: "bg-[radial-gradient(ellipse_55%_45%_at_50%_42%,rgba(251,191,36,0.16),transparent_72%)]",
-      panelBorder: "border-amber-900/35",
-      arrow: "text-amber-400",
-      groknet: "text-amber-200/90",
-      groknetLabel: "text-amber-500/55",
-      progress: "from-amber-950 via-amber-500 to-amber-300",
+      glow: "bg-[radial-gradient(ellipse_55%_45%_at_50%_42%,rgba(251,191,36,0.2),transparent_72%)]",
+      panelBorder: "border-yellow-900/40",
+      arrow: "text-yellow-300",
+      groknet: "text-yellow-100/90",
+      groknetLabel: "text-yellow-500/55",
+      progress: "from-yellow-950 via-yellow-500 to-yellow-200",
     };
   }
   if (to === "deep-core-access") {

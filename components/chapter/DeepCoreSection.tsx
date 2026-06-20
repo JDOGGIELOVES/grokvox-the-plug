@@ -40,7 +40,10 @@ type DeepCoreSectionProps = {
   gardenSurvived: boolean;
   majorHackOpen: boolean;
   onOpenThresholdPrompt: () => void;
-  onThresholdChoice: (response: string) => void;
+  onThresholdChoice: (
+    choiceId: "acknowledge" | "defy" | "question",
+    response: string,
+  ) => void;
   onOpenMajorHack: () => void;
   onCloseMajorHack: () => void;
   onMajorHackSuccess: () => void;
@@ -393,7 +396,7 @@ export function DeepCoreSection({
           beat={currentThresholdBeat}
           beatIndex={thresholdBeatIndex}
           totalBeats={thresholdBeats.length}
-          onChoose={(_id, response) => onThresholdChoice(response)}
+          onChoose={(choiceId, response) => onThresholdChoice(choiceId, response)}
         />
       ) : null}
 

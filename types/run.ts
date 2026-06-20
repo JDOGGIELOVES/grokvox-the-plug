@@ -40,6 +40,8 @@ export type ChapterOneSummary = RunSummary & {
   labHallucinationSurvived: boolean;
   dominantPersonality: GroknetPersonality;
   lastPlayerIntent: PlayerIntent;
+  /** Whether OP-SEC-01 hub hack completed — carried into later acts for reactive dialogue */
+  hubHackComplete?: boolean;
 };
 
 export type ChapterThreeSummary = {

@@ -16,6 +16,16 @@ export const CHAPTER_CLOCK_TICK_MS = 20_000;
 
 export const CHAPTER_CLOCK_STEP_MS = 60_000;
 
+/** Ambient Groknet presence — slower, watchful pacing for Act I */
+export const ACT_ONE_IDLE_WHISPER_MS = 18_000;
+export const ACT_ONE_AMBIENT_WHISPER_MS = 22_000;
+
+export function resolveHubHackComplete(
+  actOne: import("@/types/run").ChapterOneSummary,
+): boolean {
+  return actOne.hubHackComplete ?? actOne.archivesDialogueComplete;
+}
+
 export function formatTimeRemaining(ms: number): string {
   const totalSeconds = Math.max(0, Math.floor(ms / 1000));
   const hours = Math.floor(totalSeconds / 3600);

@@ -156,7 +156,32 @@ export function clearGameSave(): void {
   }
 }
 
+export function clearActOneCheckpoint(): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(CHECKPOINT_STORAGE_KEY);
+  } catch {
+    // Ignore
+  }
+}
+
 export function hasResumableCheckpoint(): boolean {
+  const save = loadGameSave();
+
+  if (save?.act2Summary) {
+    const act3 = loadActThreeCheckpoint();
+    return (
+      act3?.actTwoSummary?.completedAt === save.act2Summary.completedAt
+    );
+  }
+
+  if (save?.summary) {
+    const act2 = loadActTwoCheckpoint();
+    return (
+      act2?.actOneSummary?.completedAt === save.summary.completedAt
+    );
+  }
+
   return loadActOneCheckpoint() !== null;
 }
 

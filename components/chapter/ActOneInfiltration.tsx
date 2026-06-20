@@ -16,8 +16,14 @@ import { HallucinationEffect } from "@/components/HallucinationEffect";
 import { Terminal } from "@/components/Terminal";
 import { useGameClock } from "@/hooks/useGameClock";
 import { calculateAggression } from "@/lib/aggression";
-import { ACT_ONE_CHAPTER } from "@/lib/chapter/act-1";
-import { getGroknetInteractionLine } from "@/lib/chapter/groknet-presence";
+import {
+  ACT_ONE_AMBIENT_WHISPER_MS,
+  ACT_ONE_CHAPTER,
+} from "@/lib/chapter/act-1";
+import {
+  getActOneAmbientWhisper,
+  getGroknetInteractionLine,
+} from "@/lib/chapter/groknet-presence";
 import { resolvePersonality } from "@/lib/dialogue/personalities";
 import { calculateChapterProgress } from "@/lib/chapter-progress";
 import { buildPlayerDialogueContext } from "@/lib/dialogue/player-context";
@@ -25,8 +31,10 @@ import { getHallucinationEvent } from "@/lib/hallucinations";
 
 import { INITIAL_MOOD, type GroknetMood } from "@/lib/groknet";
 import {
+  clearActOneCheckpoint,
   clearGameSave,
   loadActOneCheckpoint,
+  loadGameSave,
   saveActOneCheckpoint,
   saveActOneProgress,
   type ActOneCheckpointState,
@@ -214,6 +222,9 @@ export function ActOneInfiltration() {
   const intentReactionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
+  const ambientTickRef = useRef(0);
+  const stateRef = useRef(state);
+  stateRef.current = state;
   const burningDelayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mirrorDelayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const convergenceDelayRef = useRef<ReturnType<typeof setTimeout> | null>(
@@ -257,7 +268,14 @@ export function ActOneInfiltration() {
   const clock = useGameClock(state.phase === "playing", clockInitialMs);
 
   useEffect(() => {
+    const save = loadGameSave();
     const checkpoint = loadActOneCheckpoint();
+
+    if (save?.act1Complete) {
+      if (checkpoint) clearActOneCheckpoint();
+      return;
+    }
+
     if (!checkpoint) return;
 
     setState((s) => ({
@@ -315,6 +333,37 @@ export function ActOneInfiltration() {
       setResumeWhisper(null);
     }
   }, [resumeWhisper, setGroknetWhisper]);
+
+  useEffect(() => {
+    if (state.phase !== "playing" || state.showLevelComplete || active) return;
+
+    const interval = window.setInterval(() => {
+      const s = stateRef.current;
+      if (
+        s.isTerminalOpen ||
+        s.isPerimeterTerminalOpen ||
+        s.isArchivesTerminalOpen ||
+        s.isFinaleTerminalOpen ||
+        s.groknetWhisper ||
+        areaTransition !== null
+      ) {
+        return;
+      }
+      const tick = ambientTickRef.current++;
+      setGroknetWhisper(
+        getActOneAmbientWhisper(s.stage, s.finalMood, tick),
+        5500,
+      );
+    }, ACT_ONE_AMBIENT_WHISPER_MS);
+
+    return () => window.clearInterval(interval);
+  }, [
+    active,
+    areaTransition,
+    setGroknetWhisper,
+    state.phase,
+    state.showLevelComplete,
+  ]);
 
   useEffect(() => {
     if (state.phase !== "playing" || state.showLevelComplete) return;
@@ -607,6 +656,7 @@ export function ActOneInfiltration() {
       labHallucinationSurvived: false,
       dominantPersonality: state.dominantPersonality,
       lastPlayerIntent: state.lastPlayerIntent,
+      hubHackComplete: state.hubHackComplete,
     };
 
     saveActOneProgress(summary);
@@ -652,7 +702,7 @@ export function ActOneInfiltration() {
     showFinaleCinematic;
 
   return (
-    <GameShell shaking={state.screenShaking}>
+    <GameShell shaking={state.screenShaking} variant="act-1">
       {state.phase === "opening" ? (
         <OpeningScene onComplete={handleOpeningComplete} />
       ) : null}

@@ -1,24 +1,33 @@
 import { CinematicOverlay } from "@/components/game/CinematicOverlay";
 import { cn } from "@/lib/utils";
 
+export type GameShellVariant = "act-1" | "act-2" | "act-3";
+
 type GameShellProps = {
   children: React.ReactNode;
   className?: string;
   shaking?: boolean;
+  variant?: GameShellVariant;
 };
 
-export function GameShell({ children, className, shaking = false }: GameShellProps) {
+export function GameShell({
+  children,
+  className,
+  shaking = false,
+  variant = "act-1",
+}: GameShellProps) {
   return (
     <div
       className={cn(
-        "relative flex min-h-screen flex-col bg-background text-foreground",
+        "game-shell relative flex min-h-screen flex-col bg-background text-foreground",
+        `game-shell-${variant}`,
         shaking && "screen-shake-detection",
         className,
       )}
     >
       <CinematicOverlay />
 
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(249,115,22,0.06),_transparent_52%)]" />
+      <div className="game-shell-glow pointer-events-none absolute inset-0" />
       <div className="pointer-events-none absolute inset-0 landing-grid opacity-20" />
       <div className="pointer-events-none absolute inset-0 landing-vignette opacity-80" />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,rgba(1,1,2,0.82)_100%)]" />

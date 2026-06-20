@@ -17,6 +17,7 @@ import { Terminal } from "@/components/Terminal";
 import { useGameClock } from "@/hooks/useGameClock";
 import { useHallucination } from "@/hooks/useHallucination";
 import { calculateAggression } from "@/lib/aggression";
+import { resolveHubHackComplete } from "@/lib/chapter/act-1";
 import {
   ACT_TWO_CHAPTER,
   ACT_TWO_CLOCK_STEP_MS,
@@ -27,6 +28,7 @@ import {
   ACT_TWO_SERVER_CLOCK_TICK_MS,
   ACT_TWO_SERVER_IDLE_WHISPER_MS,
   ACT_TWO_TIME_BUDGET_MS,
+  getActTwoChapterMeta,
 } from "@/lib/chapter/act-2";
 import {
   getTransitionWhisper,
@@ -272,6 +274,7 @@ export function ActTwoConversation() {
     null,
   );
   const [showFinale, setShowFinale] = useState(false);
+  const [resumeWhisper, setResumeWhisper] = useState<string | null>(null);
   const [intentReaction, setIntentReaction] = useState<{
     intent: PlayerIntent;
     line: string;
@@ -386,6 +389,9 @@ export function ActTwoConversation() {
         serverFarmEntered:
           checkpoint.state.actTwoStage === "central-server-farm",
       });
+      setResumeWhisper(
+        "Checkpoint restored. Every choice in the hall still echoes — I'm listening.",
+      );
       return;
     }
 
@@ -480,6 +486,13 @@ export function ActTwoConversation() {
   );
 
   useEffect(() => {
+    if (resumeWhisper) {
+      setGroknetWhisper(resumeWhisper, 6000, true);
+      setResumeWhisper(null);
+    }
+  }, [resumeWhisper, setGroknetWhisper]);
+
+  useEffect(() => {
     if (!state || !actOne || state.phase !== "playing") return;
 
     saveActTwoCheckpoint(
@@ -531,7 +544,8 @@ export function ActTwoConversation() {
             : s.actTwoStage === "research-wing"
               ? getResearchAmbientWhisper(ctx, tick)
               : getActTwoAmbientWhisper(ctx, tick);
-        return { ...s, ambientTick: tick, groknetWhisper: line };
+        setGroknetWhisper(line, 4800, tick % 4 === 0);
+        return { ...s, ambientTick: tick };
       });
     }, tickMs);
 
@@ -547,6 +561,7 @@ export function ActTwoConversation() {
     active,
     dialogueContext,
     state?.isTerminalOpen,
+    setGroknetWhisper,
   ]);
 
   useEffect(() => {
@@ -874,7 +889,7 @@ export function ActTwoConversation() {
         finalTone: state.finalTone,
         finalMood: state.finalMood,
         lastPlayerIntent: state.lastPlayerIntent,
-        hubHackComplete: actOne.archivesDialogueComplete,
+        hubHackComplete: resolveHubHackComplete(actOne),
         burningCitiesSurvived: actOne.burningCitiesSurvived,
         burningCitiesChoice: actOne.burningCitiesChoice,
         perimeterDialogueComplete: actOne.perimeterTerminalComplete,
@@ -1192,7 +1207,7 @@ export function ActTwoConversation() {
     areaTransition !== null;
 
   return (
-    <GameShell shaking={state.screenShaking}>
+    <GameShell shaking={state.screenShaking} variant="act-2">
       {state.phase === "transition" ? (
         <ActTwoTransition actOne={actOne} onComplete={handleTransitionComplete} />
       ) : null}
@@ -1207,7 +1222,7 @@ export function ActTwoConversation() {
         )}
       >
         <GameHeader
-          chapter={ACT_TWO_CHAPTER}
+          chapter={getActTwoChapterMeta(state.actTwoStage)}
           timeRemaining={clock.formatted}
           timeCritical={clock.isCritical}
           aggression={aggression}

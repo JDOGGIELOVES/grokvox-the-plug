@@ -552,8 +552,42 @@ body {
   animation: cinematic-grain-flicker 0.15s steps(2) infinite;
 }
 
-.screen-shake-detection {
+.screen-shake-detection,
+.screen-shake {
   animation: screen-shake-detection 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.game-shell-glow {
+  opacity: 0.55;
+  transition: opacity 1.2s ease;
+}
+
+.game-shell-act-1 .game-shell-glow {
+  background: radial-gradient(
+    ellipse 80% 55% at 50% 0%,
+    rgba(139, 92, 246, 0.09),
+    transparent 72%
+  );
+}
+
+.game-shell-act-2 .game-shell-glow {
+  background: radial-gradient(
+    ellipse 80% 55% at 50% 0%,
+    rgba(245, 158, 11, 0.08),
+    transparent 72%
+  );
+}
+
+.game-shell-act-3 .game-shell-glow {
+  background: radial-gradient(
+    ellipse 80% 55% at 50% 0%,
+    rgba(244, 63, 94, 0.1),
+    transparent 72%
+  );
+}
+
+.hallucination-active .game-shell-glow {
+  opacity: 0.85;
 }
 
 @keyframes cinematic-grain-flicker {
