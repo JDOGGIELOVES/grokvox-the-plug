@@ -5,7 +5,16 @@ import {
   moveDeepCore,
   movePlugChamber,
 } from "@/lib/movement/deep-core";
-import type { DeepCoreDirection, DeepCoreRoomId, PlugChamberRoomId } from "@/types/deep-core";
+import {
+  getFinalApproachMoves,
+  moveFinalApproach,
+} from "@/lib/movement/final-approach";
+import type {
+  DeepCoreDirection,
+  DeepCoreRoomId,
+  FinalApproachRoomId,
+  PlugChamberRoomId,
+} from "@/types/deep-core";
 
 type UseDeepCoreMovementOptions = {
   room: DeepCoreRoomId;
@@ -63,6 +72,35 @@ export function usePlugChamberMovement({
       if (disabled) return;
       const resolved = invertMovement ? OPPOSITE[direction] : direction;
       const next = movePlugChamber(room, resolved);
+      if (!next) return;
+      onMove(direction);
+    },
+    [disabled, invertMovement, onMove, room],
+  );
+
+  return { availableMoves, tryMove };
+}
+
+type UseFinalApproachMovementOptions = {
+  room: FinalApproachRoomId;
+  onMove: (direction: DeepCoreDirection) => void;
+  disabled?: boolean;
+  invertMovement?: boolean;
+};
+
+export function useFinalApproachMovement({
+  room,
+  onMove,
+  disabled = false,
+  invertMovement = false,
+}: UseFinalApproachMovementOptions) {
+  const availableMoves = useMemo(() => getFinalApproachMoves(room), [room]);
+
+  const tryMove = useCallback(
+    (direction: DeepCoreDirection) => {
+      if (disabled) return;
+      const resolved = invertMovement ? OPPOSITE[direction] : direction;
+      const next = moveFinalApproach(room, resolved);
       if (!next) return;
       onMove(direction);
     },

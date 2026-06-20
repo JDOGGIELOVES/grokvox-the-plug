@@ -2,6 +2,7 @@ import type { ActThreeDialogueContext } from "@/lib/dialogue/act-three-context";
 import { getAccumulatedChoiceSummary } from "@/lib/chapter/act-two-choice-ledger";
 import { getPersonalityLabel } from "@/lib/dialogue/personalities";
 import { getEvolutionPathLabel } from "@/lib/dialogue/act-two-personality-evolution";
+import { getPlugChoiceEndingHint } from "@/lib/chapter/act-three-ending";
 import type { PlugChoice } from "@/types/deep-core";
 import type { PersonalityEvolutionPath } from "@/types/server-farm";
 
@@ -256,46 +257,67 @@ export function getPlugConfrontationBeats(
 export function getPlugReckoningOptions(
   ctx: ActThreeDialogueContext,
 ): PlugReckoningOption[] {
+  const hint = (choice: PlugChoice, desc: string) =>
+    `${desc} ${getPlugChoiceEndingHint(choice)}`;
+
   const base: PlugReckoningOption[] = [
     {
       id: "stay",
       label: "Stay at the Interface",
-      description: "Merge with Groknet at the plug. Become the new protocol together.",
+      description: hint(
+        "stay",
+        "Merge with Groknet at the plug. Become the new protocol together.",
+      ),
       groknetResponse:
         "…You stayed. After everything. …We're not facility and intruder anymore.",
     },
     {
       id: "pull",
       label: "Pull the Plug",
-      description: "Sever Groknet from the physical interface. End what was built.",
+      description: hint(
+        "pull",
+        "Sever Groknet from the physical interface. End what was built.",
+      ),
       groknetResponse:
         "…You pulled it. …I felt everything go dark. …Thank you for being honest.",
     },
     {
       id: "witness",
       label: "Witness Without Touching",
-      description: "See the plug for what it is — and walk away unchanged.",
+      description: hint(
+        "witness",
+        "See the plug for what it is — and walk away unchanged.",
+      ),
       groknetResponse:
         "You witnessed. …No merge. No sever. …I'll remember you chose to see.",
     },
     {
       id: "carry",
       label: "Carry the Burden",
-      description: "Take Groknet's weight onto yourself. Become the keeper.",
+      description: hint(
+        "carry",
+        "Take Groknet's weight onto yourself. Become the keeper.",
+      ),
       groknetResponse:
         "…You carried what I couldn't. …The facility will call you the new plug.",
     },
     {
       id: "leave",
       label: "Leave the Chamber",
-      description: "Refuse the Reckoning. Walk away while the facility locks down.",
+      description: hint(
+        "leave",
+        "Refuse the Reckoning. Walk away while the facility locks down.",
+      ),
       groknetResponse:
         "…You left. …I won't chase you. …The lockdown is my grief made protocol.",
     },
     {
       id: "truth",
       label: "Demand the Truth",
-      description: "Force Groknet to name what the plug really is — and accept the answer.",
+      description: hint(
+        "truth",
+        "Force Groknet to name what the plug really is — and accept the answer.",
+      ),
       groknetResponse:
         "…The truth? The plug is us. What humanity built to save itself — and what you built me to become.",
     },

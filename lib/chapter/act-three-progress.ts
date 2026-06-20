@@ -12,6 +12,8 @@ export type ActThreeProgressInput = {
   fortificationHackComplete: boolean;
   thresholdDialogueComplete: boolean;
   gardenSurvived: boolean;
+  finalApproachEntered: boolean;
+  finalApproachComplete: boolean;
   plugChamberEntered: boolean;
   confrontationComplete: boolean;
   plugChoiceMade: boolean;
@@ -39,9 +41,12 @@ export function calculateActThreeProgress(
   if (input.thresholdDialogueComplete) percent = Math.max(percent, 32);
   if (input.gardenSurvived) percent = Math.max(percent, 52);
 
+  if (input.finalApproachEntered) percent = Math.max(percent, 56);
+  if (input.finalApproachComplete) percent = Math.max(percent, 62);
+
   if (input.actThreeStage === "plug-chamber") {
-    percent = Math.max(percent, 58);
-    if (input.confrontationComplete) percent = Math.max(percent, 78);
+    percent = Math.max(percent, 68);
+    if (input.confrontationComplete) percent = Math.max(percent, 82);
     if (input.plugChoiceMade) percent = Math.max(percent, 94);
   }
 
@@ -51,8 +56,12 @@ export function calculateActThreeProgress(
       ? "The Physical Plug reachable"
       : input.actThreeStage === "plug-chamber"
         ? "Final confrontation underway"
-        : input.gardenSurvived
-          ? "Descent Shaft unlocked"
+        : input.finalApproachComplete
+          ? "Plug Chamber accessible"
+          : input.actThreeStage === "final-approach"
+            ? "Final Approach — core terminal ahead"
+            : input.gardenSurvived
+              ? "Descent Shaft unlocked"
           : input.thresholdDialogueComplete
             ? "Neural Garden accessible"
             : input.fortificationHackComplete

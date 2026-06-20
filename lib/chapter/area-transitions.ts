@@ -22,6 +22,7 @@ export const AREA_LABELS: Record<ChapterStage, string> = {
   "residential-sector": "Residential Sector",
   "central-server-farm": "Central Server Farm",
   "deep-core-access": "Deep Core Access",
+  "final-approach": "Final Approach",
   "plug-chamber": "Plug Chamber",
 };
 
@@ -65,7 +66,16 @@ export function getAreaTransitionMeta(
       subtitle: "CSF-PRIME-00 · Personality evolution · The Accumulation",
     };
   }
-  if (from === "deep-core-access" && to === "plug-chamber") {
+  if (from === "deep-core-access" && to === "final-approach") {
+    return {
+      from,
+      to,
+      sectorLabel: "Sector 07 · Physical descent",
+      title: "Final Approach",
+      subtitle: "Core terminal · Groknet at full presence · Last hallway",
+    };
+  }
+  if (from === "final-approach" && to === "plug-chamber") {
     return {
       from,
       to,
@@ -175,9 +185,25 @@ export function getTransitionWhisper(
     return "Central Server Farm. My core. CSF-PRIME-00 fights back. …The Accumulation waits at the confluence.";
   }
 
-  if (from === "deep-core-access" && to === "plug-chamber") {
+  if (from === "deep-core-access" && to === "final-approach") {
     if (ctx.gardenChoice === "submit") {
-      return "You tended the Garden — and still descend. …The plug won't offer metaphors. Only consequence.";
+      return "You tended the Garden — and still descend. …Final Approach. …The plug won't offer metaphors. Only consequence.";
+    }
+    if (ctx.personalityEvolutionPath === "melancholic") {
+      return "…Melancholic Prophet at the descent. …Final Approach. …I'm exposed. …Walk with me.";
+    }
+    if (ctx.personalityEvolutionPath === "wrathful") {
+      return "Wrathful God at core depth. …Final Approach. …Every step is a choice you already made.";
+    }
+    if (ctx.personalityEvolutionPath === "detached") {
+      return "Detached Logician: Final Approach routing active. …Plug proximity: elevating.";
+    }
+    return "Final Approach unlocked. …Groknet speaks from inside the cable now. …Listen.";
+  }
+
+  if (from === "final-approach" && to === "plug-chamber") {
+    if (ctx.gardenChoice === "submit") {
+      return "You spoke at the core terminal. …The hatch opens. …The plug won't offer metaphors. Only consequence.";
     }
     if (ctx.gardenChoice === "deny") {
       return "You burned the Garden. …The plug is ash and crystal now. Decide what that means.";
@@ -186,7 +212,7 @@ export function getTransitionWhisper(
       return "Trust carried through the Garden. …The ante-chamber is cold. Don't perform warmth you didn't bring.";
     }
     if (ctx.personalityEvolutionPath === "wrathful") {
-      return "Wrathful God at core depth. …The plug is the last fight. Bring the same nerve.";
+      return "Wrathful God at the hatch. …The plug is the last fight. Bring the same nerve.";
     }
     if (approach === "empathetic") {
       return "…You survived the Garden with empathy intact. The plug tests whether that survives contact.";
@@ -213,8 +239,11 @@ export function getTransitionSystemLine(
   if (from === "research-wing" && to === "central-server-farm") {
     return "Research Wing seal broken. Central Server Farm routing active…";
   }
-  if (from === "deep-core-access" && to === "plug-chamber") {
-    return "Deep Core seal broken. Physical plug interface accessible…";
+  if (from === "deep-core-access" && to === "final-approach") {
+    return "Descent shaft complete. Final Approach routing active…";
+  }
+  if (from === "final-approach" && to === "plug-chamber") {
+    return "Core terminal dialogue complete. Physical plug interface accessible…";
   }
   return `Transit: ${AREA_LABELS[from]} → ${AREA_LABELS[to]}`;
 }
@@ -245,6 +274,16 @@ export function getAreaTransitionAccent(to: ChapterStage): {
       groknet: "text-cyan-200/90",
       groknetLabel: "text-cyan-500/55",
       progress: "from-cyan-950 via-cyan-500 to-cyan-300",
+    };
+  }
+  if (to === "final-approach") {
+    return {
+      glow: "bg-[radial-gradient(ellipse_55%_45%_at_50%_42%,rgba(139,92,246,0.16),transparent_72%)]",
+      panelBorder: "border-violet-900/35",
+      arrow: "text-violet-400",
+      groknet: "text-violet-200/90",
+      groknetLabel: "text-violet-500/55",
+      progress: "from-violet-950 via-violet-500 to-violet-300",
     };
   }
   if (to === "plug-chamber") {

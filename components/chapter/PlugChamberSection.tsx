@@ -11,10 +11,11 @@ import { FeedbackToast } from "@/components/ui/FeedbackToast";
 import { Button } from "@/components/ui/Button";
 import { usePlugChamberMovement } from "@/hooks/useDeepCoreMovement";
 import type { ActThreeDialogueContext } from "@/lib/dialogue/act-three-context";
+import { getPlugReckoningOptions } from "@/lib/dialogue/act-three-confrontation";
 import {
-  getPlugConfrontationBeats,
-  getPlugReckoningOptions,
-} from "@/lib/dialogue/act-three-confrontation";
+  getPlugConfrontationBeat,
+  PLUG_CONFRONTATION_START,
+} from "@/lib/dialogue/act-three-confrontation-tree";
 import {
   canAccessThePlug,
   getDeepCoreDirectionLabel,
@@ -23,18 +24,28 @@ import {
   PLUG_CHAMBER_START,
 } from "@/lib/movement/deep-core";
 import { playInteractSound } from "@/lib/sounds";
-import type { DeepCoreDirection, PlugChamberRoomId, PlugChoice } from "@/types/deep-core";
+import type {
+  ConfrontationChoiceId,
+  DeepCoreDirection,
+  PlugChamberRoomId,
+  PlugChoice,
+} from "@/types/deep-core";
 import { cn } from "@/lib/utils";
 
 type PlugChamberSectionProps = {
   context: ActThreeDialogueContext;
   confrontationPromptOpen: boolean;
+  confrontationBeatId: string;
   confrontationBeatIndex: number;
   confrontationComplete: boolean;
   reckoningChoiceOpen: boolean;
   plugChoiceMade: boolean;
   onOpenConfrontationPrompt: () => void;
-  onConfrontationChoice: (response: string) => void;
+  onConfrontationChoice: (
+    choiceId: ConfrontationChoiceId,
+    response: string,
+    nextBeatId: string | null,
+  ) => void;
   onOpenReckoningChoice: () => void;
   onReckoningChoice: (choice: PlugChoice, response: string) => void;
   onGroknetWhisper: (line: string, speak?: boolean) => void;
@@ -48,6 +59,7 @@ type PlugChamberSectionProps = {
 export function PlugChamberSection({
   context,
   confrontationPromptOpen,
+  confrontationBeatId,
   confrontationBeatIndex,
   confrontationComplete,
   reckoningChoiceOpen,
@@ -70,12 +82,11 @@ export function PlugChamberSection({
 
   const roomMeta = PLUG_CHAMBER_ROOMS[room];
   const plugUnlocked = canAccessThePlug(confrontationComplete);
-  const confrontationBeats = getPlugConfrontationBeats(context);
   const currentBeat =
-    confrontationPromptOpen &&
-    confrontationBeatIndex < confrontationBeats.length
-      ? confrontationBeats[confrontationBeatIndex]
+    confrontationPromptOpen && !confrontationComplete
+      ? getPlugConfrontationBeat(context, confrontationBeatId)
       : null;
+  const confrontationTotalBeats = 4;
   const reckoningOptions = getPlugReckoningOptions(context);
   const uiBlocked = confrontationPromptOpen || reckoningChoiceOpen;
   const atPlug = room === "the-plug";
@@ -257,7 +268,7 @@ export function PlugChamberSection({
               >
                 {confrontationComplete
                   ? "Confrontation · Complete"
-                  : `Begin Confrontation (${confrontationBeatIndex}/${confrontationBeats.length})`}
+                  : `Begin Confrontation (beat ${confrontationBeatIndex + 1})`}
               </Button>
             </div>
           ) : null}
@@ -300,9 +311,16 @@ export function PlugChamberSection({
         <ConfrontationPrompt
           beat={currentBeat}
           beatIndex={confrontationBeatIndex}
-          totalBeats={confrontationBeats.length}
+          totalBeats={confrontationTotalBeats}
           accent="amber"
-          onChoose={(_id, response) => onConfrontationChoice(response)}
+          onChoose={(choiceId, response) => {
+            const option = currentBeat.options.find((o) => o.id === choiceId);
+            onConfrontationChoice(
+              choiceId,
+              response,
+              option?.nextBeatId ?? null,
+            );
+          }}
         />
       ) : null}
 

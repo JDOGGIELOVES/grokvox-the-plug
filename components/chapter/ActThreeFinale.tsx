@@ -6,6 +6,7 @@ import {
   RECKONING_ENDINGS,
   type ActThreeFinaleBeat,
 } from "@/lib/chapter/act-three-ending";
+import { getEndingCinematicClass } from "@/lib/chapter/act-three-finale-cinematics";
 import { playGroknetVoiceLine } from "@/lib/hallucination";
 import {
   playActThreeFinaleSound,
@@ -45,6 +46,7 @@ function speakerColor(speaker: ActThreeFinaleBeat["speaker"]) {
 export function ActThreeFinale({ summary, onComplete }: ActThreeFinaleProps) {
   const beats = getActThreeFinaleBeats(summary);
   const ending = RECKONING_ENDINGS[summary.endingId];
+  const cinematicClass = getEndingCinematicClass(summary.endingId);
   const [visibleCount, setVisibleCount] = useState(0);
   const [ready, setReady] = useState(false);
   const [exiting, setExiting] = useState(false);
@@ -87,13 +89,13 @@ export function ActThreeFinale({ summary, onComplete }: ActThreeFinaleProps) {
     <div
       className={cn(
         "act-three-finale-in fixed inset-0 z-[58] flex items-center justify-center bg-background/98 px-4 backdrop-blur-lg",
+        cinematicClass,
         exiting && "act-three-finale-out",
       )}
     >
       <div className="pointer-events-none absolute inset-0 act-three-finale-vignette" />
+      <div className="pointer-events-none absolute inset-0 act-three-finale-cinematic-glow" />
       <div className="pointer-events-none absolute inset-0 landing-scanlines opacity-25" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_55%_at_50%_40%,rgba(251,191,36,0.12),transparent_68%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_50%_60%,rgba(244,63,94,0.1),transparent_70%)]" />
 
       <div className="relative z-10 w-full max-w-2xl space-y-8">
         <div className="space-y-2 text-center">
@@ -104,11 +106,11 @@ export function ActThreeFinale({ summary, onComplete }: ActThreeFinaleProps) {
             The Reckoning
           </h2>
           <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-zinc-500">
-            {ending.subtitle}
+            {ending.cinematicTagline}
           </p>
         </div>
 
-        <div className="act-three-finale-beats min-h-[260px] space-y-5">
+        <div className="act-three-finale-beats min-h-[300px] space-y-5">
           {beats.slice(0, visibleCount).map((beat) => (
             <p
               key={beat.id}

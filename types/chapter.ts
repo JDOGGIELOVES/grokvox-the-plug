@@ -12,6 +12,7 @@ export type ChapterStage =
   | "residential-sector"
   | "central-server-farm"
   | "deep-core-access"
+  | "final-approach"
   | "plug-chamber";
 
 export type ActId = "act-1" | "act-2" | "act-3";

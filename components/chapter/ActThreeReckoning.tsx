@@ -6,6 +6,7 @@ import { ActThreeChapterEnding } from "@/components/chapter/ActThreeChapterEndin
 import { ActThreeFinale } from "@/components/chapter/ActThreeFinale";
 import { ActThreeTransition } from "@/components/chapter/ActThreeTransition";
 import { DeepCoreSection } from "@/components/chapter/DeepCoreSection";
+import { FinalApproachSection } from "@/components/chapter/FinalApproachSection";
 import { PlugChamberSection } from "@/components/chapter/PlugChamberSection";
 import { GameHeader } from "@/components/chapter/GameHeader";
 import { GameShell } from "@/components/chapter/GameShell";
@@ -44,6 +45,8 @@ import {
   getPlugChamberRoomWhisper,
 } from "@/lib/chapter/act-three-presence";
 import { getReactiveGardenPreface } from "@/lib/chapter/act-three-reactive";
+import { getFinalApproachRoomWhisper } from "@/lib/dialogue/act-three-final-approach";
+import { PLUG_CONFRONTATION_START } from "@/lib/dialogue/act-three-confrontation-tree";
 import { resolveReckoningEnding } from "@/lib/chapter/act-three-ending";
 import { getTransitionWhisper } from "@/lib/chapter/area-transitions";
 import {
@@ -80,7 +83,11 @@ import type {
   HallucinationResponseChoice,
 } from "@/types/hallucination";
 import type { ChapterStage } from "@/types/chapter";
-import type { ActThreeStage, PlugChoice } from "@/types/deep-core";
+import type {
+  ActThreeStage,
+  ConfrontationChoiceId,
+  PlugChoice,
+} from "@/types/deep-core";
 
 import type { ChapterThreeSummary, ChapterTwoSummary } from "@/types/run";
 import { cn } from "@/lib/utils";
@@ -118,8 +125,13 @@ type RunState = {
   gardenSurvived: boolean;
   gardenChoice: HallucinationResponseChoice | null;
   plugChamberEntered: boolean;
+  finalApproachEntered: boolean;
+  approachDialogueComplete: boolean;
+  approachPromptOpen: boolean;
   confrontationPromptOpen: boolean;
+  confrontationBeatId: string;
   confrontationBeatIndex: number;
+  confrontationChoices: ConfrontationChoiceId[];
   confrontationComplete: boolean;
   reckoningChoiceOpen: boolean;
   plugChoice: PlugChoice | null;
@@ -159,8 +171,13 @@ function createInitialRunState(actTwo: ChapterTwoSummary): RunState {
     gardenSurvived: false,
     gardenChoice: null,
     plugChamberEntered: false,
+    finalApproachEntered: false,
+    approachDialogueComplete: false,
+    approachPromptOpen: false,
     confrontationPromptOpen: false,
+    confrontationBeatId: PLUG_CONFRONTATION_START,
     confrontationBeatIndex: 0,
+    confrontationChoices: [],
     confrontationComplete: false,
     reckoningChoiceOpen: false,
     plugChoice: null,
@@ -189,7 +206,11 @@ function toCheckpointState(state: RunState): ActThreeCheckpointState {
     gardenSurvived: state.gardenSurvived,
     gardenChoice: state.gardenChoice,
     plugChamberEntered: state.plugChamberEntered,
+    finalApproachEntered: state.finalApproachEntered,
+    approachDialogueComplete: state.approachDialogueComplete,
     confrontationBeatIndex: state.confrontationBeatIndex,
+    confrontationBeatId: state.confrontationBeatId,
+    confrontationChoices: state.confrontationChoices,
     confrontationComplete: state.confrontationComplete,
     plugChoice: state.plugChoice,
   };
@@ -259,8 +280,15 @@ export function ActThreeReckoning() {
         ...checkpoint.state,
         thresholdPromptOpen: false,
         majorHackOpen: false,
+        approachPromptOpen: false,
         confrontationPromptOpen: false,
         reckoningChoiceOpen: false,
+        confrontationBeatId:
+          checkpoint.state.confrontationBeatId ?? PLUG_CONFRONTATION_START,
+        confrontationChoices: checkpoint.state.confrontationChoices ?? [],
+        finalApproachEntered: checkpoint.state.finalApproachEntered ?? false,
+        approachDialogueComplete:
+          checkpoint.state.approachDialogueComplete ?? false,
         areaTransition: null,
         showChapterComplete: checkpoint.state.phase === "complete",
         ambientTick: 0,
@@ -295,7 +323,8 @@ export function ActThreeReckoning() {
   }, [actTwo, state]);
 
   const clockTickMs =
-    state?.actThreeStage === "plug-chamber"
+    state?.actThreeStage === "plug-chamber" ||
+    state?.actThreeStage === "final-approach"
       ? ACT_THREE_PLUG_CLOCK_TICK_MS
       : ACT_THREE_CLOCK_TICK_MS;
 
@@ -324,6 +353,8 @@ export function ActThreeReckoning() {
       fortificationHackComplete: state.fortificationHackComplete,
       thresholdDialogueComplete: state.thresholdDialogueComplete,
       gardenSurvived: state.gardenSurvived,
+      finalApproachEntered: state.finalApproachEntered,
+      finalApproachComplete: state.approachDialogueComplete,
       plugChamberEntered: state.plugChamberEntered,
       confrontationComplete: state.confrontationComplete,
       plugChoiceMade: state.plugChoice !== null,
@@ -434,12 +465,12 @@ export function ActThreeReckoning() {
     );
   }, []);
 
-  const handleEnterPlugChamber = useCallback(() => {
+  const handleEnterFinalApproach = useCallback(() => {
     if (!actTwo || !dialogueContext) return;
 
     const groknetLine = getTransitionWhisper(
       "deep-core-access",
-      "plug-chamber",
+      "final-approach",
       {
         detections: actTwo.actOneSummary.detections,
         finalTone: actTwo.finalTone,
@@ -460,6 +491,52 @@ export function ActThreeReckoning() {
 
     setAreaTransition({
       from: "deep-core-access",
+      to: "final-approach",
+      groknetLine,
+    });
+    setState((s) =>
+      s
+        ? {
+            ...s,
+            actThreeStage: "final-approach",
+            finalApproachEntered: true,
+            areaTransition: {
+              from: "deep-core-access",
+              to: "final-approach",
+              groknetLine,
+            },
+            lastActionAt: Date.now(),
+          }
+        : s,
+    );
+  }, [actTwo, dialogueContext, state?.gardenChoice]);
+
+  const handleEnterPlugChamber = useCallback(() => {
+    if (!actTwo || !dialogueContext) return;
+
+    const groknetLine = getTransitionWhisper(
+      "final-approach",
+      "plug-chamber",
+      {
+        detections: actTwo.actOneSummary.detections,
+        finalTone: actTwo.finalTone,
+        finalMood: actTwo.finalMood,
+        lastPlayerIntent: actTwo.lastPlayerIntent,
+        hubHackComplete: actTwo.actOneSummary.perimeterTerminalComplete,
+        burningCitiesSurvived: actTwo.actOneSummary.burningCitiesSurvived,
+        burningCitiesChoice: actTwo.actOneSummary.burningCitiesChoice,
+        perimeterDialogueComplete: true,
+        lastConversationChoice: actTwo.lastConversationChoice,
+        childrenChoice: actTwo.childrenChoice,
+        relationshipStance: actTwo.relationshipStance,
+        accumulationChoice: actTwo.accumulationChoice,
+        gardenChoice: state?.gardenChoice ?? null,
+        personalityEvolutionPath: actTwo.personalityEvolutionPath,
+      },
+    );
+
+    setAreaTransition({
+      from: "final-approach",
       to: "plug-chamber",
       groknetLine,
     });
@@ -470,7 +547,7 @@ export function ActThreeReckoning() {
             actThreeStage: "plug-chamber",
             plugChamberEntered: true,
             areaTransition: {
-              from: "deep-core-access",
+              from: "final-approach",
               to: "plug-chamber",
               groknetLine,
             },
@@ -499,8 +576,10 @@ export function ActThreeReckoning() {
         gardenSurvived: state.gardenSurvived,
         gardenChoice: state.gardenChoice,
         confrontationComplete: state.confrontationComplete,
+        confrontationChoices: state.confrontationChoices,
+        finalApproachComplete: state.approachDialogueComplete,
         plugChoice,
-        endingId: "the-reckoning",
+        endingId: "the-compromise",
         finalTone: state.finalTone,
         finalMood: state.finalMood,
         dominantPersonality: state.dominantPersonality,
@@ -517,6 +596,7 @@ export function ActThreeReckoning() {
           plugChoice,
           state.gardenChoice,
           base,
+          state.confrontationChoices,
         ),
       };
     },
@@ -567,14 +647,15 @@ export function ActThreeReckoning() {
   useEffect(() => {
     if (!dialogueContext || !state || state.phase !== "playing") return;
 
-    const idleMs =
-      state.actThreeStage === "plug-chamber"
-        ? ACT_THREE_PLUG_IDLE_WHISPER_MS
-        : ACT_THREE_IDLE_WHISPER_MS;
-    const ambientMs =
-      state.actThreeStage === "plug-chamber"
-        ? ACT_THREE_PLUG_AMBIENT_WHISPER_MS
-        : ACT_THREE_AMBIENT_WHISPER_MS;
+    const lateStage =
+      state.actThreeStage === "plug-chamber" ||
+      state.actThreeStage === "final-approach";
+    const idleMs = lateStage
+      ? ACT_THREE_PLUG_IDLE_WHISPER_MS
+      : ACT_THREE_IDLE_WHISPER_MS;
+    const ambientMs = lateStage
+      ? ACT_THREE_PLUG_AMBIENT_WHISPER_MS
+      : ACT_THREE_AMBIENT_WHISPER_MS;
 
     idleIntervalRef.current = setInterval(() => {
       if (Date.now() - state.lastActionAt < idleMs) return;
@@ -686,7 +767,13 @@ export function ActThreeReckoning() {
                   subtitle: "Chapter 3 · Plug Chamber",
                   sector: "Physical Interface",
                 }
-              : ACT_THREE_CHAPTER
+              : state.actThreeStage === "final-approach"
+                ? {
+                    ...ACT_THREE_CHAPTER,
+                    subtitle: "Chapter 3 · Final Approach",
+                    sector: "Physical Core Terminal",
+                  }
+                : ACT_THREE_CHAPTER
           }
           timeRemaining={clock.formatted}
           timeCritical={clock.isCritical}
@@ -774,7 +861,7 @@ export function ActThreeReckoning() {
                 );
               }}
               onEnterNeuralGarden={scheduleTheGarden}
-              onEnterDescentShaft={handleEnterPlugChamber}
+              onEnterFinalApproach={handleEnterFinalApproach}
               onGroknetWhisper={(line, speak) =>
                 setGroknetWhisper(line, 5500, speak)
               }
@@ -814,11 +901,79 @@ export function ActThreeReckoning() {
           ) : null}
 
           {playing &&
+          state.actThreeStage === "final-approach" &&
+          dialogueContext ? (
+            <FinalApproachSection
+              context={dialogueContext}
+              approachDialogueComplete={state.approachDialogueComplete}
+              approachPromptOpen={state.approachPromptOpen}
+              onOpenApproachPrompt={() =>
+                setState((s) =>
+                  s
+                    ? {
+                        ...s,
+                        approachPromptOpen: true,
+                        lastActionAt: Date.now(),
+                      }
+                    : s,
+                )
+              }
+              onApproachDialogueComplete={(response) => {
+                setGroknetWhisper(response, 7000, true);
+                setState((s) =>
+                  s
+                    ? {
+                        ...s,
+                        approachPromptOpen: false,
+                        approachDialogueComplete: true,
+                        lastActionAt: Date.now(),
+                      }
+                    : s,
+                );
+              }}
+              onEnterPlugChamber={handleEnterPlugChamber}
+              onGroknetWhisper={(line, speak) =>
+                setGroknetWhisper(line, 5500, speak)
+              }
+              onMove={(_from, to) => {
+                if (!dialogueContext) return;
+                const moveCount = (state?.moveCount ?? 0) + 1;
+                setGroknetWhisper(
+                  getHistoryMoveWhisper(dialogueContext, moveCount),
+                  4500,
+                  to === "core-terminal",
+                );
+                setState((s) =>
+                  s
+                    ? {
+                        ...s,
+                        moveCount,
+                        lastActionAt: Date.now(),
+                      }
+                    : s,
+                );
+              }}
+              onRoomEnter={(room) => {
+                if (!dialogueContext) return;
+                setGroknetWhisper(
+                  getFinalApproachRoomWhisper(room, dialogueContext),
+                  5000,
+                  room === "core-terminal",
+                );
+              }}
+              disoriented={state.disorientation.active}
+              invertMovement={state.disorientation.invertMovement}
+              controlsDisabled={controlsLocked}
+            />
+          ) : null}
+
+          {playing &&
           state.actThreeStage === "plug-chamber" &&
           dialogueContext ? (
             <PlugChamberSection
               context={dialogueContext}
               confrontationPromptOpen={state.confrontationPromptOpen}
+              confrontationBeatId={state.confrontationBeatId}
               confrontationBeatIndex={state.confrontationBeatIndex}
               confrontationComplete={state.confrontationComplete}
               reckoningChoiceOpen={state.reckoningChoiceOpen}
@@ -829,29 +984,36 @@ export function ActThreeReckoning() {
                     ? {
                         ...s,
                         confrontationPromptOpen: true,
+                        confrontationBeatId:
+                          s.confrontationBeatIndex === 0
+                            ? PLUG_CONFRONTATION_START
+                            : s.confrontationBeatId,
                         lastActionAt: Date.now(),
                       }
                     : s,
                 )
               }
-              onConfrontationChoice={(response) => {
+              onConfrontationChoice={(choiceId, response, nextBeatId) => {
                 setGroknetWhisper(response, 6000, true);
                 setState((s) => {
                   if (!s) return s;
-                  const nextBeat = s.confrontationBeatIndex + 1;
-                  const beats = 2;
-                  if (nextBeat >= beats) {
+                  const nextChoices = [...s.confrontationChoices, choiceId];
+                  const nextBeatIndex = s.confrontationBeatIndex + 1;
+                  if (!nextBeatId) {
                     return {
                       ...s,
                       confrontationPromptOpen: false,
                       confrontationComplete: true,
-                      confrontationBeatIndex: nextBeat,
+                      confrontationBeatIndex: nextBeatIndex,
+                      confrontationChoices: nextChoices,
                       lastActionAt: Date.now(),
                     };
                   }
                   return {
                     ...s,
-                    confrontationBeatIndex: nextBeat,
+                    confrontationBeatId: nextBeatId,
+                    confrontationBeatIndex: nextBeatIndex,
+                    confrontationChoices: nextChoices,
                     lastActionAt: Date.now(),
                   };
                 });

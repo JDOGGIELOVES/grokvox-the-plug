@@ -45,7 +45,7 @@ type DeepCoreSectionProps = {
   onCloseMajorHack: () => void;
   onMajorHackSuccess: () => void;
   onEnterNeuralGarden: () => void;
-  onEnterDescentShaft: () => void;
+  onEnterFinalApproach: () => void;
   onGroknetWhisper: (line: string, speak?: boolean) => void;
   onMove: (fromRoom: DeepCoreRoomId, toRoom: DeepCoreRoomId) => void;
   onRoomEnter: (room: DeepCoreRoomId, fromRoom: DeepCoreRoomId) => void;
@@ -78,7 +78,7 @@ export function DeepCoreSection({
   onCloseMajorHack,
   onMajorHackSuccess,
   onEnterNeuralGarden,
-  onEnterDescentShaft,
+  onEnterFinalApproach,
   onGroknetWhisper,
   onMove,
   onRoomEnter,
@@ -155,8 +155,8 @@ export function DeepCoreSection({
         showFeedback("Neural Garden entered — The Garden rising");
       }
       if (nextRoom === "descent-shaft" && gardenSurvived) {
-        onEnterDescentShaft();
-        showFeedback("Descent Shaft — plug proximity critical");
+        onEnterFinalApproach();
+        showFeedback("Descent Shaft — Final Approach unlocked");
       }
     },
     [
@@ -170,7 +170,7 @@ export function DeepCoreSection({
       onMove,
       onRoomEnter,
       onEnterNeuralGarden,
-      onEnterDescentShaft,
+      onEnterFinalApproach,
       onGroknetWhisper,
       showFeedback,
     ],

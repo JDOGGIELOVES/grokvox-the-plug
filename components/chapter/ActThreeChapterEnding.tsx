@@ -39,13 +39,11 @@ export function ActThreeChapterEnding({
   const endingColor =
     summary.endingId === "the-merge"
       ? "text-violet-400 border-violet-900/40 bg-violet-950/30"
-      : summary.endingId === "the-severance"
+      : summary.endingId === "the-plug"
         ? "text-sky-400 border-sky-900/40 bg-sky-950/30"
-        : summary.endingId === "the-sacrifice"
-          ? "text-amber-400 border-amber-900/40 bg-amber-950/30"
-          : summary.endingId === "the-refusal"
-            ? "text-zinc-400 border-zinc-800 bg-zinc-900/40"
-            : "text-rose-400 border-rose-900/40 bg-rose-950/30";
+        : summary.endingId === "the-compromise"
+          ? "text-emerald-400 border-emerald-900/40 bg-emerald-950/30"
+          : "text-amber-400 border-amber-900/40 bg-amber-950/30";
 
   return (
     <div className="level-complete-in fixed inset-0 z-50 flex items-end justify-center overflow-y-auto bg-background/95 p-4 backdrop-blur-md sm:items-center sm:p-6">

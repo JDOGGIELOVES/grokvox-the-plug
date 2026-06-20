@@ -2,6 +2,7 @@ import type { GroknetMood } from "@/lib/groknet";
 import type { GroknetPersonality, GroknetTone, PlayerIntent } from "@/types/dialogue";
 import type { HallucinationResponseChoice } from "@/types/hallucination";
 import type {
+  ConfrontationChoiceId,
   GroknetPresenceMode,
   PlugChoice,
   ReckoningEndingId,
@@ -56,6 +57,8 @@ export type ChapterThreeSummary = {
   gardenSurvived: boolean;
   gardenChoice: HallucinationResponseChoice | null;
   confrontationComplete: boolean;
+  confrontationChoices: ConfrontationChoiceId[];
+  finalApproachComplete: boolean;
   plugChoice: PlugChoice;
   endingId: ReckoningEndingId;
   finalTone: GroknetTone;

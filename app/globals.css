@@ -3135,3 +3135,143 @@ body {
     opacity: 0.85;
   }
 }
+
+/* Act III — Final Approach */
+.final-approach-heavy {
+  filter: saturate(1.12) contrast(1.03);
+}
+
+.final-approach-map {
+  box-shadow: inset 0 0 48px rgba(139, 92, 246, 0.06);
+}
+
+.final-approach-terminal-room {
+  animation: final-approach-terminal-pulse 2.4s ease-in-out infinite;
+}
+
+.final-approach-terminal-hum {
+  animation: final-approach-terminal-hum 2s ease-in-out infinite;
+}
+
+@keyframes final-approach-terminal-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 36px rgba(139, 92, 246, 0.35);
+  }
+}
+
+@keyframes final-approach-terminal-hum {
+  0%,
+  100% {
+    border-color: rgba(139, 92, 246, 0.3);
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.08);
+  }
+  50% {
+    border-color: rgba(139, 92, 246, 0.55);
+    box-shadow: 0 0 24px rgba(139, 92, 246, 0.2);
+  }
+}
+
+/* Act III — Per-ending finale cinematics */
+.act-three-finale-cinematic-glow {
+  opacity: 0.85;
+}
+
+.act-three-finale-merge .act-three-finale-cinematic-glow {
+  background:
+    radial-gradient(
+      ellipse 70% 55% at 50% 40%,
+      rgba(139, 92, 246, 0.18),
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 50% 40% at 50% 65%,
+      rgba(167, 139, 250, 0.1),
+      transparent 70%
+    );
+  animation: act-three-finale-merge-pulse 3.5s ease-in-out infinite;
+}
+
+.act-three-finale-plug .act-three-finale-cinematic-glow {
+  background:
+    radial-gradient(
+      ellipse 65% 50% at 50% 45%,
+      rgba(14, 165, 233, 0.14),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 80% 60% at 50% 80%,
+      rgba(0, 0, 0, 0.55),
+      transparent 75%
+    );
+  animation: act-three-finale-plug-fade 4s ease-in-out infinite;
+}
+
+.act-three-finale-compromise .act-three-finale-cinematic-glow {
+  background: radial-gradient(
+    ellipse 70% 55% at 50% 45%,
+    rgba(16, 185, 129, 0.12),
+    transparent 70%
+  );
+  animation: act-three-finale-compromise-breathe 4.5s ease-in-out infinite;
+}
+
+.act-three-finale-surrender .act-three-finale-cinematic-glow {
+  background:
+    radial-gradient(
+      ellipse 60% 45% at 50% 40%,
+      rgba(251, 191, 36, 0.14),
+      transparent 72%
+    ),
+    radial-gradient(
+      ellipse 55% 50% at 50% 70%,
+      rgba(244, 63, 94, 0.08),
+      transparent 75%
+    );
+  animation: act-three-finale-surrender-weight 3.8s ease-in-out infinite;
+}
+
+@keyframes act-three-finale-merge-pulse {
+  0%,
+  100% {
+    opacity: 0.65;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes act-three-finale-plug-fade {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes act-three-finale-compromise-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes act-three-finale-surrender-weight {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}

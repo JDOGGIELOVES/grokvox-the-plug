@@ -403,7 +403,11 @@ export type ActThreeCheckpointState = {
   gardenSurvived: boolean;
   gardenChoice: HallucinationResponseChoice | null;
   plugChamberEntered: boolean;
+  finalApproachEntered: boolean;
+  approachDialogueComplete: boolean;
   confrontationBeatIndex: number;
+  confrontationBeatId: string;
+  confrontationChoices: import("@/types/deep-core").ConfrontationChoiceId[];
   confrontationComplete: boolean;
   plugChoice: PlugChoice | null;
 };
