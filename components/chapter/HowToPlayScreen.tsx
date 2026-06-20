@@ -129,7 +129,7 @@ export function HowToPlayScreen({
             {exiting ? "Initializing uplink…" : "Begin Mission"}
           </button>
           <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-zinc-400">
-            Six hours remain · Sector 07 awaits
+            5h 47m remain · Sector 07 awaits
           </p>
         </div>
       </div>

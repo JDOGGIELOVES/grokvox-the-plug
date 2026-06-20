@@ -32,6 +32,7 @@ import { resolvePersonality } from "@/lib/dialogue/personalities";
 import { calculateChapterProgress } from "@/lib/chapter-progress";
 import { buildPlayerDialogueContext } from "@/lib/dialogue/player-context";
 import { getHallucinationEvent } from "@/lib/hallucinations";
+import { getPersonalizedChoiceConsequence } from "@/lib/hallucinations/hallucination-consequences";
 
 import { INITIAL_MOOD, type GroknetMood } from "@/lib/groknet";
 import {
@@ -813,7 +814,13 @@ export function ActOneInfiltration() {
         screenShaking: choice === "deny",
       }));
 
-      setGroknetWhisper(consequence.groknetLine, 6000);
+      const personalized = getPersonalizedChoiceConsequence(
+        eventId,
+        choice,
+        consequence.groknetLine,
+        buildActOneHallucinationContext(stateRef.current),
+      );
+      setGroknetWhisper(personalized, 6000);
       resolveChoice(choice);
 
       if (choice === "deny") {

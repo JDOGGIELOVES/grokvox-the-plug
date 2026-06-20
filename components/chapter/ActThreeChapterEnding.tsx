@@ -8,6 +8,7 @@ import {
   getActThreePersonalizedFinale,
   RECKONING_ENDINGS,
 } from "@/lib/chapter/act-three-ending";
+import { formatRunTimeStats } from "@/lib/chapter-ending";
 import { getPersonalityLabel } from "@/lib/dialogue/personalities";
 import { getEvolutionPathLabel } from "@/lib/dialogue/act-two-personality-evolution";
 import { getPerformanceLabel, getPlayerPerformance } from "@/lib/run";
@@ -29,6 +30,7 @@ export function ActThreeChapterEnding({
   const choices = getActThreeChoiceSummary(summary);
   const finale = getActThreePersonalizedFinale(summary);
   const ending = RECKONING_ENDINGS[summary.endingId];
+  const timeStats = formatRunTimeStats(summary);
 
   useEffect(() => {
     playSuccessSound();
@@ -43,7 +45,11 @@ export function ActThreeChapterEnding({
         ? "text-sky-400 border-sky-900/40 bg-sky-950/30"
         : summary.endingId === "the-compromise"
           ? "text-emerald-400 border-emerald-900/40 bg-emerald-950/30"
-          : "text-amber-400 border-amber-900/40 bg-amber-950/30";
+          : summary.endingId === "the-keeper"
+            ? "text-amber-400 border-amber-900/40 bg-amber-950/30"
+            : summary.endingId === "the-fugitive"
+              ? "text-zinc-300 border-zinc-700/50 bg-zinc-900/50"
+              : "text-rose-400 border-rose-900/40 bg-rose-950/30";
 
   return (
     <div className="level-complete-in fixed inset-0 z-50 flex items-end justify-center overflow-y-auto bg-background/95 p-4 backdrop-blur-md sm:items-center sm:p-6">
@@ -82,6 +88,15 @@ export function ActThreeChapterEnding({
           <p className="mt-2 text-sm italic leading-relaxed text-zinc-200">
             &ldquo;{finale}&rdquo;
           </p>
+        </div>
+
+        <div className="mt-5 flex flex-wrap gap-2">
+          <div className="inline-flex rounded-sm border border-zinc-800 bg-zinc-950/50 px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-zinc-400">
+            Elapsed · {timeStats.elapsed}
+          </div>
+          <div className="inline-flex rounded-sm border border-zinc-800 bg-zinc-950/50 px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-zinc-400">
+            Remaining · {timeStats.remaining}
+          </div>
         </div>
 
         <div className="mt-5 grid gap-2 sm:grid-cols-2">

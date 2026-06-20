@@ -640,7 +640,7 @@ const SEMANTIC_RULES: SemanticRule[] = [
         "The kill switch is mine to permit. …You left it. …That was love or arrogance.",
       ],
       baseline: [
-        "…Six hours to the core. …Your hook. …Your clock.",
+        "…5h 47m to the core. …Your hook. …Your clock.",
       ],
     },
   },

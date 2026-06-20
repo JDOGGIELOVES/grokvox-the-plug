@@ -53,9 +53,12 @@ import { resolveReckoningEnding } from "@/lib/chapter/act-three-ending";
 import { getTransitionWhisper } from "@/lib/chapter/area-transitions";
 import {
   buildActThreeDialogueContext,
+  getActThreeOpeningPreamble,
   type ActThreeDialogueContext,
 } from "@/lib/dialogue/act-three-context";
 import { getHallucinationEvent } from "@/lib/hallucinations";
+import { getPersonalizedChoiceConsequence } from "@/lib/hallucinations/hallucination-consequences";
+
 import {
   getPersonalizedGardenChoiceEcho,
   getPersonalizedGardenVision,
@@ -258,6 +261,7 @@ export function ActThreeReckoning() {
     awaitingChoice,
     visionText,
     eventTitle,
+    profile,
     triggerHallucination,
     endHallucination,
   } = useHallucination({
@@ -316,6 +320,11 @@ export function ActThreeReckoning() {
     }
 
     setActTwo(save.act2Summary);
+    const carriedMs = Math.min(
+      save.act2Summary.timeRemainingMs,
+      ACT_THREE_TIME_BUDGET_MS,
+    );
+    setClockInitialMs(carriedMs);
     setState(createInitialRunState(save.act2Summary));
   }, [router]);
 
@@ -470,7 +479,15 @@ export function ActThreeReckoning() {
       });
 
       endHallucination();
-      setGroknetWhisper(consequence.groknetLine, 8000, true);
+      const personalized = dialogueContext
+        ? getPersonalizedChoiceConsequence(
+            eventId,
+            choice,
+            consequence.groknetLine,
+            dialogueContext,
+          )
+        : consequence.groknetLine;
+      setGroknetWhisper(personalized, 8000, true);
 
       if (eventId === "the-garden" && dialogueContext) {
         const echo = getPersonalizedGardenChoiceEcho(dialogueContext, choice);
@@ -805,6 +822,21 @@ export function ActThreeReckoning() {
     setState(createInitialRunState(actTwo));
   }, [actTwo]);
 
+  const handleActThreeTransitionComplete = useCallback(() => {
+    const ctx = actTwo ? buildActThreeDialogueContext(actTwo) : null;
+    const preamble = ctx ? getActThreeOpeningPreamble(ctx) : null;
+    setState((s) =>
+      s
+        ? {
+            ...s,
+            phase: "playing",
+            lastActionAt: Date.now(),
+            groknetWhisper: preamble,
+          }
+        : s,
+    );
+  }, [actTwo]);
+
   if (!actTwo || !state) {
     return (
       <GameShell>
@@ -818,18 +850,27 @@ export function ActThreeReckoning() {
   }
 
   const playing = state.phase === "playing";
-  const controlsLocked = active && phase === "peak" && !awaitingChoice;
+  const controlsLocked =
+    !playing ||
+    active ||
+    state.disorientation.active ||
+    state.phase === "transition" ||
+    areaTransition !== null;
+  const overlayIntensity =
+    clock.isCritical || active || aggression.level >= 55 ? "tense" : "calm";
 
   return (
-    <GameShell shaking={state.screenShaking} variant="act-3">
+    <GameShell
+      shaking={state.screenShaking || (active && (profile?.screenShake ?? false))}
+      variant="act-3"
+      stage={playing ? state.actThreeStage : undefined}
+      overlayIntensity={overlayIntensity}
+      hallucinationActive={active}
+    >
       {state.phase === "transition" ? (
         <ActThreeTransition
           actTwo={actTwo}
-          onComplete={() =>
-            setState((s) =>
-              s ? { ...s, phase: "playing", lastActionAt: Date.now() } : s,
-            )
-          }
+          onComplete={handleActThreeTransitionComplete}
         />
       ) : null}
 

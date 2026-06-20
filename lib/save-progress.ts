@@ -152,6 +152,8 @@ export function clearGameSave(): void {
   try {
     window.localStorage.removeItem(SAVE_STORAGE_KEY);
     window.localStorage.removeItem(CHECKPOINT_STORAGE_KEY);
+    window.localStorage.removeItem(ACT_TWO_CHECKPOINT_STORAGE_KEY);
+    window.localStorage.removeItem(ACT_THREE_CHECKPOINT_STORAGE_KEY);
   } catch {
     // Ignore
   }

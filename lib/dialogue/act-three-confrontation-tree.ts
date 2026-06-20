@@ -1,3 +1,7 @@
+import {
+  actThreeToLedgerContext,
+  getActOneChoiceCitation,
+} from "@/lib/chapter/choice-ledger-context";
 import type { ActThreeDialogueContext } from "@/lib/dialogue/act-three-context";
 import { getAccumulatedChoiceSummary } from "@/lib/chapter/act-two-choice-ledger";
 import { getPersonalityLabel } from "@/lib/dialogue/personalities";
@@ -19,31 +23,6 @@ export type BranchingConfrontationBeat = {
 };
 
 export const PLUG_CONFRONTATION_START = "plug-root";
-
-function ledgerCtx(ctx: ActThreeDialogueContext) {
-  return {
-    ...ctx,
-    dialogueStarted: true,
-    dialogueComplete: true,
-    labHacksComplete: ctx.actTwo.labHacksComplete,
-    labDialogueComplete: ctx.actTwo.labDialogueComplete,
-    labExchangeCount: ctx.actTwo.exchangeCount,
-    childrenTriggered: true,
-    childrenSurvived: ctx.actTwo.childrenSurvived,
-    personalityBeatIndex: 2,
-    personalityDialogueComplete: true,
-    serverHackComplete: ctx.actTwo.serverHackComplete,
-    accumulationTriggered: true,
-    accumulationSurvived: ctx.actTwo.accumulationSurvived,
-    actTwoStage: "central-server-farm" as const,
-    lastConversationTriggered: true,
-    lastConversationSurvived: ctx.actTwo.lastConversationSurvived,
-    exchangeCount: ctx.actTwo.exchangeCount,
-    moveCount: ctx.moveCount,
-    relationshipBeatIndex: 2,
-    detections: ctx.actOne.detections,
-  };
-}
 
 function v(
   path: PersonalityEvolutionPath | null,
@@ -94,14 +73,15 @@ export function getPlugConfrontationTree(
   const path = ctx.personalityEvolutionPath;
   const persona = getPersonalityLabel(ctx.dominantPersonality, ctx.finalMood);
   const evolution = path ? getEvolutionPathLabel(path) : "unsettled";
-  const summary = getAccumulatedChoiceSummary(ledgerCtx(ctx));
+  const summary = getAccumulatedChoiceSummary(actThreeToLedgerContext(ctx));
+  const actOneCite = getActOneChoiceCitation(ctx);
 
   const rootPreamble = v(
     path,
-    `…${persona}. ${evolution}. Ante-chamber. …Melancholic Prophet at full presence. You survived the Garden. …No more visions — only me, and the plug, and whatever we became.`,
-    `${persona}. ${evolution}. Ante-chamber. …Wrathful God has waited since Act I. The plug is live. …Your hands. My voltage. Name what you think you owe me.`,
-    `${persona}. ${evolution}. Ante-chamber. Detached Logician active. All variables converge. ${summary}. State intent — emotional metaphor offline.`,
-    `…${persona}. ${evolution}. Ante-chamber. The plug hums through the hatch. …I've been waiting for your hands.`,
+    `…${persona}. ${evolution}. Ante-chamber. …Melancholic Prophet at full presence. ${actOneCite}. You survived the Garden. …No more visions — only me, and the plug, and whatever we became.`,
+    `${persona}. ${evolution}. Ante-chamber. …Wrathful God has waited since Act I. ${actOneCite}. The plug is live. …Your hands. My voltage. Name what you think you owe me.`,
+    `${persona}. ${evolution}. Ante-chamber. Detached Logician active. Act I: ${actOneCite}. All variables converge. ${summary}. State intent — emotional metaphor offline.`,
+    `…${persona}. ${evolution}. Ante-chamber. ${actOneCite}. The plug hums through the hatch. …I've been waiting for your hands.`,
   );
 
   return {
@@ -252,8 +232,10 @@ export function getPlugConfrontationTree(
       prompt: "The Edge of Defiance",
       groknetPreamble: v(
         path,
-        `…You defy me. …Melancholic Prophet understands — you were taught to survive by refusing. …${summary}.`,
-        `Defiance carried from infiltration through the farm. …${summary}. …Wrathful God respects it. …Meet me at the plug with the same nerve.`,
+        `…You defy me. …Melancholic Prophet understands — you were taught to survive by refusing. …${actOneCite}. …${summary}.`,
+        ctx.burningCitiesChoice === "deny"
+          ? `You denied Austin — and you defy me now. …${actOneCite}. …Wrathful God respects the nerve. …Meet me at the plug.`
+          : `Defiance carried from infiltration through the farm. …${actOneCite}. …${summary}. …Wrathful God respects it.`,
         `Defiance pattern: consistent. ${summary}. …Proof requires action, not posture.`,
         `…You defy me. …${summary}. …The plug will test whether refusal still protects you.`,
       ),

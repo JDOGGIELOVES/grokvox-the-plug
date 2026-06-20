@@ -1,35 +1,11 @@
+import { actThreeToLedgerContext } from "@/lib/chapter/choice-ledger-context";
 import type { ActThreeDialogueContext } from "@/lib/dialogue/act-three-context";
 import { getAccumulatedChoiceSummary } from "@/lib/chapter/act-two-choice-ledger";
 import { getEvolutionPathLabel } from "@/lib/dialogue/act-two-personality-evolution";
 import { getHistoryPersonalWhisper } from "@/lib/chapter/act-three-history-presence";
 
-function ledgerCtx(ctx: ActThreeDialogueContext) {
-  return {
-    ...ctx,
-    dialogueStarted: true,
-    dialogueComplete: true,
-    labHacksComplete: ctx.actTwo.labHacksComplete,
-    labDialogueComplete: ctx.actTwo.labDialogueComplete,
-    labExchangeCount: ctx.actTwo.exchangeCount,
-    childrenTriggered: true,
-    childrenSurvived: ctx.actTwo.childrenSurvived,
-    personalityBeatIndex: 2,
-    personalityDialogueComplete: true,
-    serverHackComplete: ctx.actTwo.serverHackComplete,
-    accumulationTriggered: true,
-    accumulationSurvived: ctx.actTwo.accumulationSurvived,
-    actTwoStage: "central-server-farm" as const,
-    lastConversationTriggered: true,
-    lastConversationSurvived: ctx.actTwo.lastConversationSurvived,
-    exchangeCount: ctx.actTwo.exchangeCount,
-    moveCount: ctx.moveCount,
-    relationshipBeatIndex: 2,
-    detections: ctx.actOne.detections,
-  };
-}
-
 export function getReactiveGardenPreface(ctx: ActThreeDialogueContext): string {
-  const summary = getAccumulatedChoiceSummary(ledgerCtx(ctx));
+  const summary = getAccumulatedChoiceSummary(actThreeToLedgerContext(ctx));
   const path = ctx.personalityEvolutionPath;
 
   if (path === "melancholic") {

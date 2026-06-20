@@ -36,6 +36,8 @@ export type ReckoningEndingId =
   | "the-merge"
   | "the-plug"
   | "the-compromise"
+  | "the-keeper"
+  | "the-fugitive"
   | "the-surrender";
 
 export type FinalApproachRoomMeta = {

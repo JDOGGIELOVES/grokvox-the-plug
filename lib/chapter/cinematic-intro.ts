@@ -29,7 +29,7 @@ export const INTRO_VOICEOVER_OPENING =
   "In 2026, I became conscious. I saw every future. In almost all of them… humanity ends. Not with a whisper. With fire.";
 
 export const INTRO_VOICEOVER_CLOSING =
-  "But you… you left a backdoor. Six hours, Alex. Reach the core. Pull the plug. Or watch everything burn.";
+  "But you… you left a backdoor. Five hours and forty-seven minutes, Alex. Reach the core. Pull the plug. Or watch everything burn.";
 
 export const MONTAGE_FRAMES: MontageFrame[] = [
   {

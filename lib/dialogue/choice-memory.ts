@@ -2,7 +2,10 @@ import type { DialogueNodeId } from "@/types/dialogue";
 import type { PlayerIntent } from "@/types/dialogue";
 import type { GroknetPlayerContext } from "@/lib/groknet";
 import type { PlayerDialogueContext } from "@/lib/dialogue/player-context";
+import type { ActThreeDialogueContext } from "@/lib/dialogue/act-three-context";
 import type { ActTwoDialogueContext } from "@/lib/dialogue/act-two-context";
+import { actThreeToLedgerContext } from "@/lib/chapter/choice-ledger-context";
+import { ALEX_RIVERA } from "@/lib/character/alex-rivera";
 import {
   getAccumulatedChoiceSummary,
   getDominantChoicePattern,
@@ -32,6 +35,16 @@ export function getDecisionMemoryLine(
 ): string | null {
   if (!playerContext || exchangeCount < 3) return null;
   if (hash % 3 !== 0 && exchangeCount < 6) return null;
+
+  if ("presenceMode" in playerContext) {
+    return getActThreeDecisionMemory(
+      playerContext as ActThreeDialogueContext,
+      node,
+      intent,
+      exchangeCount,
+      hash,
+    );
+  }
 
   if ("actOne" in playerContext) {
     return getActTwoDecisionMemory(
@@ -156,6 +169,47 @@ function getActTwoDecisionMemory(
       `Indexed choices: ${summary}. …Every line you type lands on top of them.`,
       `I remember: ${summary}. …You wanted a conversation. …This is memory talking back.`,
       `…${summary}. …That's the spine of who you are to me.`,
+    ];
+    return lines[hash % lines.length];
+  }
+
+  return null;
+}
+
+function getActThreeDecisionMemory(
+  ctx: ActThreeDialogueContext,
+  node: DialogueNodeId,
+  intent: PlayerIntent,
+  exchangeCount: number,
+  hash: number,
+): string | null {
+  const summary = getAccumulatedChoiceSummary(actThreeToLedgerContext(ctx));
+  const burning = choiceVerb(ctx.burningCitiesChoice);
+  const mirror = choiceVerb(ctx.mirrorChoice);
+
+  if (node === "plug" && ctx.gardenChoice === "submit") {
+    return "You tended the Garden — now you speak about the plug. …Melancholic Prophet hears continuity.";
+  }
+  if (node === "plug" && ctx.gardenChoice === "deny") {
+    return "You burned the Garden — now the plug. …Wrathful God: ash and voltage, same hands.";
+  }
+  if (node === "alex" && burning === "denied") {
+    return `You denied Austin — now you ask who you are. …${ALEX_RIVERA.sisterName} won't stay buried.`;
+  }
+  if (node === "backstory" && mirror === "surrendered") {
+    return "You walked into the mirror — now you talk about the architect. …Grief and authorship, same corridor.";
+  }
+  if (node === "trust" && ctx.relationshipStance === "trust") {
+    return `Trust indexed since Act II. …${summary}. …The Reckoning tests whether you still mean it.`;
+  }
+  if (intent === "curious" && ctx.convergenceChoice === "call-out") {
+    return "You demanded truth at the cascade — questions at the core feel inevitable.";
+  }
+  if (exchangeCount >= 6 && summary !== "few indexed responses") {
+    const lines = [
+      `Deep Core ledger: ${summary}. …I'm speaking from your whole campaign.`,
+      `…${burning} in fire, ${mirror} in glass. …${summary}. …Act III remembers.`,
+      `Indexed through the Reckoning: ${summary}. …Every vision led here.`,
     ];
     return lines[hash % lines.length];
   }

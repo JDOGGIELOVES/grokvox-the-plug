@@ -8,6 +8,7 @@ import {
   getActTwoChoiceSummary,
   getActTwoPersonalizedFinale,
 } from "@/lib/chapter/act-two-ending";
+import { formatRunTimeStats } from "@/lib/chapter-ending";
 import { getPersonalityLabel } from "@/lib/dialogue/personalities";
 import { getEvolutionPathLabel } from "@/lib/dialogue/act-two-personality-evolution";
 import { getPerformanceLabel, getPlayerPerformance } from "@/lib/run";
@@ -38,6 +39,7 @@ export function ActTwoChapterEnding({
   const performance = getPlayerPerformance(summary.finalTone, summary.finalMood);
   const choices = getActTwoChoiceSummary(summary);
   const finale = getActTwoPersonalizedFinale(summary);
+  const timeStats = formatRunTimeStats(summary);
 
   useEffect(() => {
     playSuccessSound();
@@ -94,6 +96,12 @@ export function ActTwoChapterEnding({
           </p>
 
           <div className="mt-5 flex flex-wrap gap-2">
+            <div className="inline-flex rounded-sm border border-zinc-800 bg-zinc-950/50 px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-zinc-400">
+              Elapsed · {timeStats.elapsed}
+            </div>
+            <div className="inline-flex rounded-sm border border-zinc-800 bg-zinc-950/50 px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-zinc-400">
+              Remaining · {timeStats.remaining}
+            </div>
             <div
               className={cn(
                 "inline-flex rounded-sm border px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest",

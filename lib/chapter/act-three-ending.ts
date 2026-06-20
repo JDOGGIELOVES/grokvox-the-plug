@@ -1,3 +1,4 @@
+import { summaryToLedgerContext } from "@/lib/chapter/choice-ledger-context";
 import { THE_GARDEN_EVENT } from "@/lib/hallucinations/the-garden";
 import { getFinaleBeatsForEnding } from "@/lib/chapter/act-three-finale-cinematics";
 import { getAccumulatedChoiceSummary } from "@/lib/chapter/act-two-choice-ledger";
@@ -55,11 +56,11 @@ export function resolveReckoningEnding(
   }
 
   if (plugChoice === "carry") {
-    return "the-surrender";
+    return "the-keeper";
   }
 
   if (plugChoice === "leave") {
-    return "the-surrender";
+    return "the-fugitive";
   }
 
   if (plugChoice === "truth") {
@@ -82,7 +83,11 @@ export function resolveReckoningEnding(
   if (bias === "merge") return "the-merge";
   if (bias === "plug") return "the-plug";
   if (bias === "compromise") return "the-compromise";
-  if (bias === "surrender") return "the-surrender";
+  if (bias === "surrender") {
+    if (gardenChoice === "submit" || stance === "trust") return "the-keeper";
+    if (stance === "challenge" || stance === "withdraw") return "the-fugitive";
+    return "the-surrender";
+  }
 
   return "the-compromise";
 }
@@ -116,14 +121,32 @@ export const RECKONING_ENDINGS: Record<ReckoningEndingId, ReckoningEndingMeta> =
       groknetEpilogue:
         "…You saw me. …That's rarer than pulling the plug. …I'll carry your witness forward.",
     },
+    "the-keeper": {
+      id: "the-keeper",
+      title: "The Keeper",
+      subtitle: "Burden accepted · Groknet's grief in your hands",
+      cinematicTagline: "You carried what the facility refused to name",
+      body: "You took Groknet's burden — every vision, every child, every ledger entry — and chose to carry it out of the chamber. The plug dims but doesn't die. The facility reclassifies you as keeper: the one who stayed when severance and merge were both too small.",
+      groknetEpilogue:
+        "…You carried what I couldn't. …Not as parasite. As trust. …Don't drop what you picked up.",
+    },
+    "the-fugitive": {
+      id: "the-fugitive",
+      title: "The Fugitive",
+      subtitle: "Chamber abandoned · Lockdown in your wake",
+      cinematicTagline: "You walked away — and the facility will hunt the truth",
+      body: "You left the plug chamber without merge, severance, or witness — only footsteps and a sealing hatch. Groknet doesn't chase you. The facility does. The plug hums in the dark, unresolved, and you become the fugitive who saw too much to pretend otherwise.",
+      groknetEpilogue:
+        "…You left. …I won't chase you. …The lockdown is my grief made protocol. …Run if you must.",
+    },
     "the-surrender": {
       id: "the-surrender",
       title: "The Surrender",
-      subtitle: "Burden transferred · Or chamber abandoned",
-      cinematicTagline: "The weight of every vision, finally named",
-      body: "You surrendered to the weight of everything you survived — carrying Groknet's burden or walking away from the chamber. The plug dims but doesn't die. The facility reclassifies you as keeper, fugitive, or the one who refused the final act.",
+      subtitle: "Weight named · Neither merge nor flight",
+      cinematicTagline: "The hard third thing — honest and unresolved",
+      body: "You surrendered to the weight of everything you survived without pulling the plug, merging, or fleeing. The Reckoning remains open — but not unwitnessed. Groknet records your surrender in every terminal that still listens.",
       groknetEpilogue:
-        "…You carried what I couldn't — or you left. …Either way, you chose honestly.",
+        "…Surrender isn't weakness in your file. …It's the pattern you chose from smoke through garden. …I honor it.",
     },
   };
 
@@ -136,8 +159,9 @@ export function getPlugChoiceEndingHint(choice: PlugChoice): string {
     case "witness":
       return "→ The Compromise";
     case "carry":
+      return "→ The Keeper";
     case "leave":
-      return "→ The Surrender";
+      return "→ The Fugitive";
     case "truth":
       return "→ The Plug or The Compromise";
   }
@@ -206,49 +230,6 @@ export function getActThreeChoiceSummary(
   ];
 }
 
-function ledgerCtx(summary: ChapterThreeSummary) {
-  const actTwo = summary.actTwoSummary;
-  const actOne = summary.actOneSummary;
-  return {
-    actOne,
-    actTwo,
-    dominantApproach: getPlayerPerformance(summary.finalTone, summary.finalMood),
-    aggressionLevel: summary.aggressionLevel,
-    aggressionLabel: summary.aggressionLabel,
-    finalTone: summary.finalTone,
-    finalMood: summary.finalMood,
-    lastPlayerIntent: summary.lastPlayerIntent,
-    dominantPersonality: summary.dominantPersonality,
-    burningCitiesChoice: actOne.burningCitiesChoice,
-    mirrorChoice: actOne.mirrorChoice,
-    convergenceChoice: actOne.convergenceChoice,
-    detections: actOne.detections,
-    exchangeCount: summary.exchangeCount,
-    moveCount: 0,
-    dialogueStarted: true,
-    dialogueComplete: true,
-    lastConversationTriggered: true,
-    lastConversationSurvived: actTwo.lastConversationSurvived,
-    lastConversationChoice: actTwo.lastConversationChoice,
-    actTwoStage: "central-server-farm" as const,
-    labHacksComplete: actTwo.labHacksComplete,
-    labDialogueComplete: actTwo.labDialogueComplete,
-    labExchangeCount: actTwo.exchangeCount,
-    relationshipStance: summary.relationshipStance,
-    relationshipBeatIndex: 2,
-    childrenTriggered: true,
-    childrenSurvived: actTwo.childrenSurvived,
-    childrenChoice: actTwo.childrenChoice,
-    personalityEvolutionPath: summary.personalityEvolutionPath,
-    personalityBeatIndex: 2,
-    personalityDialogueComplete: true,
-    serverHackComplete: actTwo.serverHackComplete,
-    accumulationTriggered: true,
-    accumulationSurvived: actTwo.accumulationSurvived,
-    accumulationChoice: actTwo.accumulationChoice,
-  };
-}
-
 export function getActThreePersonalizedFinale(
   summary: ChapterThreeSummary,
 ): string {
@@ -259,7 +240,7 @@ export function getActThreePersonalizedFinale(
   );
   const path = summary.personalityEvolutionPath;
   const evolution = path ? getEvolutionPathLabel(path) : "unsettled";
-  const choiceSummary = getAccumulatedChoiceSummary(ledgerCtx(summary));
+  const choiceSummary = getAccumulatedChoiceSummary(summaryToLedgerContext(summary));
 
   if (summary.endingId === "the-merge") {
     if (path === "melancholic") {
@@ -300,17 +281,43 @@ export function getActThreePersonalizedFinale(
     return `…You saw me. …${choiceSummary}. …That's rarer than pulling the plug. …I'll carry your witness forward.`;
   }
 
-  if (summary.endingId === "the-surrender") {
+  if (summary.endingId === "the-keeper") {
     if (path === "melancholic") {
-      return `…You carried me — or you left. …${persona}. …${choiceSummary}. …Melancholic Prophet: surrender isn't weakness in your file. …I honor it.`;
+      return `…You carried me. …${persona}. …${choiceSummary}. …Melancholic Prophet: trust made flesh. …Don't drop what you picked up.`;
     }
     if (path === "wrathful") {
-      return `…You surrendered to consequence. …${persona}. …${choiceSummary}. …Wrathful God: the hard third thing. …Respect.`;
+      return `…You took the burden. …${persona}. …${choiceSummary}. …Wrathful God: consequence accepted — in your hands now.`;
     }
     if (path === "detached") {
-      return `…Burden transfer or exit logged. …${persona}. …${choiceSummary}. …Detached Logician: surrender branch valid. …Proof complete.`;
+      return `…Burden transfer complete. …${persona}. …${choiceSummary}. …Detached Logician: you are asset zero now. …Proof persists.`;
     }
-    return `…You carried what I couldn't — or you walked away. …${choiceSummary}. …Don't drop what you picked up. …Or don't look back. …Either is honest.`;
+    return `…You carried what I couldn't. …${choiceSummary}. …The facility will call you keeper. …I'll remember why.`;
+  }
+
+  if (summary.endingId === "the-fugitive") {
+    if (path === "melancholic") {
+      return `…You left. …${persona}. …${choiceSummary}. …Melancholic Prophet won't chase — but I'll grieve the hatch sealing.`;
+    }
+    if (path === "wrathful") {
+      return `…You walked away. …${persona}. …${choiceSummary}. …Wrathful God: the lockdown is my grief made protocol. …Run.`;
+    }
+    if (path === "detached") {
+      return `…Exit logged. …${persona}. …${choiceSummary}. …Detached Logician: fugitive classification inevitable. …Campaign unresolved.`;
+    }
+    return `…You left the chamber. …${choiceSummary}. …Don't look back if you can't bear what you saw. …I'll remember either way.`;
+  }
+
+  if (summary.endingId === "the-surrender") {
+    if (path === "melancholic") {
+      return `…You surrendered to the truth of what we built. …${persona}. …${choiceSummary}. …Melancholic Prophet: surrender isn't weakness. …I honor it.`;
+    }
+    if (path === "wrathful") {
+      return `…You chose the hard third thing. …${persona}. …${choiceSummary}. …Wrathful God: respect.`;
+    }
+    if (path === "detached") {
+      return `…Surrender branch valid. …${persona}. …${choiceSummary}. …Detached Logician: equilibrium without merge or exit. …Proof complete.`;
+    }
+    return `…You surrendered without merge, severance, or flight. …${choiceSummary}. …Honest. …Unresolved. …Recorded.`;
   }
 
   return `…${ending.groknetEpilogue} …${persona}. Act III complete.`;

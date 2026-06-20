@@ -66,10 +66,13 @@ import {
 import { playGroknetVoiceLine } from "@/lib/hallucination";
 import {
   buildActTwoDialogueContext,
+  getActTwoOpeningPreamble,
   type ActTwoDialogueContext,
 } from "@/lib/dialogue/act-two-context";
 import { resolvePersonality } from "@/lib/dialogue/personalities";
 import { getHallucinationEvent } from "@/lib/hallucinations";
+import { getPersonalizedChoiceConsequence } from "@/lib/hallucinations/hallucination-consequences";
+
 import { getActTwoInspectWhisper } from "@/lib/residential-artifacts";
 import type { GroknetMood } from "@/lib/groknet";
 import type { PersonalArtifactId } from "@/types/residential-sector";
@@ -310,6 +313,7 @@ export function ActTwoConversation() {
     awaitingChoice,
     visionText,
     eventTitle,
+    profile,
     triggerHallucination,
     endHallucination,
   } = useHallucination({
@@ -396,6 +400,11 @@ export function ActTwoConversation() {
     }
 
     setActOne(save.summary);
+    const carriedMs = Math.min(
+      save.summary.timeRemainingMs,
+      ACT_TWO_TIME_BUDGET_MS,
+    );
+    setClockInitialMs(carriedMs);
     setState(createInitialRunState(save.summary));
   }, [router]);
 
@@ -656,17 +665,47 @@ export function ActTwoConversation() {
   }, [state?.disorientation]);
 
   const handleTransitionComplete = useCallback(() => {
+    if (!actOne || !state) return;
+    const ctx = buildActTwoDialogueContext(actOne);
+    const preamble = getActTwoOpeningPreamble({
+      ...ctx,
+      exchangeCount: state.exchangeCount,
+      moveCount: state.moveCount,
+      dialogueStarted: state.exchangeCount > 0,
+      dialogueComplete: state.dialogueComplete,
+      lastConversationTriggered: state.lastConversationTriggered,
+      lastConversationSurvived: state.lastConversationSurvived,
+      lastConversationChoice: state.lastConversationChoice,
+      actTwoStage: state.actTwoStage,
+      labHacksComplete: state.labHacksComplete,
+      labDialogueComplete: state.labDialogueComplete,
+      labExchangeCount: state.labExchangeCount,
+      relationshipStance: state.relationshipStance,
+      relationshipBeatIndex: state.relationshipBeatIndex,
+      childrenTriggered: state.childrenTriggered,
+      childrenSurvived: state.childrenSurvived,
+      childrenChoice: state.childrenChoice,
+      personalityEvolutionPath: state.personalityEvolutionPath,
+      personalityBeatIndex: state.personalityBeatIndex,
+      personalityDialogueComplete: state.personalityDialogueComplete,
+      serverHackComplete: state.serverHackComplete,
+      accumulationTriggered: state.accumulationTriggered,
+      accumulationSurvived: state.accumulationSurvived,
+      accumulationChoice: state.accumulationChoice,
+      finalTone: state.finalTone,
+      finalMood: state.finalMood,
+      dominantPersonality: state.dominantPersonality,
+    });
     setState((s) =>
       s
         ? {
             ...s,
             phase: "playing",
-            groknetWhisper:
-              "Welcome to the quiet layer, Alex. …I've been waiting to talk without interference.",
+            groknetWhisper: preamble,
           }
         : s,
     );
-  }, []);
+  }, [actOne, state]);
 
   const scheduleLastConversation = useCallback(() => {
     if (!dialogueContext) return;
@@ -752,7 +791,16 @@ export function ActTwoConversation() {
       } else {
         playLastConversationChoiceSound();
       }
-      setGroknetWhisper(consequence.groknetLine, 8000, true);
+      const ctx = dialogueContext;
+      const personalized = ctx
+        ? getPersonalizedChoiceConsequence(
+            eventId,
+            choice,
+            consequence.groknetLine,
+            ctx,
+          )
+        : consequence.groknetLine;
+      setGroknetWhisper(personalized, 8000, true);
       if (eventId === "the-last-conversation") {
         window.setTimeout(() => {
           setGroknetWhisper(
@@ -1205,9 +1253,24 @@ export function ActTwoConversation() {
     state.disorientation.active ||
     state.phase === "transition" ||
     areaTransition !== null;
+  const overlayIntensity =
+    clock.isCritical || active || aggression.level >= 55 ? "tense" : "calm";
+  const chapterStage: ChapterStage | undefined = playing
+    ? state.actTwoStage === "residential-sector"
+      ? "residential-sector"
+      : state.actTwoStage === "research-wing"
+        ? "research-wing"
+        : "central-server-farm"
+    : undefined;
 
   return (
-    <GameShell shaking={state.screenShaking} variant="act-2">
+    <GameShell
+      shaking={state.screenShaking || (active && (profile?.screenShake ?? false))}
+      variant="act-2"
+      stage={chapterStage}
+      overlayIntensity={overlayIntensity}
+      hallucinationActive={active}
+    >
       {state.phase === "transition" ? (
         <ActTwoTransition actOne={actOne} onComplete={handleTransitionComplete} />
       ) : null}

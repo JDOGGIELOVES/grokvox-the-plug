@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { actThreeToLedgerContext } from "@/lib/chapter/choice-ledger-context";
 import type { ActThreeDialogueContext } from "@/lib/dialogue/act-three-context";
 import {
   getAccumulatedChoiceEntries,
@@ -19,31 +20,6 @@ type PlugTerminalPanelProps = {
   onProceed: () => void;
 };
 
-function ledgerCtx(ctx: ActThreeDialogueContext) {
-  return {
-    ...ctx,
-    dialogueStarted: true,
-    dialogueComplete: true,
-    labHacksComplete: ctx.actTwo.labHacksComplete,
-    labDialogueComplete: ctx.actTwo.labDialogueComplete,
-    labExchangeCount: ctx.actTwo.exchangeCount,
-    childrenTriggered: true,
-    childrenSurvived: ctx.actTwo.childrenSurvived,
-    personalityBeatIndex: 2,
-    personalityDialogueComplete: true,
-    serverHackComplete: ctx.actTwo.serverHackComplete,
-    accumulationTriggered: true,
-    accumulationSurvived: ctx.actTwo.accumulationSurvived,
-    actTwoStage: "central-server-farm" as const,
-    lastConversationTriggered: true,
-    lastConversationSurvived: ctx.actTwo.lastConversationSurvived,
-    exchangeCount: ctx.actTwo.exchangeCount,
-    moveCount: ctx.moveCount,
-    relationshipBeatIndex: 2,
-    detections: ctx.actOne.detections,
-  };
-}
-
 export function PlugTerminalPanel({
   context,
   onProceed,
@@ -51,10 +27,11 @@ export function PlugTerminalPanel({
   const [visibleLines, setVisibleLines] = useState(0);
   const [ready, setReady] = useState(false);
   const variant = getPersonalityVariant(context);
-  const entries = getAccumulatedChoiceEntries(ledgerCtx(context)).filter(
+  const ledger = actThreeToLedgerContext(context);
+  const entries = getAccumulatedChoiceEntries(ledger).filter(
     (e) => e.choice !== "none",
   );
-  const summary = getAccumulatedChoiceSummary(ledgerCtx(context));
+  const summary = getAccumulatedChoiceSummary(ledger);
   const historyWhisper = getPlugHistoryWhisper(context);
 
   const terminalLines = [

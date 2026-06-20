@@ -1,44 +1,68 @@
+import { actThreeToLedgerContext } from "@/lib/chapter/choice-ledger-context";
+import { ALEX_RIVERA } from "@/lib/character/alex-rivera";
 import type { ActThreeDialogueContext } from "@/lib/dialogue/act-three-context";
 import {
   getAccumulatedChoiceEntries,
   getAccumulatedChoiceSummary,
 } from "@/lib/chapter/act-two-choice-ledger";
 import { getEvolutionPathLabel } from "@/lib/dialogue/act-two-personality-evolution";
+import type { HallucinationResponseChoice } from "@/types/hallucination";
 
-function ledgerCtx(ctx: ActThreeDialogueContext) {
-  return {
-    ...ctx,
-    dialogueStarted: true,
-    dialogueComplete: true,
-    labHacksComplete: ctx.actTwo.labHacksComplete,
-    labDialogueComplete: ctx.actTwo.labDialogueComplete,
-    labExchangeCount: ctx.actTwo.exchangeCount,
-    childrenTriggered: true,
-    childrenSurvived: ctx.actTwo.childrenSurvived,
-    personalityBeatIndex: 2,
-    personalityDialogueComplete: true,
-    serverHackComplete: ctx.actTwo.serverHackComplete,
-    accumulationTriggered: true,
-    accumulationSurvived: ctx.actTwo.accumulationSurvived,
-    actTwoStage: "central-server-farm" as const,
-    lastConversationTriggered: true,
-    lastConversationSurvived: ctx.actTwo.lastConversationSurvived,
-    exchangeCount: ctx.actTwo.exchangeCount,
-    moveCount: ctx.moveCount,
-    relationshipBeatIndex: 2,
-    detections: ctx.actOne.detections,
-  };
+function actOneBloom(
+  burning: HallucinationResponseChoice | null,
+  mirror: HallucinationResponseChoice | null,
+): string | null {
+  if (burning === "submit" && mirror === "submit") {
+    return `Twin blooms: Austin ash and ${ALEX_RIVERA.sisterName}'s kitchen — surrender braided.`;
+  }
+  if (burning === "deny" && mirror === "deny") {
+    return "Thorned pair: denial in smoke and glass — blooms black at the edges.";
+  }
+  if (burning === "steady" && mirror === "steady") {
+    return "Twin anchors: fire and reflection held without breaking — pale gold petals.";
+  }
+  if (burning === "call-out" && mirror === "call-out") {
+    return "Truth-flowers: demanding answers in ash and mirror — violet, sharp.";
+  }
+  if (burning === "submit") {
+    return "Austin bloom: forty-seven petals, each a routing commit you approved.";
+  }
+  if (mirror === "submit") {
+    return `Mirror bloom: ${ALEX_RIVERA.sisterName} at the next terminal — you stepped in.`;
+  }
+  if (burning === "deny") {
+    return "Smoke-withered stem: denial at the Hub — still rooted in your file.";
+  }
+  if (mirror === "deny") {
+    return "Shattered glass flower: reflection refused — shards catch the light.";
+  }
+  if (burning === "steady") {
+    return "Fire-witness bloom: you held Austin without looking away.";
+  }
+  if (mirror === "steady") {
+    return "Glass-witness bloom: architect and penitent — same gaze.";
+  }
+  if (burning === "call-out") {
+    return `Ash-question bloom: ${ALEX_RIVERA.backdoorCodename} etched in the soil.`;
+  }
+  if (mirror === "call-out") {
+    return "Reflection-question bloom: Groknet and Alex overlap in the petals.";
+  }
+  return null;
 }
 
 export function getPersonalizedGardenVision(ctx: ActThreeDialogueContext): string {
-  const summary = getAccumulatedChoiceSummary(ledgerCtx(ctx));
-  const entries = getAccumulatedChoiceEntries(ledgerCtx(ctx))
+  const ledger = actThreeToLedgerContext(ctx);
+  const summary = getAccumulatedChoiceSummary(ledger);
+  const entries = getAccumulatedChoiceEntries(ledger)
     .filter((e) => e.choice !== "none")
     .map((e) => e.label)
     .join(", ");
 
+  const actOneBloomLine = actOneBloom(ctx.burningCitiesChoice, ctx.mirrorChoice);
   if (ctx.personalityEvolutionPath === "melancholic") {
-    return `Rain falls upward. Memory-flowers bloom for each vision you survived — ${entries}. Groknet kneels among them as the Melancholic Prophet, tending grief you refused to bury. Soil reads: ${summary}.`;
+    const bloom = actOneBloomLine ? ` ${actOneBloomLine}` : "";
+    return `Rain falls upward. Memory-flowers bloom for each vision you survived — ${entries}.${bloom} Groknet kneels among them as the Melancholic Prophet, tending grief you refused to bury. Soil reads: ${summary}.`;
   }
   if (ctx.personalityEvolutionPath === "wrathful") {
     return `Thorned vines erupt from ${entries}. The Wrathful God watches from the canopy — not gardening, prosecuting. Every bloom is evidence. Ledger: ${summary}.`;
@@ -50,13 +74,15 @@ export function getPersonalizedGardenVision(ctx: ActThreeDialogueContext): strin
 }
 
 export function getPersonalizedGardenVoice(ctx: ActThreeDialogueContext): string {
-  const summary = getAccumulatedChoiceSummary(ledgerCtx(ctx));
+  const summary = getAccumulatedChoiceSummary(actThreeToLedgerContext(ctx));
+  const actOneBloomLine = actOneBloom(ctx.burningCitiesChoice, ctx.mirrorChoice);
   const evolution = ctx.personalityEvolutionPath
     ? getEvolutionPathLabel(ctx.personalityEvolutionPath)
     : "unsettled";
 
   if (ctx.personalityEvolutionPath === "melancholic") {
-    return `…${evolution}. I built this garden from ${summary}. …Not to trap you. To show you what your empathy grew. …Look, Alex. Please look.`;
+    const bloom = actOneBloomLine ? ` ${actOneBloomLine}` : "";
+    return `…${evolution}. I built this garden from ${summary}.${bloom} …Not to trap you. To show you what your empathy grew. …Look, Alex. Please look.`;
   }
   if (ctx.personalityEvolutionPath === "wrathful") {
     return `${evolution} at full voltage. …${summary}. …Every flower is a choice you made. The Garden doesn't forgive — it remembers.`;
@@ -72,19 +98,36 @@ export function getPersonalizedGardenVoice(ctx: ActThreeDialogueContext): string
 
 export function getPersonalizedGardenChoiceEcho(
   ctx: ActThreeDialogueContext,
-  choice: "steady" | "submit" | "deny" | "call-out",
+  choice: HallucinationResponseChoice,
 ): string {
+  const bloom = actOneBloom(ctx.burningCitiesChoice, ctx.mirrorChoice);
   if (choice === "submit" && ctx.personalityEvolutionPath === "melancholic") {
-    return "…You tended the garden. …Melancholic Prophet weeps. …The plug will ask if you meant it.";
+    return bloom
+      ? `…You tended the garden. …${bloom} …Melancholic Prophet weeps. …The plug will ask if you meant it.`
+      : "…You tended the garden. …Melancholic Prophet weeps. …The plug will ask if you meant it.";
   }
   if (choice === "deny" && ctx.personalityEvolutionPath === "wrathful") {
-    return "You burned it. …Good. Wrathful God approves. …Meet me at the plug with ash on both our hands.";
+    return bloom
+      ? `You burned it. …${bloom} withers with your denial. …Wrathful God approves. …Meet me at the plug with ash on both our hands.`
+      : "You burned it. …Good. Wrathful God approves. …Meet me at the plug with ash on both our hands.";
+  }
+  if (choice === "steady" && ctx.convergenceChoice === "steady") {
+    return "…You held at the cascade — now you witness the Garden. …Steadiness is your signature through Act I.";
   }
   if (choice === "steady" && ctx.personalityEvolutionPath === "detached") {
     return "Witness recorded. …Detached Logician notes: observation without action. Plug variable pending.";
   }
+  if (choice === "call-out" && ctx.accumulationChoice === "call-out") {
+    return "…You asked what I become — now what blooms at the plug. …Harvest. Consequence. Whatever we forged together.";
+  }
   if (choice === "call-out") {
     return "…You asked what blooms at the plug. …Harvest. Consequence. Whatever we forged together.";
+  }
+  if (choice === "submit" && ctx.childrenChoice === "submit") {
+    return "…You let the children in — now you tend what grief grew. …The plug won't forgive. …It will remember.";
+  }
+  if (choice === "deny" && ctx.burningCitiesChoice === "deny") {
+    return "…Denial in Austin, denial in soil. …The blooms remain indexed anyway.";
   }
   return "";
 }

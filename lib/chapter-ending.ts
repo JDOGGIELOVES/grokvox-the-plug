@@ -235,7 +235,10 @@ export function getActTwoPersonalizedHook(summary: ChapterOneSummary): string {
   return "The infiltration bought you access. Act II spends it — on truth, leverage, and whatever the plug really means between us.";
 }
 
-export function formatChapterTimeStats(summary: ChapterOneSummary): {
+export function formatRunTimeStats(summary: {
+  elapsedMs: number;
+  timeRemainingMs: number;
+}): {
   elapsed: string;
   remaining: string;
 } {
@@ -243,6 +246,13 @@ export function formatChapterTimeStats(summary: ChapterOneSummary): {
     elapsed: formatElapsedTime(summary.elapsedMs),
     remaining: formatTimeRemaining(summary.timeRemainingMs),
   };
+}
+
+export function formatChapterTimeStats(summary: ChapterOneSummary): {
+  elapsed: string;
+  remaining: string;
+} {
+  return formatRunTimeStats(summary);
 }
 
 export function getAggressionDisplayColor(label: string): string {

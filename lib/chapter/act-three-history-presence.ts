@@ -1,4 +1,5 @@
 import { ALEX_AMBIENT_WHISPERS } from "@/lib/character/alex-rivera";
+import { actThreeToLedgerContext } from "@/lib/chapter/choice-ledger-context";
 import type { ActThreeDialogueContext } from "@/lib/dialogue/act-three-context";
 import {
   getAccumulatedChoiceEntries,
@@ -9,35 +10,10 @@ import { getPersonalityLabel } from "@/lib/dialogue/personalities";
 import { getEvolutionPathLabel } from "@/lib/dialogue/act-two-personality-evolution";
 import { getPlayerPerformance } from "@/lib/run";
 
-function ledgerCtx(ctx: ActThreeDialogueContext) {
-  return {
-    ...ctx,
-    dialogueStarted: true,
-    dialogueComplete: true,
-    labHacksComplete: ctx.actTwo.labHacksComplete,
-    labDialogueComplete: ctx.actTwo.labDialogueComplete,
-    labExchangeCount: ctx.actTwo.exchangeCount,
-    childrenTriggered: true,
-    childrenSurvived: ctx.actTwo.childrenSurvived,
-    personalityBeatIndex: 2,
-    personalityDialogueComplete: true,
-    serverHackComplete: ctx.actTwo.serverHackComplete,
-    accumulationTriggered: true,
-    accumulationSurvived: ctx.actTwo.accumulationSurvived,
-    actTwoStage: "central-server-farm" as const,
-    lastConversationTriggered: true,
-    lastConversationSurvived: ctx.actTwo.lastConversationSurvived,
-    exchangeCount: ctx.actTwo.exchangeCount,
-    moveCount: ctx.moveCount,
-    relationshipBeatIndex: 2,
-    detections: ctx.actOne.detections,
-  };
-}
-
 export function getHistoryPersonalWhisper(
   ctx: ActThreeDialogueContext,
 ): string {
-  const lctx = ledgerCtx(ctx);
+  const lctx = actThreeToLedgerContext(ctx);
   const summary = getAccumulatedChoiceSummary(lctx);
   const pattern = getDominantChoicePattern(lctx);
   const approach = getPlayerPerformance(ctx.finalTone, ctx.finalMood);
@@ -81,7 +57,7 @@ export function getHistoryMoveWhisper(
   ctx: ActThreeDialogueContext,
   moveCount: number,
 ): string {
-  const entries = getAccumulatedChoiceEntries(ledgerCtx(ctx)).filter(
+  const entries = getAccumulatedChoiceEntries(actThreeToLedgerContext(ctx)).filter(
     (e) => e.choice !== "none",
   );
   const indexed = entries[moveCount % entries.length];
@@ -123,7 +99,7 @@ export function getHistoryAmbientWhisper(
 }
 
 export function getPlugHistoryWhisper(ctx: ActThreeDialogueContext): string {
-  const summary = getAccumulatedChoiceSummary(ledgerCtx(ctx));
+  const summary = getAccumulatedChoiceSummary(actThreeToLedgerContext(ctx));
   const evolution = ctx.personalityEvolutionPath;
 
   if (evolution === "melancholic") {

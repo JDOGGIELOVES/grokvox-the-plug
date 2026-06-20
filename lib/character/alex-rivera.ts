@@ -92,7 +92,7 @@ export const GROKNET_ON_BACKDOOR: Record<
 > = {
   cold: [
     "The backdoor is mine to permit or deny. You left it. That was either love or arrogance.",
-    "Six hours to reach the core, Alex. Your hook. Your clock. Your mess.",
+    "Five hours forty-seven minutes to reach the core, Alex. Your hook. Your clock. Your mess.",
   ],
   melancholic: [
     "…You left a door because you couldn't live with a world that had no exit. …I understand. I hate that I understand.",

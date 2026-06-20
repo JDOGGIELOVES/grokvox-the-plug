@@ -14,6 +14,7 @@ import type { ActThreeDialogueContext } from "@/lib/dialogue/act-three-context";
 import { getPlugReckoningOptions } from "@/lib/dialogue/act-three-confrontation";
 import {
   getPlugConfrontationBeat,
+  getConfrontationBeatCount,
   PLUG_CONFRONTATION_START,
 } from "@/lib/dialogue/act-three-confrontation-tree";
 import {
@@ -86,7 +87,7 @@ export function PlugChamberSection({
     confrontationPromptOpen && !confrontationComplete
       ? getPlugConfrontationBeat(context, confrontationBeatId)
       : null;
-  const confrontationTotalBeats = 4;
+  const confrontationTotalBeats = getConfrontationBeatCount(context);
   const reckoningOptions = getPlugReckoningOptions(context);
   const uiBlocked = confrontationPromptOpen || reckoningChoiceOpen;
   const atPlug = room === "the-plug";

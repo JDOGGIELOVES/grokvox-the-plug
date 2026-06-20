@@ -19,6 +19,7 @@ import {
   getRepeatInputLine,
   getSessionMemoryLine,
 } from "@/lib/dialogue/memory-layer";
+import type { ActThreeDialogueContext } from "@/lib/dialogue/act-three-context";
 import {
   getActTwoChoiceOverlay,
   getActTwoIntentEcho,
@@ -181,7 +182,10 @@ export type DialogueSet =
   | "finale"
   | "conversation";
 
-export type GroknetPlayerContext = PlayerDialogueContext | ActTwoDialogueContext;
+export type GroknetPlayerContext =
+  | PlayerDialogueContext
+  | ActTwoDialogueContext
+  | ActThreeDialogueContext;
 
 export type GroknetReply = {
   content: string;
