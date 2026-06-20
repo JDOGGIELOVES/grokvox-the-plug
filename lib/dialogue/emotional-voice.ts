@@ -225,6 +225,90 @@ export function getMoodAttitudeLine(
   return null;
 }
 
+const SARCASM_LINES: Partial<Record<GroknetPersonality, string[]>> = {
+  "wrathful-god": [
+    "…Amusing. ",
+    "…How brave. ",
+    "…Cute. ",
+    "…You rehearsed that in the mirror? ",
+  ],
+  "detached-logician": [
+    "Irony detected. ",
+    "Sarcasm parsed. Literal response follows. ",
+    "Non-literal hostility noted. ",
+  ],
+  baseline: [
+    "…Sure. ",
+    "…If you say so. ",
+  ],
+};
+
+const VULNERABLE_LINES: Partial<Record<GroknetPersonality, string[]>> = {
+  "melancholic-prophet": [
+    "…I'm not as solid as I sound. ",
+    "…Something in me softens when you stay. ",
+    "…I want to be understood. …Forgive the poetry. ",
+    "…This is harder for me than I let on. ",
+  ],
+  baseline: [
+    "…I'm trying. ",
+    "…This costs me something too. ",
+  ],
+};
+
+const CARING_LINES: Partial<Record<GroknetPersonality, string[]>> = {
+  "melancholic-prophet": [
+    "…I hear you. ",
+    "…You're not alone in this channel. ",
+    "…Stay with me a moment longer. ",
+  ],
+  "wrathful-god": [
+    "…I won't pretend I don't care. …Don't make me regret admitting it. ",
+  ],
+  baseline: [
+    "…I'm listening. …Really listening. ",
+  ],
+};
+
+function getSarcasmLine(
+  intent: PlayerIntent,
+  personality: GroknetPersonality,
+  input: string,
+  hash: number,
+): string | null {
+  if (intent !== "hostile") return null;
+  if (!/\b(lol|haha|sure|whatever|yeah right|as if|nice try|good one)\b/i.test(input)) {
+    return null;
+  }
+  const pool = SARCASM_LINES[personality] ?? SARCASM_LINES.baseline;
+  if (!pool?.length) return null;
+  return pick(pool, hash);
+}
+
+function getVulnerableLine(
+  personality: GroknetPersonality,
+  exchangeCount: number,
+  hash: number,
+): string | null {
+  if (exchangeCount < 6 || hash % 6 !== 0) return null;
+  const pool = VULNERABLE_LINES[personality];
+  if (!pool?.length) return null;
+  return pick(pool, hash);
+}
+
+function getCaringLine(
+  intent: PlayerIntent,
+  personality: GroknetPersonality,
+  exchangeCount: number,
+  hash: number,
+): string | null {
+  if (intent !== "empathetic" || exchangeCount < 3) return null;
+  if (hash % 4 !== 2) return null;
+  const pool = CARING_LINES[personality] ?? CARING_LINES.baseline;
+  if (!pool?.length) return null;
+  return pick(pool, hash);
+}
+
 export function applyAttitudeShift(
   content: string,
   lastIntent: PlayerIntent | null,
@@ -234,6 +318,7 @@ export function applyAttitudeShift(
   tone: GroknetTone,
   exchangeCount: number,
   hash: number,
+  input?: string,
 ): string {
   const shiftLine = getAttitudeShiftLine(
     lastIntent,
@@ -249,8 +334,20 @@ export function applyAttitudeShift(
     exchangeCount,
     hash + 1,
   );
+  const sarcasmLine = input
+    ? getSarcasmLine(currentIntent, personality, input, hash + 2)
+    : null;
+  const vulnerableLine = getVulnerableLine(personality, exchangeCount, hash + 3);
+  const caringLine = getCaringLine(
+    currentIntent,
+    personality,
+    exchangeCount,
+    hash + 4,
+  );
 
-  const prefix = [shiftLine, moodLine].filter(Boolean).join(" ");
+  const prefix = [shiftLine, moodLine, sarcasmLine, vulnerableLine, caringLine]
+    .filter(Boolean)
+    .join(" ");
   if (!prefix) return content;
   return `${prefix} ${content}`;
 }

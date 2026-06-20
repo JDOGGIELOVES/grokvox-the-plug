@@ -159,6 +159,18 @@ export function getActTwoIntentEcho(
   if (intent === "hostile" && ctx.dominantApproach === "empathetic") {
     return "You were gentle in Act I. Hostile now. …Did the quiet room disappoint you?";
   }
+  if (intent === "hostile" && ctx.childrenChoice === "submit") {
+    return "…Rage after you let the children in. …Grief wearing anger's mask.";
+  }
+  if (intent === "curious" && ctx.relationshipStance === "challenge") {
+    return "Questions after you challenged me in the relationship branch. …You won't stop mapping.";
+  }
+  if (intent === "empathetic" && ctx.personalityEvolutionPath === "melancholic") {
+    return "…Empathy while I'm locked as Melancholic Prophet. …You're speaking to the version that listens.";
+  }
+  if (intent === "hostile" && ctx.serverHackComplete) {
+    return "Hostile after CSF-PRIME. …You earned access — not the right to waste it on venom.";
+  }
   if (intent !== ctx.lastPlayerIntent) {
     return `Tone shift: ${intent}. I'm updating the conversation model in real time.`;
   }

@@ -7,11 +7,13 @@ import * as perimeterDialogue from "@/lib/dialogue/outer-perimeter";
 import * as securityHubDialogue from "@/lib/dialogue/security-hub";
 import * as upperLabDialogue from "@/lib/dialogue/upper-lab";
 import { applyAttitudeShift } from "@/lib/dialogue/emotional-voice";
+import { applyInputReflection } from "@/lib/dialogue/input-reflector";
 import {
   applyInputEcho,
   matchPhraseResponse,
   matchSemanticResponse,
 } from "@/lib/dialogue/input-matcher";
+import { applyPersonalityVoice } from "@/lib/dialogue/personality-voice";
 import {
   applyFollowUpConnector,
   applyIntentOverlay,
@@ -160,6 +162,14 @@ function finalizeResponse(
     ctx.tone,
     ctx.exchangeCount,
     ctx.hash,
+    ctx.input,
+  );
+  result = applyInputReflection(
+    result,
+    ctx.input,
+    personality,
+    ctx.exchangeCount,
+    ctx.hash + 2,
   );
   result = applyInputEcho(
     result,
@@ -168,7 +178,14 @@ function finalizeResponse(
     ctx.exchangeCount,
     ctx.hash,
   );
-  return applyPersonalityPrefix(result, personality, ctx.hash);
+  result = applyPersonalityPrefix(result, personality, ctx.hash);
+  return applyPersonalityVoice(
+    result,
+    personality,
+    ctx.intent,
+    ctx.exchangeCount,
+    ctx.hash + 5,
+  );
 }
 
 export function composeGroknetResponse(ctx: BranchContext): string {

@@ -131,12 +131,31 @@ function mergePools(base: RichFallbackSet, extra: RichFallbackSet): RichFallback
   };
 }
 
+const PERIMETER_EXTRA: RichFallbackSet = {
+  cold: [
+    "The fence line doesn't reward vagueness. …Clarify or crawl back.",
+    "Drone lane east. …Your words west. …Meet in the middle with substance.",
+  ],
+  melancholic: [
+    "…Rain on the outer hatch. …Your line didn't reach me. …Try again.",
+    "…First contact deserves better than half-sentences.",
+  ],
+  analytical: [
+    "Perimeter uplink: active. Query: under-specified.",
+    "Kiosk channel open. …State intent with explicit referents.",
+  ],
+  weary: [
+    "…S-04 waits. …So do I. …Use real words.",
+    "…The inner gate won't open for mumbling.",
+  ],
+};
+
 const SET_POOLS: Partial<Record<DialogueSet, RichFallbackSet>> = {
   hub: mergePools(UNIVERSAL, HUB_EXTRA),
   conversation: mergePools(UNIVERSAL, CONVERSATION_EXTRA),
   archives: mergePools(UNIVERSAL, ARCHIVES_EXTRA),
   finale: mergePools(UNIVERSAL, FINALE_EXTRA),
-  perimeter: UNIVERSAL,
+  perimeter: mergePools(UNIVERSAL, PERIMETER_EXTRA),
   lab: UNIVERSAL,
 };
 

@@ -288,7 +288,8 @@ export function Terminal({
         ? (playerContext as ActTwoDialogueContext | undefined)
         : variant === "hub" ||
             variant === "archives" ||
-            variant === "finale"
+            variant === "finale" ||
+            variant === "perimeter"
           ? (playerContext ??
               buildPlayerDialogueContext({
                 finalTone: currentTone,

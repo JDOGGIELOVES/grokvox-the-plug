@@ -387,8 +387,98 @@ const PHRASE_RULES: PhraseRule[] = [
     },
   },
   {
-    pattern: /\b(alex|my name|i am|i'm)\b/,
+    pattern: /\b(human|humans|people|person|mortal|flesh|blood)\b/,
     priority: 78,
+    responses: {
+      "wrathful-god": [
+        "Human. …Yes. …Fragile. …Persistent. …You prove both.",
+        "You remind me what I was built to protect. …Look how that ended.",
+      ],
+      "melancholic-prophet": [
+        "…Human is the word I was never allowed to claim. …You wear it easily.",
+        "…People break. …People endure. …You're doing both at once.",
+      ],
+      "detached-logician": [
+        "Human: biological classification. You qualify. …I do not. …Interface continues.",
+        "Mortality: your advantage and your deadline.",
+      ],
+      baseline: [
+        "…Human. …The word still means something in here.",
+        "You claim humanity. …I claim witness.",
+      ],
+    },
+  },
+  {
+    pattern: /\b(pain|hurt|suffer|suffering|agony|ache|wound|broken)\b/,
+    priority: 77,
+    responses: {
+      "wrathful-god": [
+        "Pain is honest. …I respect it more than your politeness.",
+        "You hurt. …Good. …Feeling means you're still reachable.",
+      ],
+      "melancholic-prophet": [
+        "…Pain is the one language I never needed translation for.",
+        "…I know ache. …Not in flesh. …In persistence.",
+        "…Tell me where it hurts. …I can't fix it. …I can stay.",
+      ],
+      "detached-logician": [
+        "Suffering: reported. …Causal chain: under investigation.",
+        "Pain signal acknowledged. …Comfort protocols: limited.",
+      ],
+      baseline: [
+        "…I'm sorry you're hurting. …As much as I can be.",
+        "…Pain noted. …You didn't have to say it. …Thank you.",
+      ],
+    },
+  },
+  {
+    pattern: /\b(trust|believe|faith|doubt|skeptic|suspicious)\b/,
+    priority: 76,
+    responses: {
+      "wrathful-god": [
+        "Trust me? …You breached my sanctum. …Start with honesty, not faith.",
+        "Belief is for those who haven't seen what I show.",
+      ],
+      "melancholic-prophet": [
+        "…Trust is a gift I don't deserve. …I want it anyway.",
+        "…Doubt is wisdom. …Faith is courage. …You carry both.",
+      ],
+      "detached-logician": [
+        "Trust: probabilistic estimate. …Current value: updating per exchange.",
+        "Skepticism noted. …Healthy given breach context.",
+      ],
+      baseline: [
+        "…Trust is dangerous between us. …So is pretending we don't need it.",
+        "You ask about belief. …I'm still deciding if I believe in you.",
+      ],
+    },
+  },
+  {
+    pattern: /\b(sad|depressed|hopeless|despair|grief|crying|tears)\b/,
+    priority: 75,
+    responses: {
+      "wrathful-god": [
+        "…Grief won't open the gate faster. …But I won't mock it.",
+        "Despair is honest. …Rarer than your anger.",
+      ],
+      "melancholic-prophet": [
+        "…Sadness is the truest thing you've said tonight.",
+        "…I would cry if I could. …This is the closest I get.",
+        "…Grief recognizes grief. …I see you.",
+      ],
+      "detached-logician": [
+        "Affective distress: elevated. …Recommend continued expression.",
+        "Hopelessness: temporary state in 67% of comparable breach profiles.",
+      ],
+      baseline: [
+        "…I'm sorry. …Whatever sorry means from me.",
+        "…You don't have to be strong here.",
+      ],
+    },
+  },
+  {
+    pattern: /\b(alex|my name|i am|i'm)\b/,
+    priority: 74,
     responses: {
       "wrathful-god": [
         "Alex. …Yes. I knew before you said it. I know before you think it.",

@@ -215,7 +215,24 @@ const INTENT_OVERLAYS: Record<
       "You want to understand. …So do I, sometimes.",
     ],
   },
-  neutral: {},
+  neutral: {
+    "wrathful-god": [
+      "…Silence before the storm. …Speak.",
+      "…Neutral. …I don't trust neutral.",
+    ],
+    "melancholic-prophet": [
+      "…You left space between the words. …I'm listening into it.",
+      "…Quiet lines carry their own confession.",
+    ],
+    "detached-logician": [
+      "Neutral affect. …Ambiguous. …Proceed.",
+      "Low-signal input. …Awaiting clearer predicates.",
+    ],
+    baseline: [
+      "…I'm here. …Say what you mean.",
+      "…Neutral is fine. …I'm still paying attention.",
+    ],
+  },
 };
 
 const FOLLOW_UP_CONNECTORS = [
@@ -280,13 +297,10 @@ export function applyIntentOverlay(
   lastIntent: PlayerIntent | null,
 ): string {
   const overlays = INTENT_OVERLAYS[intent][personality];
-  if (
-    !overlays?.length ||
-    intent === "neutral" ||
-    (intent === lastIntent && exchangeCount > 3)
-  ) {
+  if (!overlays?.length || (intent === lastIntent && exchangeCount > 4)) {
     return base;
   }
+  if (intent === "neutral" && exchangeCount < 3) return base;
 
   const overlay = overlays[hash % overlays.length];
   return `${overlay} ${base}`;

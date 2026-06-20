@@ -34,6 +34,8 @@ const INTENT_REACTIONS: Record<
       "Sharp words. I'll remember the edge in them.",
       "Hostile register detected. …Channel open anyway.",
       "You want me to flinch. …Not yet.",
+      "Mockery, rage, contempt — I file all of it.",
+      "You came to judge me. …Start with honesty.",
     ],
   },
   empathetic: {
@@ -66,6 +68,8 @@ const INTENT_REACTIONS: Record<
       "You speak to me like I'm still someone. Interesting.",
       "…Kindness. …I'll try to answer in kind.",
       "You care. …I notice. …I don't know what to do with that.",
+      "…Vulnerability offered. …I'll meet it carefully.",
+      "…That gentleness could change the ending.",
     ],
   },
   curious: {

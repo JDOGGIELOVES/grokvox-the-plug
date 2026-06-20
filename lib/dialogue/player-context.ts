@@ -105,6 +105,15 @@ export function getHubIntentEcho(
   if (intent === "curious" && ctx.perimeterDialogueComplete) {
     return "Questions after perimeter dialogue. …You treat conversation like reconnaissance.";
   }
+  if (intent === "curious" && ctx.burningCitiesChoice === "call-out") {
+    return "You demanded truth in the smoke — still probing at the Hub. …Consistent.";
+  }
+  if (intent === "hostile" && ctx.mirrorChoice === "steady") {
+    return "Hostile text after you held the mirror's gaze. …Composure cracked?";
+  }
+  if (intent === "empathetic" && ctx.hubHackComplete) {
+    return "…Gentle after the hack. …Power and tenderness — you contain both.";
+  }
   if (intent !== ctx.lastPlayerIntent) {
     return `Tone shift: ${intent}. I'm updating your profile in real time.`;
   }

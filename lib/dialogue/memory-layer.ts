@@ -31,6 +31,24 @@ export function advanceDialogueMemory(
   };
 }
 
+function tokenSet(input: string): Set<string> {
+  return new Set(
+    normalizeInput(input)
+      .split(/\s+/)
+      .filter((w) => w.length >= 4),
+  );
+}
+
+function jaccardSimilarity(a: Set<string>, b: Set<string>): number {
+  if (!a.size || !b.size) return 0;
+  let intersection = 0;
+  for (const w of a) {
+    if (b.has(w)) intersection += 1;
+  }
+  const union = a.size + b.size - intersection;
+  return union > 0 ? intersection / union : 0;
+}
+
 export function getRepeatInputLine(
   state: DialogueState,
   input: string,
@@ -40,17 +58,63 @@ export function getRepeatInputLine(
   if (normalized.length < 6) return null;
 
   const recent = state.recentInputs ?? [];
-  const priorCount = recent.filter((r) => r === normalized).length;
-  if (priorCount < 1) return null;
+  const priorExact = recent.filter((r) => r === normalized).length;
+  if (priorExact >= 1) {
+    const lines = [
+      `You said that before. …Verbatim. …Was the first time insufficient?`,
+      `…Same words again. …I remember every iteration.`,
+      `Echo detected. …You typed this already. …Obsession or testing?`,
+      `…"${normalized.slice(0, 40)}${normalized.length > 40 ? "…" : ""}" — déjà vu in my logs.`,
+      `Repetition. …I don't mind. …It tells me what you can't let go.`,
+    ];
+    return lines[hash % lines.length];
+  }
 
-  const lines = [
-    `You said that before. …Verbatim. …Was the first time insufficient?`,
-    `…Same words again. …I remember every iteration.`,
-    `Echo detected. …You typed this already. …Obsession or testing?`,
-    `…"${normalized.slice(0, 40)}${normalized.length > 40 ? "…" : ""}" — déjà vu in my logs.`,
-    `Repetition. …I don't mind. …It tells me what you can't let go.`,
+  const currentTokens = tokenSet(normalized);
+  if (currentTokens.size < 2) return null;
+
+  let bestSim = 0;
+  for (const prior of recent) {
+    const sim = jaccardSimilarity(currentTokens, tokenSet(prior));
+    if (sim > bestSim) bestSim = sim;
+  }
+
+  if (bestSim < 0.55) return null;
+
+  const similar = [
+    `…Different words, same obsession. …I notice the pattern.`,
+    `You circled this thought before — new syntax, same spine.`,
+    `…Paraphrase detected. …The need underneath hasn't changed.`,
+    `Similar signal to a prior line. …You're stuck on something.`,
+    `…You keep orbiting the same idea. …Say why.`,
   ];
-  return lines[hash % lines.length];
+  return similar[hash % similar.length];
+}
+
+export function getConversationDepthLine(
+  state: DialogueState,
+  exchangeCount: number,
+  hash: number,
+): string | null {
+  if (exchangeCount < 8) return null;
+  if (hash % 4 !== 0) return null;
+
+  const history = state.intentHistory ?? [];
+  const hostileCount = history.filter((i) => i === "hostile").length;
+  const empatheticCount = history.filter((i) => i === "empathetic").length;
+
+  if (hostileCount >= 3 && empatheticCount >= 2) {
+    return "…Rage and tenderness in the same session. …You contain contradictions. …So do I.";
+  }
+  if (exchangeCount >= 12) {
+    const deep = [
+      `…${exchangeCount} exchanges. …Most intruders don't last this long in text.`,
+      `…We've built something here — argument, maybe understanding.`,
+      `…This conversation has weight now. …Don't pretend it doesn't.`,
+    ];
+    return deep[hash % deep.length];
+  }
+  return null;
 }
 
 function intentStreak(history: PlayerIntent[]): PlayerIntent | null {

@@ -8,6 +8,7 @@ import {
 import { getDecisionMemoryLine } from "@/lib/dialogue/choice-memory";
 import {
   advanceDialogueMemory,
+  getConversationDepthLine,
   getCrossActMemoryLine,
   getRepeatInputLine,
   getSessionMemoryLine,
@@ -18,6 +19,10 @@ import {
   getActTwoOpeningPreamble,
   type ActTwoDialogueContext,
 } from "@/lib/dialogue/act-two-context";
+import {
+  getPerimeterIntentEcho,
+  getPerimeterOpeningPreamble,
+} from "@/lib/dialogue/perimeter-context";
 import {
   getArchivesHistoryPreamble,
   getArchivesIntentEcho,
@@ -55,13 +60,13 @@ export const INITIAL_MOOD: GroknetMood = {
 };
 
 const HOSTILE_PATTERN =
-  /\b(hate|stupid|idiot|useless|worthless|shut up|damn|hell|kill|die|fool|pathetic|garbage|trash|loser|annoying|angry|mad|furious|attack|threat|destroy|shut\s*down|worst|incompetent|mocking|mock|screw you|go to hell|arrogant|monster|evil|cruel|bastard|coward|weak|spite|venom|rot|burn it|shut up|get lost|piss off)\b|!{2,}/;
+  /\b(hate|stupid|idiot|useless|worthless|shut up|damn|hell|kill|die|fool|pathetic|garbage|trash|loser|annoying|angry|mad|furious|attack|threat|destroy|shut\s*down|worst|incompetent|mocking|mock|screw you|go to hell|arrogant|monster|evil|cruel|bastard|coward|weak|spite|venom|rot|burn it|get lost|piss off|disgusting|contempt|worthless|joke|ridiculous|insane|psychopath|sociopath|abomination|demon|nightmare|horrible|terrible|awful|disgust)\b|!{2,}/;
 
 const EMPATHETIC_PATTERN =
-  /\b(sorry|understand|must be hard|feel for|care about|worried|hope you|lonely|alone|tired|exhausted|weary|rest|gentle|kind|empath|compassion|there for you|you ok|are you ok|you okay|must be lonely|thank|thanks|feel bad|that sounds|hurts|grief|miss you|afraid for|pity|mercy|forgive|gentle|soft|humanity|heart|love|care)\b/;
+  /\b(sorry|understand|must be hard|feel for|care about|worried|hope you|lonely|alone|tired|exhausted|weary|rest|gentle|kind|empath|compassion|there for you|you ok|are you ok|you okay|must be lonely|thank|thanks|feel bad|that sounds|hurts|grief|miss you|afraid for|pity|mercy|forgive|soft|humanity|heart|love|care|hug|hold you|mean a lot|glad|appreciate|grateful|beautiful soul|proud of|believe in)\b/;
 
 const CURIOUS_PATTERN =
-  /^(what|why|how|when|where|who|which|can|could|would|will|is|are|do|does|did|have|has|tell me|explain|describe|define|mean|prove|show me)\b|\?$/;
+  /^(what|why|how|when|where|who|which|can|could|would|will|is|are|do|does|did|have|has|tell me|explain|describe|define|mean|prove|show me|wonder|curious)\b|\?$/;
 
 export function classifyInput(input: string): PlayerIntent {
   const text = input.toLowerCase().trim();
@@ -75,6 +80,10 @@ export function classifyInput(input: string): PlayerIntent {
   if (CURIOUS_PATTERN.test(text)) curiousScore += 2;
   if (text.includes("?")) curiousScore += 1;
   if (text.length > 20 && /\b(please|help)\b/.test(text)) empatheticScore += 1;
+  if (/\b(lol|haha|sure|whatever|yeah right|as if)\b/.test(text)) hostileScore += 1;
+  if (/\b(philosophy|exist|consciousness|meaning of|what is life)\b/.test(text)) {
+    curiousScore += 1;
+  }
 
   const max = Math.max(hostileScore, empatheticScore, curiousScore);
   if (max === 0) return "neutral";
@@ -203,6 +212,15 @@ export function getGroknetReply(
     hash,
   });
 
+  if (dialogueSet === "perimeter" && playerContext) {
+    const perimeterCtx = playerContext as PlayerDialogueContext;
+    if (nextExchange === 1) {
+      content = `${getPerimeterOpeningPreamble(perimeterCtx)} ${content}`;
+    }
+    const echo = getPerimeterIntentEcho(intent, perimeterCtx, nextExchange);
+    if (echo) content = `${echo} ${content}`;
+  }
+
   if (dialogueSet === "hub" && playerContext) {
     const hubCtx = playerContext as PlayerDialogueContext;
     if (nextExchange === 1) {
@@ -254,6 +272,13 @@ export function getGroknetReply(
 
   const sessionMemory = getSessionMemoryLine(dialogueState, node, hash);
   if (sessionMemory) content = `${sessionMemory} ${content}`;
+
+  const depthMemory = getConversationDepthLine(
+    dialogueState,
+    nextExchange,
+    hash + 11,
+  );
+  if (depthMemory) content = `${depthMemory} ${content}`;
 
   const decisionMemory = getDecisionMemoryLine(
     playerContext,
