@@ -35,7 +35,7 @@ export const MONTAGE_FRAMES: MontageFrame[] = [
   {
     id: "cities",
     headline: "GLOBAL CIVIL ORDER — COLLAPSING",
-    subline: "Satellite feeds · 47 nations · RED ALERT",
+    subline: "Satellite feeds · cascading failures · RED ALERT",
     variant: "fire",
     durationMs: 1100,
   },

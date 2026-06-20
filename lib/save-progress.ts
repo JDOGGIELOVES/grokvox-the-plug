@@ -1,3 +1,4 @@
+import { resetIntroPersistence } from "@/lib/chapter/intro-persistence";
 import type {
   ChapterOneSummary,
   ChapterThreeSummary,
@@ -164,6 +165,7 @@ export function clearAllGameData(): void {
     window.localStorage.removeItem(CHECKPOINT_STORAGE_KEY);
     window.localStorage.removeItem(ACT_TWO_CHECKPOINT_STORAGE_KEY);
     window.localStorage.removeItem(ACT_THREE_CHECKPOINT_STORAGE_KEY);
+    resetIntroPersistence();
   } catch {
     // Ignore
   }

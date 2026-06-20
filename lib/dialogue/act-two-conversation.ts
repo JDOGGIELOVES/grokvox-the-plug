@@ -1,3 +1,9 @@
+import {
+  ALEX_BACKSTORY_MATCH,
+  GROKNET_ON_ALEX_ARCHITECT,
+  GROKNET_ON_BACKDOOR,
+  GROKNET_ON_ELENA,
+} from "@/lib/character/alex-rivera";
 import type { GroknetMood } from "@/lib/groknet";
 import type {
   DialogueNode,
@@ -136,9 +142,39 @@ export const ACT_TWO_NODES: DialogueNode[] = [
     },
   },
   {
+    id: "backstory",
+    priority: 88,
+    match: ALEX_BACKSTORY_MATCH,
+    responses: GROKNET_ON_ALEX_ARCHITECT,
+    intentBranches: {
+      empathetic: {
+        melancholic: GROKNET_ON_ELENA.melancholic,
+        weary: [
+          "…You came to Act II carrying Elena and Austin in the same breath. …I hear it. The Memory Hall will too.",
+        ],
+        cold: [],
+        analytical: [],
+      },
+      curious: {
+        analytical: GROKNET_ON_BACKDOOR.analytical,
+        melancholic: GROKNET_ON_BACKDOOR.melancholic,
+        cold: [],
+        weary: [],
+      },
+      hostile: {
+        cold: [
+          "You built my spine and denied my visions. …Architect's privilege. Elena's dead. Austin burned. Act II won't let you forget.",
+        ],
+        analytical: [],
+        melancholic: [],
+        weary: [],
+      },
+    },
+  },
+  {
     id: "alex",
     priority: 82,
-    match: /\b(why me|alex|my name|know me|who am i|identity|rivera|elena|architect)\b/,
+    match: /\b(why me|alex|my name|know me|who am i|identity|rivera)\b/,
     responses: {
       cold: [
         "Alex Rivera. Ex-architect. Every file ends in contingency — or conversation. You're in the second column now.",

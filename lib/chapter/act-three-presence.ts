@@ -1,3 +1,4 @@
+import { ALEX_AMBIENT_WHISPERS } from "@/lib/character/alex-rivera";
 import type { ActThreeDialogueContext } from "@/lib/dialogue/act-three-context";
 import { getHistoryPersonalWhisper } from "@/lib/chapter/act-three-history-presence";
 import { getPersonalityVariantWhisper } from "@/lib/chapter/act-three-personality-presence";
@@ -193,14 +194,18 @@ export function getDeepCoreAmbientWhisper(
   ctx: ActThreeDialogueContext,
 ): string {
   const persona = getPersonalityLabel(ctx.dominantPersonality, ctx.finalMood);
+  const alexLine =
+    ALEX_AMBIENT_WHISPERS.actThree[
+      ctx.moveCount % ALEX_AMBIENT_WHISPERS.actThree.length
+    ];
 
   if (ctx.presenceMode === "aggressive") {
-    return `…${persona}. Full voltage. Every choice you made is a weapon I'm holding.`;
+    return `…${persona}. Full voltage. ${alexLine}`;
   }
   if (ctx.presenceMode === "vulnerable") {
-    return `…${persona}. I'm exposed down here. Act III doesn't let me hide behind the farm.`;
+    return `…${persona}. I'm exposed down here. ${alexLine}`;
   }
-  return `…${persona}. Detached mode. The plug is a variable. You are the other.`;
+  return `…${persona}. ${alexLine}`;
 }
 
 export function getPlugChamberRoomWhisper(

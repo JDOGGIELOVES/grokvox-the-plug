@@ -80,3 +80,14 @@ export function cancelIntroSpeech(): void {
   if (typeof window === "undefined" || !window.speechSynthesis) return;
   window.speechSynthesis.cancel();
 }
+
+export function resetIntroPersistence(): void {
+  if (typeof window === "undefined") return;
+
+  try {
+    window.localStorage.removeItem(INTRO_SEEN_STORAGE_KEY);
+    window.localStorage.removeItem(INTRO_SKIP_LEVEL_KEY);
+  } catch {
+    // Storage unavailable
+  }
+}

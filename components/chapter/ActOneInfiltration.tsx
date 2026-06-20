@@ -48,6 +48,7 @@ import {
   ACT_ONE_MISSION_START_WHISPER,
   ACT_ONE_RETURNING_WHISPER,
   cancelIntroSpeech,
+  getIntroSkipLevel,
   hasSeenIntro,
   markCinematicSkipped,
   markHowToPlaySkipped,
@@ -55,6 +56,15 @@ import {
   shouldAutoSkipCinematic,
   shouldAutoSkipToMission,
 } from "@/lib/chapter/intro-persistence";
+import {
+  getBurningCitiesVisionText,
+  getBurningCitiesVoiceLine,
+  getConvergenceVisionText,
+  getConvergenceVoiceLine,
+  getMirrorVisionText,
+  getMirrorVoiceLine,
+  type ActOneHallucinationContext,
+} from "@/lib/hallucinations/act-one-personalized";
 import {
   playHallucinationPeakSound,
   playTensionPulseSound,
@@ -196,7 +206,16 @@ function getIntroBootstrap(): IntroBootstrap {
   }
 
   if (checkpoint) {
-    return fallback;
+    const restoredPhase =
+      checkpoint.state.phase === "playing" ||
+      checkpoint.state.phase === "complete"
+        ? checkpoint.state.phase
+        : "playing";
+    return {
+      phase: restoredPhase,
+      startMissionDeploy: false,
+      returning,
+    };
   }
 
   if (shouldAutoSkipToMission()) {
@@ -216,6 +235,29 @@ function getIntroBootstrap(): IntroBootstrap {
   }
 
   return { ...fallback, returning };
+}
+
+function buildActOneHallucinationContext(
+  state: RunState,
+): ActOneHallucinationContext {
+  return {
+    ...buildPlayerDialogueContext({
+      finalTone: state.finalTone,
+      finalMood: state.finalMood,
+      lastPlayerIntent: state.lastPlayerIntent,
+      burningCitiesChoice: state.burningCitiesChoice,
+      mirrorChoice: state.mirrorChoice,
+      detections: state.detections,
+      exchangeCount: state.exchangeCount,
+      perimeterDialogueComplete: state.perimeterTerminalComplete,
+      hubHackComplete: state.hubHackComplete,
+      burningCitiesSurvived: state.burningCitiesSurvived,
+    }),
+    convergenceChoice: state.convergenceChoice,
+    hubExchanges: state.hubExchanges,
+    archivesDialogueComplete: state.archivesDialogueComplete,
+    finaleDialogueComplete: state.finaleDialogueComplete,
+  };
 }
 
 function createInitialRunState(phase: ChapterPhase = "cinematic-intro"): RunState {
@@ -620,10 +662,15 @@ export function ActOneInfiltration() {
       if (burningDelayRef.current) clearTimeout(burningDelayRef.current);
 
       burningDelayRef.current = setTimeout(() => {
+        const ctx = buildActOneHallucinationContext(stateRef.current);
+        const voiceLine = getBurningCitiesVoiceLine(ctx);
         playTensionPulseSound();
         triggerHallucinationWithContext({
           eventId: "burning-cities",
           triggerSource: "story",
+          voiceLine,
+          message: voiceLine,
+          visionText: getBurningCitiesVisionText(ctx),
         });
         burningDelayRef.current = null;
       }, 900);
@@ -641,10 +688,15 @@ export function ActOneInfiltration() {
       }
 
       convergenceDelayRef.current = setTimeout(() => {
+        const ctx = buildActOneHallucinationContext(stateRef.current);
+        const voiceLine = getConvergenceVoiceLine(ctx);
         playHallucinationPeakSound();
         triggerHallucinationWithContext({
           eventId: "the-convergence",
           triggerSource: "story",
+          voiceLine,
+          message: voiceLine,
+          visionText: getConvergenceVisionText(ctx),
         });
         convergenceDelayRef.current = null;
       }, 1400);
@@ -666,15 +718,34 @@ export function ActOneInfiltration() {
       if (mirrorDelayRef.current) clearTimeout(mirrorDelayRef.current);
 
       mirrorDelayRef.current = setTimeout(() => {
+        const ctx = buildActOneHallucinationContext(stateRef.current);
+        const voiceLine = getMirrorVoiceLine(ctx);
         playTensionPulseSound();
         triggerHallucinationWithContext({
           eventId: "the-mirror",
           triggerSource: "story",
+          voiceLine,
+          message: voiceLine,
+          visionText: getMirrorVisionText(ctx),
         });
         mirrorDelayRef.current = null;
       }, 1100);
 
       return { ...s, mirrorTriggered: true };
+    });
+  }, [triggerHallucinationWithContext]);
+
+  const handleDialogueHallucinationBleed = useCallback(() => {
+    playTensionPulseSound();
+    triggerHallucinationWithContext({
+      eventId: "whisper-echo",
+      triggerSource: "story",
+      voiceLine:
+        "…You dug up the architect file on the uplink. …Elena heard those questions once. …So did I.",
+      message:
+        "…You dug up the architect file on the uplink. …Elena heard those questions once. …So did I.",
+      visionText:
+        "Terminal text doubles. Your routing commit hash scrolls beside Elena's safety objection — both timestamped the night before Austin.",
     });
   }, [triggerHallucinationWithContext]);
 
@@ -934,6 +1005,7 @@ export function ActOneInfiltration() {
           onComplete={handleHowToPlayComplete}
           onSkipIntro={handleSkipToMission}
           showSkipIntro={returningPlayer}
+          showSkippedBriefing={getIntroSkipLevel() >= 1}
         />
       ) : null}
 
@@ -1101,6 +1173,7 @@ export function ActOneInfiltration() {
             }));
           }}
           onPlayerIntent={handlePlayerIntent}
+          onHallucinationEvent={handleDialogueHallucinationBleed}
           playerContext={archivesPlayerContext}
         />
       ) : null}
@@ -1133,6 +1206,7 @@ export function ActOneInfiltration() {
               }));
             }}
             onPlayerIntent={handlePlayerIntent}
+            onHallucinationEvent={handleDialogueHallucinationBleed}
             playerContext={archivesPlayerContext}
           />
           <Terminal
@@ -1166,6 +1240,7 @@ export function ActOneInfiltration() {
               }));
             }}
             onPlayerIntent={handlePlayerIntent}
+            onHallucinationEvent={handleDialogueHallucinationBleed}
             playerContext={archivesPlayerContext}
           />
         </>

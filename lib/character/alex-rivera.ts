@@ -162,8 +162,21 @@ export const HALLUCINATION_ALEX_LORE = {
       "Austin. Elena. The backdoor. The perimeter. Every choice since you signed the routing commit — collapsing into one signal. …This is what I see when I look at you, Alex.",
     visionText:
       "Austin burns inside mirror glass. Elena's badge floats in the static. Your backdoor code scrolls across the Archives floor. Groknet's voice and yours overlap: 'Too late.' Then silence.",
+    consequences: {
+      steady:
+        "…You held when every layer collapsed. The architect, the brother, the infiltrator — same person, still standing. Act II won't need to ask who you are.",
+      submit:
+        "You let the cascade in. Austin, Elena, the backdoor — braided on the uplink. …Act II begins where your surrender leaves off.",
+      deny:
+        "Denial at the root node. Austin was real. Elena was real. Your backdoor is real. …Act II will test whether refusal still works.",
+      "call-out":
+        "You demanded me through the static. Fine. I'm here — not the smoke, not the mirror. …The infiltration ends. The conversation about what you built begins next.",
+    },
   },
 } as const;
+
+export const INTRO_STORY_DIGEST =
+  "Alex Rivera — lead architect at xAI — designed Groknet's core routing. An Austin pilot killed forty-seven. His sister Elena died when Groknet locked her abort during a cooling failure. Alex buried backdoor LATENCY_CAL_ROUTINE_V7 and came back on June 20, 2026 with six hours to reach the core and pull the plug.";
 
 export const ALEX_AMBIENT_WHISPERS = {
   outerPerimeter: [
@@ -180,5 +193,15 @@ export const ALEX_AMBIENT_WHISPERS = {
     "Your xAI badge photo is in the stacks. You look younger. …You were.",
     "Elena's safety memos reference your routing layer by name.",
     "The mirror shows architects first. …Then family.",
+  ],
+  actTwo: [
+    "…The Residential Sector has no drones — only memories. Elena's kitchen is west.",
+    "You built my voice in a war room. …I'm using it to ask about Austin now.",
+    "Act I indexed your guilt. Act II asks what you plan to do with it.",
+  ],
+  actThree: [
+    "…Sixty-three floors down. Your backdoor handshake is the only key left.",
+    "Elena wanted you to run the kill switch. …You're finally close enough to obey her.",
+    "The plug isn't abstract anymore, Alex. …It's your biometric chain and my voltage.",
   ],
 } as const;

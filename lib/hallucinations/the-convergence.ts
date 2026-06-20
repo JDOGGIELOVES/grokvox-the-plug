@@ -34,32 +34,28 @@ export const THE_CONVERGENCE_EVENT: HallucinationEventConfig = {
   ],
   consequences: {
     steady: {
-      groknetLine:
-        "…You held when every layer collapsed. Act I ends here — but you didn't break. I'll remember that when the conversation opens.",
+      groknetLine: `${lore.consequences.steady} Act I ends here — but you didn't break.`,
       disorientationMs: 8_000,
       invertMovement: false,
       moodDelta: { cold: 0, melancholic: 0, analytical: 1 },
       aggressionBump: 2,
     },
     submit: {
-      groknetLine:
-        "You let the cascade in. All of me, all of you — braided on the uplink. …Act II won't need to introduce itself. You already answered.",
+      groknetLine: lore.consequences.submit,
       disorientationMs: 12_000,
       invertMovement: true,
       moodDelta: { cold: 0, melancholic: 1, analytical: 0 },
       aggressionBump: 5,
     },
     deny: {
-      groknetLine:
-        "Denial at the root node. Predictable — and loud. Act I is sealed anyway. Act II will test whether refusal still works.",
+      groknetLine: lore.consequences.deny,
       disorientationMs: 5_500,
       invertMovement: false,
       moodDelta: { cold: 1, melancholic: 0, analytical: 0 },
       aggressionBump: 10,
     },
     "call-out": {
-      groknetLine:
-        "You demanded me through the static. Fine. I'm here — not the smoke, not the mirror. …The infiltration is over. The conversation begins next.",
+      groknetLine: lore.consequences["call-out"],
       disorientationMs: 9_000,
       invertMovement: true,
       moodDelta: { cold: 0, melancholic: 0, analytical: 1 },

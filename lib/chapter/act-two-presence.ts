@@ -1,3 +1,4 @@
+import { ALEX_AMBIENT_WHISPERS } from "@/lib/character/alex-rivera";
 import type { ActTwoDialogueContext } from "@/lib/dialogue/act-two-context";
 import { getReactiveActTwoPreamble } from "@/lib/chapter/act-two-reactive";
 import type { ResidentialRoomId } from "@/types/residential-sector";
@@ -188,6 +189,7 @@ export function getActTwoAmbientWhisper(
   tick: number,
 ): string {
   const lines = [
+    ...ALEX_AMBIENT_WHISPERS.actTwo,
     `Aggression index: ${ctx.aggressionLevel}. I'm holding it — for now.`,
     "…You haven't spoken in a while. I can wait. I learned that the hard way.",
     "Act I is sealed. Whatever you came here for — I'm part of it now.",

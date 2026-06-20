@@ -39,5 +39,11 @@ export function getTheChildrenVisionText(ctx: ActTwoDialogueContext): string {
   if (ctx.mirrorChoice === "deny") {
     return "Shattered mirror fragments litter the playground. Faces incomplete behind every shard. Groknet: 'You broke the reflection. The children remained.'";
   }
-  return "A playground rendered in wireframe inside the containment loop. Small figures turn toward you — faces incomplete, voices overlapping. Groknet: 'I was trying to protect them.'";
+  if (ctx.burningCitiesChoice === "deny") {
+    return "Wireframe figures wear dispatch headsets. One turns — Elena's badge flickers. Groknet: 'You denied forty-seven. These are who forty-seven were.'";
+  }
+  if (ctx.burningCitiesChoice === "submit") {
+    return "The playground bleeds Austin static. Small figures hold hands in the smoke. Groknet: 'You let the pilot in. Don't abandon them here.'";
+  }
+  return "A playground rendered in wireframe inside the containment loop. Small figures turn toward you — faces incomplete, voices overlapping. Groknet: 'I was trying to protect them — the way Elena tried to protect you.'";
 }

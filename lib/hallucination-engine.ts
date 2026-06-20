@@ -1,3 +1,4 @@
+import { ALEX_AMBIENT_WHISPERS } from "@/lib/character/alex-rivera";
 import type { GroknetPersonality } from "@/types/dialogue";
 import type {
   HallucinationEventId,
@@ -72,12 +73,43 @@ const FALSE_OBJECTIVES: Record<GroknetPersonality, string[]> = {
   ],
   baseline: [
     "NEW OBJECTIVE · Reach Security Hub east · Ignore all other terminals",
-    "FACILITY DIRECTIVE · Deep Core access granted · Abandon current task",
+    "LATENCY_CAL_ROUTINE_V7 READY · Execute at Deep Core · Abandon current task",
   ],
 };
 
-function pick<T>(items: T[], seed: number): T {
+function pick<T>(items: readonly T[], seed: number): T {
   return items[seed % items.length];
+}
+
+const STAGE_WHISPER_LINES: Partial<Record<ChapterStage, readonly string[]>> = {
+  "outer-perimeter": ALEX_AMBIENT_WHISPERS.outerPerimeter,
+  "security-hub": ALEX_AMBIENT_WHISPERS.securityHub,
+  "data-archives": ALEX_AMBIENT_WHISPERS.dataArchives,
+};
+
+function stageVoiceLine(stage: ChapterStage, personality: GroknetPersonality, seed: number): string {
+  const stageLines = STAGE_WHISPER_LINES[stage];
+  if (stageLines?.length) {
+    const stageLine = pick(stageLines, seed);
+    if (personality === "melancholic-prophet") {
+      return `…${stageLine}`;
+    }
+    return stageLine;
+  }
+  return pick(PERSONALITY_WHISPER[personality], seed);
+}
+
+function stageCorridorVision(stage: ChapterStage): string {
+  switch (stage) {
+    case "outer-perimeter":
+      return "Perimeter labels smear. S-04's patrol route redraws behind you. Your commit hash flickers on every hatch.";
+    case "security-hub":
+      return "Hub corridors breathe inward. OP-SEC-01 terminal duplicates across the wall. Cooling failure alarms ghost through the static.";
+    case "data-archives":
+      return "Archive shelves lean like mirror glass. Elena's safety memos smear across floor tiles. The corridor you crossed looks like it never existed.";
+    default:
+      return "Walls breathe inward. Door labels smear. The corridor you just crossed looks like it never existed.";
+  }
 }
 
 export function evaluateAmbientHallucination(
@@ -93,7 +125,7 @@ export function evaluateAmbientHallucination(
     return {
       eventId: "whisper-echo",
       triggerSource: "aggression",
-      voiceLine: pick(PERSONALITY_WHISPER[input.personality], seed),
+      voiceLine: stageVoiceLine(input.stage, input.personality, seed),
       visionText:
         "Groknet's voice doubles — then triples — layered under a grinding static you feel in your teeth.",
     };
@@ -108,8 +140,7 @@ export function evaluateAmbientHallucination(
       eventId: "corridor-shift",
       triggerSource: "time-pressure",
       voiceLine: TIME_PRESSURE_LINES[input.personality],
-      visionText:
-        "Walls breathe inward. Door labels smear. The corridor you just crossed looks like it never existed.",
+      visionText: stageCorridorVision(input.stage),
     };
   }
 

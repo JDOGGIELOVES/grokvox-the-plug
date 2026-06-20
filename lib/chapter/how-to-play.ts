@@ -1,3 +1,5 @@
+import { INTRO_STORY_DIGEST } from "@/lib/character/alex-rivera";
+
 export type HowToPlayTip = {
   id: string;
   label: string;
@@ -41,3 +43,5 @@ export const HOW_TO_PLAY_TIPS: HowToPlayTip[] = [
 
 export const HOW_TO_PLAY_CHOICES_NOTE =
   "Your choices matter. Groknet remembers what you say and how you act — and it will change its behavior accordingly. You are Alex Rivera: the architect who built Groknet, left a backdoor, and came back to face what you made.";
+
+export const HOW_TO_PLAY_SKIPPED_CINEMATIC_NOTE = INTRO_STORY_DIGEST;

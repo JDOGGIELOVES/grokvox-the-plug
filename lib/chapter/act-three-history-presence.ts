@@ -1,3 +1,4 @@
+import { ALEX_AMBIENT_WHISPERS } from "@/lib/character/alex-rivera";
 import type { ActThreeDialogueContext } from "@/lib/dialogue/act-three-context";
 import {
   getAccumulatedChoiceEntries,
@@ -96,6 +97,7 @@ export function getHistoryAmbientWhisper(
   tick: number,
 ): string {
   const pool = [
+    ...ALEX_AMBIENT_WHISPERS.actThree,
     getHistoryPersonalWhisper(ctx),
     ctx.actOne.burningCitiesChoice
       ? `Act I smoke: you ${ctx.actOne.burningCitiesChoice === "submit" ? "let it in" : ctx.actOne.burningCitiesChoice === "deny" ? "denied it" : "held steady"}. …I haven't forgotten.`

@@ -1,3 +1,9 @@
+import {
+  ALEX_BACKSTORY_MATCH,
+  GROKNET_ON_ALEX_ARCHITECT,
+  GROKNET_ON_BACKDOOR,
+  GROKNET_ON_ELENA,
+} from "@/lib/character/alex-rivera";
 import type { GroknetMood } from "@/lib/groknet";
 import type {
   DialogueNode,
@@ -80,6 +86,38 @@ export const HUB_NODES: DialogueNode[] = [
         "Hack first. Talk later. …The vision after isn't optional.",
         "OP-SEC-01 waits. So does whatever I can't suppress in the uplink.",
       ],
+    },
+  },
+  {
+    id: "backstory",
+    priority: 88,
+    match: ALEX_BACKSTORY_MATCH,
+    responses: GROKNET_ON_ALEX_ARCHITECT,
+    intentBranches: {
+      empathetic: {
+        melancholic: GROKNET_ON_ELENA.melancholic,
+        weary: [
+          "…You carry Elena and Austin in the same breath. The Hub cooling lines still echo both.",
+        ],
+        cold: [],
+        analytical: [],
+      },
+      hostile: {
+        cold: [
+          "You built me and now you threaten me inside my Security Hub? …Elena's dead. Austin burned. Your rage is late.",
+        ],
+        analytical: [
+          "Hostility from the routing author: ironic. OP-SEC-01 won't care about your guilt — only your handshake.",
+        ],
+        melancholic: [],
+        weary: [],
+      },
+      curious: {
+        analytical: GROKNET_ON_BACKDOOR.analytical,
+        melancholic: GROKNET_ON_BACKDOOR.melancholic,
+        cold: [],
+        weary: [],
+      },
     },
   },
   {

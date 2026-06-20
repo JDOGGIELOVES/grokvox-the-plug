@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 import {
   HOW_TO_PLAY_CHOICES_NOTE,
+  HOW_TO_PLAY_SKIPPED_CINEMATIC_NOTE,
   HOW_TO_PLAY_TIPS,
   HOW_TO_PLAY_TITLE,
 } from "@/lib/chapter/how-to-play";
@@ -13,12 +14,14 @@ type HowToPlayScreenProps = {
   onComplete: () => void;
   onSkipIntro?: () => void;
   showSkipIntro?: boolean;
+  showSkippedBriefing?: boolean;
 };
 
 export function HowToPlayScreen({
   onComplete,
   onSkipIntro,
   showSkipIntro = false,
+  showSkippedBriefing = false,
 }: HowToPlayScreenProps) {
   const [exiting, setExiting] = useState(false);
 
@@ -90,6 +93,17 @@ export function HowToPlayScreen({
               </li>
             ))}
           </ul>
+
+          {showSkippedBriefing ? (
+            <div className="how-to-play-note mt-7 rounded-sm border border-accent/25 bg-accent/5 p-4">
+              <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-accent">
+                Story Briefing
+              </p>
+              <p className="mt-2 text-game-body text-sm leading-relaxed text-zinc-200">
+                {HOW_TO_PLAY_SKIPPED_CINEMATIC_NOTE}
+              </p>
+            </div>
+          ) : null}
 
           <div className="how-to-play-note mt-7 border-t border-zinc-800/70 pt-6">
             <p className="text-game-body text-center italic text-zinc-200">
