@@ -85,6 +85,13 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${orbitron.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var p=localStorage.getItem("groknet-performance-mode");if(p==="on"){document.documentElement.classList.add("performance-mode");return}if(p==="off")return;var m=matchMedia("(max-width:768px)").matches,t="ontouchstart"in window||navigator.maxTouchPoints>0,c=matchMedia("(pointer:coarse)").matches,r=matchMedia("(prefers-reduced-motion:reduce)").matches;if(r||(m&&(t||c)))document.documentElement.classList.add("performance-mode")}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <PerformanceModeProvider>{children}</PerformanceModeProvider>
         <Analytics />

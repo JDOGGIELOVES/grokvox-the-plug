@@ -141,7 +141,8 @@ function FacilityScene() {
           rx="300"
           ry="130"
           fill="url(#intro-bunker-glow)"
-          className="intro-bunker-pulse"
+          className={performanceMode ? undefined : "intro-bunker-pulse"}
+          opacity={performanceMode ? 0.8 : undefined}
         />
 
         <path
@@ -168,7 +169,7 @@ function FacilityScene() {
           height="65"
           fill="#f97316"
           opacity="0.14"
-          className="intro-door-glow"
+          className={performanceMode ? undefined : "intro-door-glow"}
         />
 
         <path
@@ -190,8 +191,12 @@ function FacilityScene() {
             height={7}
             fill="#f97316"
             opacity={0.38}
-            className="intro-perimeter-light"
-            style={{ animationDelay: `${i * 0.55}s` }}
+            className={performanceMode ? undefined : "intro-perimeter-light"}
+            style={
+              performanceMode
+                ? { opacity: 0.36 }
+                : { animationDelay: `${i * 0.55}s` }
+            }
           />
         ))}
 
@@ -230,7 +235,7 @@ function MontageScene({ frameIndex }: { frameIndex: number }) {
       )}
       <div className="intro-montage-vignette absolute inset-0" />
 
-      {frame.variant === "nuclear" ? (
+      {frame.variant === "nuclear" && !performanceMode ? (
         <div className="intro-montage-radar absolute inset-0 flex items-center justify-center opacity-25">
           <div className="intro-radar-ring h-64 w-64 rounded-full border border-red-500/50 sm:h-[28rem] sm:w-[28rem]" />
           <div className="intro-radar-ring absolute h-48 w-48 rounded-full border border-orange-500/30 sm:h-72 sm:w-72" />
@@ -280,6 +285,8 @@ function MontageScene({ frameIndex }: { frameIndex: number }) {
 }
 
 function TerminalScene() {
+  const { performanceMode } = usePerformanceMode();
+
   return (
     <div className="intro-terminal-shot absolute inset-0 flex items-center justify-center">
       <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 via-zinc-900/95 to-black" />
@@ -303,10 +310,25 @@ function TerminalScene() {
           </linearGradient>
         </defs>
 
-        <ellipse cx="400" cy="300" rx="340" ry="220" fill="url(#terminal-glow)" className="intro-terminal-glow-pulse" />
+        <ellipse
+          cx="400"
+          cy="300"
+          rx="340"
+          ry="220"
+          fill="url(#terminal-glow)"
+          className={performanceMode ? undefined : "intro-terminal-glow-pulse"}
+          opacity={performanceMode ? 0.84 : undefined}
+        />
 
         <rect x="250" y="150" width="300" height="200" fill="#08080c" stroke="#52525b" strokeWidth="2" rx="6" />
-        <rect x="270" y="168" width="260" height="155" fill="url(#screen-glow)" className="intro-screen-flicker" />
+        <rect
+          x="270"
+          y="168"
+          width="260"
+          height="155"
+          fill="url(#screen-glow)"
+          className={performanceMode ? undefined : "intro-screen-flicker"}
+        />
         <line x1="290" y1="200" x2="500" y2="200" stroke="#f97316" strokeWidth="1.2" opacity="0.55" />
         <line x1="290" y1="222" x2="470" y2="222" stroke="#f97316" strokeWidth="1" opacity="0.4" />
         <line x1="290" y1="244" x2="430" y2="244" stroke="#f97316" strokeWidth="1" opacity="0.28" />
@@ -428,6 +450,7 @@ export function CinematicIntro({
   skipAvailableMs = INTRO_SKIP_DELAY_MS,
   showReturningHint = false,
 }: CinematicIntroProps) {
+  const { performanceMode } = usePerformanceMode();
   const [sceneIndex, setSceneIndex] = useState(0);
   const [montageIndex, setMontageIndex] = useState(0);
   const [exiting, setExiting] = useState(false);
@@ -612,8 +635,12 @@ export function CinematicIntro({
       role="presentation"
     >
       <div className="cinematic-vignette pointer-events-none absolute inset-0 z-30" />
-      <div className="cinematic-scanlines pointer-events-none absolute inset-0 z-30" />
-      <div className="cinematic-grain pointer-events-none absolute inset-0 z-30" />
+      {performanceMode ? null : (
+        <>
+          <div className="cinematic-scanlines pointer-events-none absolute inset-0 z-30" />
+          <div className="cinematic-grain pointer-events-none absolute inset-0 z-30" />
+        </>
+      )}
 
       {currentScene === "black" ? (
         <div className="intro-black-fade absolute inset-0 bg-black" />

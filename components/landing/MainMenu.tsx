@@ -11,11 +11,13 @@ import {
 } from "@/lib/landing";
 import { clearAllGameData } from "@/lib/save-progress";
 import { playDoorSound, playInteractSound } from "@/lib/sounds";
+import { usePerformanceMode } from "@/components/PerformanceModeProvider";
 import { cn } from "@/lib/utils";
 
 type MenuAction = "continue" | "new-game" | "enter" | "act" | null;
 
 export function MainMenu() {
+  const { performanceMode } = usePerformanceMode();
   const router = useRouter();
   const [menu, setMenu] = useState<GameMenuState | null>(null);
   const [action, setAction] = useState<MenuAction>(null);
@@ -96,7 +98,9 @@ export function MainMenu() {
             entering && action === "continue" && "enter-facility-btn-active",
           )}
         >
-          <span className="enter-facility-btn-border pointer-events-none absolute -inset-px rounded-sm" />
+          {performanceMode ? null : (
+            <span className="enter-facility-btn-border pointer-events-none absolute -inset-px rounded-sm" />
+          )}
           <span className="relative flex flex-col items-center gap-1">
             <span>
               {entering && action === "continue"
@@ -121,7 +125,9 @@ export function MainMenu() {
             entering && action === "enter" && "enter-facility-btn-active",
           )}
         >
-          <span className="enter-facility-btn-border pointer-events-none absolute -inset-px rounded-sm" />
+          {performanceMode ? null : (
+            <span className="enter-facility-btn-border pointer-events-none absolute -inset-px rounded-sm" />
+          )}
           <span className="relative flex flex-col items-center gap-1">
             <span>
               {entering && action === "enter"

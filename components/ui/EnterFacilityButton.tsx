@@ -11,6 +11,7 @@ import {
 import { playDoorSound } from "@/lib/sounds";
 import { cn } from "@/lib/utils";
 import { GroknetLandingWhisper } from "@/components/landing/GroknetLandingWhisper";
+import { usePerformanceMode } from "@/components/PerformanceModeProvider";
 
 type EnterFacilityButtonProps = {
   className?: string;
@@ -22,6 +23,7 @@ export function EnterFacilityButton({
   className,
   forceNewGame = false,
 }: EnterFacilityButtonProps) {
+  const { performanceMode } = usePerformanceMode();
   const router = useRouter();
   const [hoverLine, setHoverLine] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState(false);
@@ -81,17 +83,21 @@ export function EnterFacilityButton({
           isEntering && "enter-facility-btn-active pointer-events-none scale-[0.99]",
         )}
       >
+        {performanceMode ? null : (
+          <>
+            <span
+              aria-hidden
+              className="enter-facility-btn-border pointer-events-none absolute -inset-px rounded-sm"
+            />
+            <span
+              aria-hidden
+              className="enter-facility-btn-shimmer pointer-events-none absolute inset-0 overflow-hidden rounded-sm"
+            />
+          </>
+        )}
         <span
           aria-hidden
-          className="enter-facility-btn-border pointer-events-none absolute -inset-px rounded-sm"
-        />
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-0 rounded-sm bg-accent opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-50"
-        />
-        <span
-          aria-hidden
-          className="enter-facility-btn-shimmer pointer-events-none absolute inset-0 overflow-hidden rounded-sm"
+          className="pointer-events-none absolute inset-0 rounded-sm bg-accent opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-40"
         />
 
         <span className="relative flex flex-col items-center gap-1">

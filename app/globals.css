@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 :root {
   --background: #010102;
@@ -80,7 +80,11 @@ body {
 }
 
 .accent-pulse {
-  animation: accent-pulse 4s ease-in-out infinite;
+  animation: accent-breathe 7s ease-in-out infinite;
+}
+
+.accent-breathe {
+  animation: accent-breathe 7s ease-in-out infinite;
 }
 
 .hero-fade-in {
@@ -116,15 +120,13 @@ body {
   animation: status-blink 2.4s ease-in-out infinite;
 }
 
-@keyframes accent-pulse {
+@keyframes accent-breathe {
   0%,
   100% {
-    opacity: 0.35;
-    transform: scale(1);
+    opacity: 0.28;
   }
   50% {
-    opacity: 0.65;
-    transform: scale(1.05);
+    opacity: 0.42;
   }
 }
 
@@ -302,7 +304,7 @@ body {
   animation: hallucination-warning-pulse 1s ease-in-out infinite;
 }
 
-/* Hallucination system — types, personality, ambient */
+/* Hallucination system ΓÇö types, personality, ambient */
 .hallucination-intensity-high .hallucination-tint {
   opacity: 0.92;
 }
@@ -535,7 +537,7 @@ body {
   }
 }
 
-/* Distort only vision overlay text — not gameplay UI underneath */
+/* Distort only vision overlay text ΓÇö not gameplay UI underneath */
 .hallucination-active .hallucination-vision,
 .hallucination-active .hallucination-message,
 .hallucination-active .hallucination-event-title {
@@ -927,7 +929,7 @@ body {
   opacity: 0.5;
 }
 
-/* ===== READABILITY — GAME UI ===== */
+/* ===== READABILITY ΓÇö GAME UI ===== */
 .game-shell {
   font-size: 16px;
   line-height: 1.6;
@@ -1073,7 +1075,7 @@ body {
 }
 
 .landing-horizon-pulse {
-  animation: landing-horizon-pulse 5s ease-in-out infinite;
+  animation: landing-horizon-breathe 8s ease-in-out infinite;
 }
 
 .landing-light-flicker {
@@ -1081,7 +1083,7 @@ body {
 }
 
 .landing-door-glow {
-  animation: landing-door-glow 2.8s ease-in-out infinite;
+  animation: landing-door-breathe 7s ease-in-out infinite;
 }
 
 .landing-particle {
@@ -1150,13 +1152,13 @@ body {
   }
 }
 
-@keyframes landing-horizon-pulse {
+@keyframes landing-horizon-breathe {
   0%,
   100% {
-    opacity: 0.75;
+    opacity: 0.78;
   }
   50% {
-    opacity: 1;
+    opacity: 0.92;
   }
 }
 
@@ -1176,13 +1178,13 @@ body {
   }
 }
 
-@keyframes landing-door-glow {
+@keyframes landing-door-breathe {
   0%,
   100% {
-    opacity: 0.12;
+    opacity: 0.14;
   }
   50% {
-    opacity: 0.35;
+    opacity: 0.22;
   }
 }
 
@@ -1512,15 +1514,15 @@ body {
 }
 
 .intro-bunker-pulse {
-  animation: intro-bunker-pulse 4s ease-in-out infinite;
+  animation: intro-bunker-breathe 8s ease-in-out infinite;
 }
 
 .intro-door-glow {
-  animation: intro-door-glow 2.5s ease-in-out infinite;
+  animation: intro-door-breathe 7s ease-in-out infinite;
 }
 
 .intro-perimeter-light {
-  animation: intro-perimeter-light 2.8s ease-in-out infinite;
+  animation: intro-perimeter-breathe 6s ease-in-out infinite;
 }
 
 .intro-location-tag {
@@ -1592,11 +1594,11 @@ body {
 }
 
 .intro-terminal-glow-pulse {
-  animation: intro-terminal-glow-pulse 3s ease-in-out infinite;
+  animation: intro-terminal-breathe 8s ease-in-out infinite;
 }
 
 .intro-screen-flicker {
-  animation: intro-screen-flicker 4s ease-in-out infinite;
+  animation: intro-screen-breathe 10s ease-in-out infinite;
 }
 
 .intro-title-prelude {
@@ -1706,36 +1708,33 @@ body {
   }
 }
 
-@keyframes intro-bunker-pulse {
+@keyframes intro-bunker-breathe {
   0%,
   100% {
-    opacity: 0.7;
+    opacity: 0.72;
   }
   50% {
-    opacity: 1;
+    opacity: 0.88;
   }
 }
 
-@keyframes intro-door-glow {
+@keyframes intro-door-breathe {
   0%,
   100% {
-    opacity: 0.1;
+    opacity: 0.12;
   }
   50% {
-    opacity: 0.22;
+    opacity: 0.18;
   }
 }
 
-@keyframes intro-perimeter-light {
+@keyframes intro-perimeter-breathe {
   0%,
   100% {
-    opacity: 0.25;
-  }
-  40% {
-    opacity: 0.55;
-  }
-  60% {
     opacity: 0.3;
+  }
+  50% {
+    opacity: 0.42;
   }
 }
 
@@ -1848,13 +1847,23 @@ body {
   }
 }
 
-@keyframes intro-terminal-glow-pulse {
+@keyframes intro-terminal-breathe {
   0%,
   100% {
-    opacity: 0.75;
+    opacity: 0.78;
   }
   50% {
+    opacity: 0.9;
+  }
+}
+
+@keyframes intro-screen-breathe {
+  0%,
+  100% {
     opacity: 1;
+  }
+  50% {
+    opacity: 0.94;
   }
 }
 
@@ -2317,7 +2326,7 @@ body {
   );
 }
 
-/* Act II — Residential Sector */
+/* Act II ΓÇö Residential Sector */
 .residential-map {
   box-shadow: inset 0 0 48px rgba(139, 92, 246, 0.08);
   background: linear-gradient(
@@ -2561,7 +2570,7 @@ body {
   }
 }
 
-/* Research Wing — Experimental Labs */
+/* Research Wing ΓÇö Experimental Labs */
 .research-wing-map {
   box-shadow: inset 0 0 48px rgba(245, 158, 11, 0.1);
   background: linear-gradient(
@@ -3527,7 +3536,7 @@ body {
   }
 }
 
-/* Act III — Deep Core & Plug Chamber */
+/* Act III ΓÇö Deep Core & Plug Chamber */
 .deep-core-atmosphere {
   border-radius: 2px;
 }
@@ -3917,7 +3926,7 @@ body {
   }
 }
 
-/* Act III — Deep Core corruption overlay */
+/* Act III ΓÇö Deep Core corruption overlay */
 .deep-core-flicker-lights {
   background: radial-gradient(
     ellipse 100% 80% at 50% 0%,
@@ -3965,7 +3974,7 @@ body {
   text-shadow: 0 0 10px rgba(244, 63, 94, 0.45);
 }
 
-/* Act III — Groknet personality variant */
+/* Act III ΓÇö Groknet personality variant */
 .groknet-presence-banner {
   box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.35);
 }
@@ -4014,7 +4023,7 @@ body {
   transform-origin: left center;
 }
 
-/* Act III — Plug terminal */
+/* Act III ΓÇö Plug terminal */
 .plug-terminal-in {
   animation: plug-terminal-in 0.55s ease-out both;
 }
@@ -4035,7 +4044,7 @@ body {
   animation: plug-interface-hum 2s ease-in-out infinite;
 }
 
-/* Act III — The Garden hallucination */
+/* Act III ΓÇö The Garden hallucination */
 .hallucination-the-garden {
   filter: saturate(1.15) contrast(1.02);
 }
@@ -4270,7 +4279,7 @@ body {
   }
 }
 
-/* Act III — Final Approach */
+/* Act III ΓÇö Final Approach */
 .final-approach-heavy {
   filter: saturate(1.12) contrast(1.03);
 }
@@ -4309,7 +4318,7 @@ body {
   }
 }
 
-/* Act III — Per-ending finale cinematics */
+/* Act III ΓÇö Per-ending finale cinematics */
 .act-three-finale-cinematic-glow {
   opacity: 0.85;
 }
@@ -4520,7 +4529,7 @@ body {
   }
 }
 
-/* ── Performance Mode (mobile / low-end auto-detect) ── */
+/* ΓöÇΓöÇ Performance Mode (mobile / low-end auto-detect) ΓöÇΓöÇ */
 
 html.performance-mode .cinematic-grain,
 html.performance-mode .cinematic-scanlines,
@@ -4593,18 +4602,39 @@ html.performance-mode .hallucination-corridor-warp,
 html.performance-mode .hallucination-corridor-labels,
 html.performance-mode .hallucination-directive-scan,
 html.performance-mode .accent-pulse,
+html.performance-mode .accent-breathe,
+html.performance-mode .intro-bunker-pulse,
+html.performance-mode .intro-door-glow,
 html.performance-mode .intro-perimeter-light,
+html.performance-mode .intro-terminal-glow-pulse,
+html.performance-mode .intro-screen-flicker,
 html.performance-mode .intro-facility-scan,
 html.performance-mode .intro-montage-radar,
 html.performance-mode .intro-radar-ring,
 html.performance-mode .intro-montage-fire-glow,
 html.performance-mode .intro-montage-live,
+html.performance-mode .enter-facility-btn-border,
+html.performance-mode .enter-facility-btn-shimmer,
+html.performance-mode .main-menu-routing-bar,
 html.performance-mode .status-blink {
   display: none !important;
 }
 
 html.performance-mode .title-glow {
-  text-shadow: none !important;
+  text-shadow: 0 0 16px rgba(249, 115, 22, 0.12) !important;
+}
+
+html.performance-mode .intro-montage-flash {
+  animation: intro-montage-flash-lite 0.55s ease-out both !important;
+}
+
+@keyframes intro-montage-flash-lite {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 html.performance-mode .intro-facility-zoom {

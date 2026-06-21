@@ -1,7 +1,11 @@
+"use client";
+
 import { MainMenu } from "@/components/landing/MainMenu";
 import { LandingStory } from "@/components/landing/LandingStory";
+import { usePerformanceMode } from "@/components/PerformanceModeProvider";
 import { CinematicOverlay } from "@/components/game/CinematicOverlay";
 import { LandingBackground } from "@/components/landing/LandingBackground";
+import { cn } from "@/lib/utils";
 
 const ACT_STRIP = [
   { act: "I", title: "The Infiltration", areas: "Perimeter · Hub · Archives" },
@@ -10,6 +14,8 @@ const ACT_STRIP = [
 ] as const;
 
 export function LandingHero() {
+  const { performanceMode } = usePerformanceMode();
+
   return (
     <div className="relative flex min-h-[100dvh] flex-col overflow-hidden bg-background">
       <LandingBackground />
@@ -22,20 +28,40 @@ export function LandingHero() {
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_40%_30%_at_80%_90%,rgba(139,92,246,0.06),transparent_65%)]"
       />
-      <div aria-hidden className="landing-grid pointer-events-none absolute inset-0 opacity-80" />
-      <div aria-hidden className="landing-vignette pointer-events-none absolute inset-0" />
-      <div aria-hidden className="landing-scanlines absolute inset-0" />
-
       <div
         aria-hidden
-        className="accent-pulse pointer-events-none absolute left-1/2 top-[36%] h-[32rem] w-[32rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/8 blur-3xl"
+        className={cn(
+          "landing-grid pointer-events-none absolute inset-0",
+          performanceMode ? "opacity-40" : "opacity-80",
+        )}
       />
+      <div aria-hidden className="landing-vignette pointer-events-none absolute inset-0" />
+      {performanceMode ? null : (
+        <div aria-hidden className="landing-scanlines absolute inset-0" />
+      )}
 
-      <CinematicOverlay />
+      {performanceMode ? (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute left-1/2 top-[36%] h-[24rem] w-[24rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/6 blur-2xl"
+        />
+      ) : (
+        <div
+          aria-hidden
+          className="accent-breathe pointer-events-none absolute left-1/2 top-[36%] h-[28rem] w-[28rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/7 blur-2xl"
+        />
+      )}
+
+      <CinematicOverlay reduced={performanceMode} />
 
       <header className="hero-fade-in relative z-10 flex items-center justify-between px-6 py-5 sm:px-10">
         <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.3em] text-muted">
-          <span className="h-1.5 w-1.5 rounded-full bg-accent status-blink" />
+          <span
+            className={cn(
+              "h-1.5 w-1.5 rounded-full bg-accent",
+              !performanceMode && "status-blink",
+            )}
+          />
           Groknet uplink active
         </div>
         <div className="hidden font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-600 sm:block">
@@ -48,7 +74,12 @@ export function LandingHero() {
           Interactive Narrative Thriller · Free to Play
         </p>
 
-        <h1 className="hero-fade-in-delayed title-glow mt-4 max-w-4xl font-display text-3xl font-bold uppercase leading-[1.08] tracking-[0.05em] text-foreground sm:text-4xl md:text-5xl lg:text-6xl">
+        <h1
+          className={cn(
+            "hero-fade-in-delayed mt-4 max-w-4xl font-display text-3xl font-bold uppercase leading-[1.08] tracking-[0.05em] text-foreground sm:text-4xl md:text-5xl lg:text-6xl",
+            !performanceMode && "title-glow",
+          )}
+        >
           Stop the AI Before It Launches Every Nuclear Weapon
         </h1>
 
@@ -84,7 +115,7 @@ export function LandingHero() {
           {ACT_STRIP.map((entry) => (
             <div
               key={entry.act}
-              className="rounded-sm border border-zinc-800/60 bg-zinc-950/30 px-4 py-3 backdrop-blur-sm"
+              className="rounded-sm border border-zinc-800/60 bg-zinc-950/50 px-4 py-3"
             >
               <p className="font-display text-[10px] font-semibold uppercase tracking-[0.2em] text-accent/90 sm:text-xs">
                 Act {entry.act}
