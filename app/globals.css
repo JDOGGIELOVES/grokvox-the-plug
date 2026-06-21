@@ -2672,11 +2672,29 @@ body {
 
 .hallucination-the-children-figures {
   background:
-    radial-gradient(ellipse 6% 14% at 28% 52%, rgba(251, 191, 36, 0.14), transparent 70%),
-    radial-gradient(ellipse 6% 14% at 42% 48%, rgba(251, 191, 36, 0.12), transparent 70%),
-    radial-gradient(ellipse 6% 14% at 58% 50%, rgba(251, 191, 36, 0.13), transparent 70%),
-    radial-gradient(ellipse 6% 14% at 72% 46%, rgba(251, 191, 36, 0.11), transparent 70%);
+    radial-gradient(ellipse 8% 18% at 22% 50%, rgba(251, 191, 36, 0.22), transparent 72%),
+    radial-gradient(ellipse 8% 18% at 38% 46%, rgba(251, 191, 36, 0.2), transparent 72%),
+    radial-gradient(ellipse 9% 20% at 52% 48%, rgba(244, 63, 94, 0.18), transparent 72%),
+    radial-gradient(ellipse 8% 18% at 66% 44%, rgba(251, 191, 36, 0.19), transparent 72%),
+    radial-gradient(ellipse 8% 18% at 80% 50%, rgba(251, 191, 36, 0.17), transparent 72%);
   animation: children-figures-turn 5s ease-in-out infinite;
+}
+
+.children-ghost-figure {
+  animation: children-ghost-bob 3.2s ease-in-out infinite;
+  opacity: 0.85;
+}
+
+@keyframes children-ghost-bob {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 0.65;
+  }
+  50% {
+    transform: translateX(-50%) translateY(-4px);
+    opacity: 1;
+  }
 }
 
 .hallucination-the-children-voices {

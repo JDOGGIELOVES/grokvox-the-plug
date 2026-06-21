@@ -48,7 +48,7 @@ export function HallucinationEffect({
       <div
         className={cn(
           "hallucination-blocker fixed inset-0 z-[45]",
-          awaitingChoice || isTheGarden
+          awaitingChoice || isTheGarden || isTheChildren
             ? "pointer-events-none"
             : "cursor-not-allowed",
         )}
@@ -237,7 +237,7 @@ export function HallucinationEffect({
             </p>
           ) : null}
 
-          {message && !isTheGarden ? (
+          {message && !isTheGarden && !isTheChildren ? (
             <p
               className={cn(
                 "hallucination-message max-w-xl text-center font-mono text-xl leading-relaxed tracking-wide sm:text-2xl",
@@ -323,10 +323,14 @@ export function HallucinationEffect({
             {awaitingChoice
               ? isTheGarden
                 ? "Respond below — or Break Free"
-                : "Choose your response"
+                : isTheChildren
+                  ? "Respond below — or Break Free"
+                  : "Choose your response"
               : isTheGarden
                 ? "Neural Garden blooming"
-                : "Signal compromised"}
+                : isTheChildren
+                  ? "The Children · playground rendering"
+                  : "Signal compromised"}
           </p>
         ) : null}
       </div>

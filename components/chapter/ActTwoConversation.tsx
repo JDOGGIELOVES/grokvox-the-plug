@@ -11,6 +11,7 @@ import { AreaTransition } from "@/components/chapter/AreaTransition";
 import { ResidentialSectorSection } from "@/components/chapter/ResidentialSectorSection";
 import { ResearchWingSection } from "@/components/chapter/ResearchWingSection";
 import { ServerFarmSection } from "@/components/chapter/ServerFarmSection";
+import { ChildrenHallucinationPrompt } from "@/components/ChildrenHallucinationPrompt";
 import { HallucinationChoicePrompt } from "@/components/HallucinationChoicePrompt";
 import { HallucinationEffect } from "@/components/HallucinationEffect";
 import { Terminal } from "@/components/Terminal";
@@ -52,6 +53,7 @@ import {
   getLastConversationVoiceLine,
 } from "@/lib/hallucinations/the-last-conversation-personalized";
 import {
+  getChildrenExitWhisper,
   getTheChildrenVisionText,
   getTheChildrenVoiceLine,
 } from "@/lib/hallucinations/the-children-personalized";
@@ -291,6 +293,11 @@ export function ActTwoConversation() {
     null,
   );
   const childrenDelayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const childrenExitHandledRef = useRef(false);
+  const dialogueContextRef = useRef<ActTwoDialogueContext | null>(null);
+  const groknetWhisperRef = useRef<
+    (line: string, persistMs?: number, speak?: boolean) => void
+  >(() => {});
   const accumulationDelayRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
@@ -330,15 +337,28 @@ export function ActTwoConversation() {
         );
       }
       if (endedEvent === "the-children") {
+        if (childrenExitHandledRef.current) return;
+
+        const ctx = dialogueContextRef.current;
+        childrenExitHandledRef.current = true;
         setState((s) =>
           s
             ? {
                 ...s,
                 childrenSurvived: true,
                 screenShaking: false,
+                disorientation: {
+                  active: true,
+                  invertMovement: false,
+                  endsAt: Date.now() + 2_500,
+                },
+                lastActionAt: Date.now(),
               }
             : s,
         );
+        if (ctx) {
+          groknetWhisperRef.current(getChildrenExitWhisper(ctx, null), 9000, true);
+        }
       }
       if (endedEvent === "the-accumulation") {
         setState((s) =>
@@ -493,6 +513,11 @@ export function ActTwoConversation() {
     },
     [],
   );
+  groknetWhisperRef.current = setGroknetWhisper;
+
+  useEffect(() => {
+    dialogueContextRef.current = dialogueContext;
+  }, [dialogueContext]);
 
   useEffect(() => {
     if (resumeWhisper) {
@@ -744,11 +769,94 @@ export function ActTwoConversation() {
     }, 1400);
   }, [dialogueContext, triggerHallucination]);
 
+  const handleChildrenBreakFree = useCallback(() => {
+    if (eventId !== "the-children" || !dialogueContext) return;
+
+    childrenExitHandledRef.current = true;
+    endHallucination();
+    setState((s) =>
+      s
+        ? {
+            ...s,
+            childrenSurvived: true,
+            screenShaking: false,
+            disorientation: {
+              active: true,
+              invertMovement: false,
+              endsAt: Date.now() + 2_500,
+            },
+            lastActionAt: Date.now(),
+          }
+        : s,
+    );
+    setGroknetWhisper(getChildrenExitWhisper(dialogueContext, null), 9000, true);
+  }, [dialogueContext, endHallucination, eventId, setGroknetWhisper]);
+
   const handleHallucinationChoice = useCallback(
     (choice: HallucinationResponseChoice) => {
       const event = getHallucinationEvent(eventId);
       const consequence = event?.consequences[choice];
       if (!consequence) return;
+
+      if (eventId === "the-children") {
+        childrenExitHandledRef.current = true;
+        endHallucination();
+        playTheChildrenSound();
+
+        setState((s) => {
+          if (!s) return s;
+          return {
+            ...s,
+            childrenChoice: choice,
+            childrenSurvived: true,
+            screenShaking: false,
+            finalMood: {
+              cold: Math.min(
+                3,
+                Math.max(0, s.finalMood.cold + consequence.moodDelta.cold),
+              ),
+              melancholic: Math.min(
+                3,
+                Math.max(
+                  0,
+                  s.finalMood.melancholic + consequence.moodDelta.melancholic,
+                ),
+              ),
+              analytical: Math.min(
+                3,
+                Math.max(
+                  0,
+                  s.finalMood.analytical + consequence.moodDelta.analytical,
+                ),
+              ),
+            },
+            disorientation: {
+              active: true,
+              invertMovement: consequence.invertMovement,
+              endsAt: Date.now() + consequence.disorientationMs,
+            },
+            lastActionAt: Date.now(),
+          };
+        });
+
+        if (dialogueContext) {
+          const personalized = getPersonalizedChoiceConsequence(
+            eventId,
+            choice,
+            consequence.groknetLine,
+            dialogueContext,
+          );
+          setGroknetWhisper(personalized, 6500, true);
+          window.setTimeout(() => {
+            setGroknetWhisper(
+              getChildrenExitWhisper(dialogueContext, choice),
+              10_000,
+              true,
+            );
+          }, 3800);
+        }
+        return;
+      }
 
       setState((s) => {
         if (!s) return s;
@@ -757,7 +865,6 @@ export function ActTwoConversation() {
           ...(eventId === "the-last-conversation"
             ? { lastConversationChoice: choice }
             : {}),
-          ...(eventId === "the-children" ? { childrenChoice: choice } : {}),
           ...(eventId === "the-accumulation"
             ? { accumulationChoice: choice }
             : {}),
@@ -786,8 +893,6 @@ export function ActTwoConversation() {
       endHallucination();
       if (eventId === "the-accumulation") {
         playTheAccumulationSound();
-      } else if (eventId === "the-children") {
-        playTheChildrenSound();
       } else {
         playLastConversationChoiceSound();
       }
@@ -810,17 +915,8 @@ export function ActTwoConversation() {
           );
         }, 8600);
       }
-      if (eventId === "the-children") {
-        window.setTimeout(() => {
-          setGroknetWhisper(
-            "The playground fades. …Descend from the Containment Loop — the Central Server Farm is my spine, and Act II peaks there.",
-            7500,
-            true,
-          );
-        }, 8600);
-      }
     },
-    [eventId, endHallucination, setGroknetWhisper],
+    [dialogueContext, eventId, endHallucination, setGroknetWhisper],
   );
 
   const handleChapterComplete = useCallback(() => {
@@ -992,45 +1088,58 @@ export function ActTwoConversation() {
   }, [beginAreaTransition, state?.childrenSurvived, state?.serverFarmEntered]);
 
   const scheduleTheChildren = useCallback(() => {
-    if (!dialogueContext) return;
+    if (!dialogueContext || state?.childrenSurvived || active) return;
 
-    setState((s) => {
-      if (!s || s.childrenTriggered) return s;
+    childrenExitHandledRef.current = false;
 
-      if (childrenDelayRef.current) clearTimeout(childrenDelayRef.current);
+    setState((s) =>
+      s
+        ? {
+            ...s,
+            childrenTriggered: true,
+            screenShaking: true,
+            lastActionAt: Date.now(),
+          }
+        : s,
+    );
 
-      const ctx = {
-        ...dialogueContext,
-        childrenChoice: s.childrenChoice,
-        relationshipStance: s.relationshipStance,
-        labDialogueComplete: s.labDialogueComplete,
-        lastConversationChoice: s.lastConversationChoice,
-      };
-      childrenDelayRef.current = setTimeout(() => {
-        playTheChildrenSound();
-        playHallucinationPeakSound();
-        triggerHallucination({
-          eventId: "the-children",
-          voiceLine: getTheChildrenVoiceLine(ctx),
-          message: getTheChildrenVoiceLine(ctx),
-          visionText: getTheChildrenVisionText(ctx),
-        });
-        childrenDelayRef.current = null;
-      }, 1800);
-
-      return {
-        ...s,
-        childrenTriggered: true,
-        screenShaking: true,
-      };
-    });
-
+    if (childrenDelayRef.current) clearTimeout(childrenDelayRef.current);
     if (shakeTimeoutRef.current) clearTimeout(shakeTimeoutRef.current);
+
     shakeTimeoutRef.current = setTimeout(() => {
       setState((s) => (s ? { ...s, screenShaking: false } : s));
       shakeTimeoutRef.current = null;
-    }, 1400);
-  }, [dialogueContext, triggerHallucination]);
+    }, 480);
+
+    const ctx = {
+      ...dialogueContext,
+      childrenChoice: state?.childrenChoice ?? null,
+      relationshipStance: state?.relationshipStance ?? null,
+      labDialogueComplete: state?.labDialogueComplete ?? false,
+      lastConversationChoice: state?.lastConversationChoice ?? null,
+    };
+
+    childrenDelayRef.current = setTimeout(() => {
+      playTheChildrenSound();
+      playHallucinationPeakSound();
+      triggerHallucination({
+        eventId: "the-children",
+        personality: dialogueContext.dominantPersonality,
+        voiceLine: getTheChildrenVoiceLine(ctx),
+        visionText: getTheChildrenVisionText(ctx),
+      });
+      childrenDelayRef.current = null;
+    }, 1600);
+  }, [
+    active,
+    dialogueContext,
+    state?.childrenChoice,
+    state?.childrenSurvived,
+    state?.labDialogueComplete,
+    state?.lastConversationChoice,
+    state?.relationshipStance,
+    triggerHallucination,
+  ]);
 
   const handleResearchRoomEnter = useCallback(
     (room: ResearchRoomId, _fromRoom: ResearchRoomId) => {
@@ -1352,6 +1461,7 @@ export function ActTwoConversation() {
               relationshipBeatIndex={state.relationshipBeatIndex}
               relationshipStance={state.relationshipStance}
               childrenSurvived={state.childrenSurvived}
+              childrenActive={active && eventId === "the-children"}
               activeHack={state.activeHack}
               relationshipPromptOpen={state.relationshipPromptOpen}
               onOpenHack={(terminalId) =>
@@ -1494,7 +1604,14 @@ export function ActTwoConversation() {
         awaitingChoice={awaitingChoice}
       />
 
-      {awaitingChoice ? (
+      {active && eventId === "the-children" && dialogueContext ? (
+        <ChildrenHallucinationPrompt
+          context={dialogueContext}
+          phase={awaitingChoice ? "choices" : "rising"}
+          onChoose={handleHallucinationChoice}
+          onBreakFree={handleChildrenBreakFree}
+        />
+      ) : awaitingChoice ? (
         <HallucinationChoicePrompt
           eventId={eventId}
           onChoose={handleHallucinationChoice}

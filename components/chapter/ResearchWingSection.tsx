@@ -35,6 +35,7 @@ type ResearchWingSectionProps = {
   relationshipBeatIndex: number;
   relationshipStance: RelationshipStance | null;
   childrenSurvived: boolean;
+  childrenActive?: boolean;
   activeHack: LabTerminalId | null;
   relationshipPromptOpen: boolean;
   onOpenHack: (terminalId: LabTerminalId) => void;
@@ -68,6 +69,7 @@ export function ResearchWingSection({
   relationshipBeatIndex,
   relationshipStance,
   childrenSurvived,
+  childrenActive = false,
   activeHack,
   relationshipPromptOpen,
   onOpenHack,
@@ -366,30 +368,52 @@ export function ResearchWingSection({
                   Sealed — hacks and relationship index required
                 </p>
               ) : null}
-              {canTriggerChildren ? (
-                <p className="research-children-warning rounded-sm border border-rose-900/40 bg-rose-950/20 px-3 py-2 font-mono text-[9px] uppercase tracking-widest text-rose-300/80">
-                  The Children — vision imminent
+              {childrenActive ? (
+                <p className="rounded-sm border border-rose-900/40 bg-rose-950/20 px-3 py-2 font-mono text-[9px] uppercase tracking-widest text-rose-300/80">
+                  The Children active — respond below or Break Free
                 </p>
               ) : null}
-              {childrenSurvived ? (
-                <p className="rounded-sm border border-emerald-900/40 bg-emerald-950/20 px-3 py-2 font-mono text-[9px] uppercase tracking-widest text-emerald-400/80">
-                  The Children — survived
-                </p>
-              ) : null}
-              {childrenSurvived && onEnterServerFarm ? (
+              {canTriggerChildren && !childrenActive ? (
                 <Button
                   variant="accent"
                   onClick={() => {
                     playInteractSound();
-                    onEnterServerFarm();
+                    onEnterContainmentLoop();
+                    showFeedback("The Children rising — respond when ready");
                   }}
-                  disabled={controlsDisabled || serverFarmUnlocked || uiBlocked}
-                  className="h-12 w-full font-mono text-xs uppercase tracking-[0.2em] shadow-[0_0_24px_rgba(34,211,238,0.18)]"
+                  disabled={controlsDisabled || uiBlocked}
+                  className="h-12 w-full font-mono text-xs uppercase tracking-[0.2em] shadow-[0_0_24px_rgba(244,63,94,0.12)]"
                 >
-                  {serverFarmUnlocked
-                    ? "Central Server Farm · En route"
-                    : "Descend to Central Server Farm"}
+                  Face The Children
                 </Button>
+              ) : null}
+              {childrenSurvived ? (
+                <>
+                  <p className="rounded-sm border border-emerald-900/40 bg-emerald-950/20 px-3 py-2 font-mono text-[9px] uppercase tracking-widest text-emerald-400/80">
+                    The Children — survived · Server Farm unlocked
+                  </p>
+                  {onEnterServerFarm ? (
+                    <Button
+                      variant="accent"
+                      onClick={() => {
+                        playInteractSound();
+                        onEnterServerFarm();
+                        showFeedback("Central Server Farm — Act II peak ahead");
+                      }}
+                      disabled={
+                        controlsDisabled ||
+                        serverFarmUnlocked ||
+                        uiBlocked ||
+                        childrenActive
+                      }
+                      className="h-12 w-full font-mono text-xs uppercase tracking-[0.2em] shadow-[0_0_24px_rgba(34,211,238,0.18)]"
+                    >
+                      {serverFarmUnlocked
+                        ? "Central Server Farm · En route"
+                        : "Descend to Central Server Farm"}
+                    </Button>
+                  ) : null}
+                </>
               ) : null}
             </div>
           ) : null}
