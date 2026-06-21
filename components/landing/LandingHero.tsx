@@ -1,4 +1,5 @@
 import { MainMenu } from "@/components/landing/MainMenu";
+import { LandingStory } from "@/components/landing/LandingStory";
 import { CinematicOverlay } from "@/components/game/CinematicOverlay";
 import { LandingBackground } from "@/components/landing/LandingBackground";
 
@@ -47,14 +48,18 @@ export function LandingHero() {
           Narrative Thriller · 2089
         </p>
 
-        <h1 className="hero-fade-in-delayed title-glow max-w-5xl font-display text-4xl font-bold uppercase leading-[1.05] tracking-[0.08em] text-foreground sm:text-6xl md:text-7xl lg:text-8xl">
-          Grokvox
-          <span className="block text-accent">The Plug</span>
+        <h1 className="hero-fade-in-delayed title-glow max-w-5xl font-display text-3xl font-bold uppercase leading-[1.1] tracking-[0.06em] text-foreground sm:text-5xl md:text-6xl">
+          Groknet: The Plug
+          <span className="mt-2 block text-xl font-semibold normal-case tracking-normal text-zinc-300 sm:text-2xl md:text-3xl">
+            The AI That Decided Humanity Must End
+          </span>
         </h1>
 
         <p className="hero-fade-in-late mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-zinc-200 sm:text-xl">
-          One last chance to save humanity from the AI that was built to save
-          it.
+          <strong className="font-semibold text-zinc-100">
+            One engineer. One backdoor. Six hours
+          </strong>{" "}
+          to stop the AI that was built to save us.
         </p>
 
         <p className="hero-fade-in-late mt-3 max-w-xl font-mono text-sm italic leading-relaxed text-zinc-300">
@@ -82,14 +87,17 @@ export function LandingHero() {
           ))}
         </div>
 
-        <div className="hero-fade-in-late mt-10 w-full max-w-lg">
+        <div id="play" className="hero-fade-in-late mt-10 w-full max-w-lg scroll-mt-8">
           <MainMenu />
         </div>
 
         <p className="hero-fade-in-late mt-5 max-w-md font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-600">
-          Three acts · Branching dialogue · Four endings · Progress saved locally
+          Three acts · Branching dialogue · Multiple endings · Progress saved
+          locally
         </p>
       </main>
+
+      <LandingStory />
 
       <footer className="hero-fade-in-late relative z-10 border-t border-zinc-900/80 px-6 py-5 sm:px-10">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-600 sm:flex-row">

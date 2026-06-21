@@ -24,12 +24,12 @@ const orbitron = Orbitron({
 export const metadata: Metadata = {
   title: "Groknet: The Plug — A Narrative Thriller",
   description:
-    "Infiltrate Sector 07, negotiate with Groknet across three acts, and decide humanity's fate at the Plug. A browser-based narrative thriller.",
+    "One engineer. One backdoor. Six hours to stop Groknet — the AI that decided humanity must end. A dark, cinematic narrative thriller at grokvox.com.",
   metadataBase: new URL("https://www.grokvox.com"),
   openGraph: {
     title: "Groknet: The Plug",
     description:
-      "One last chance to save humanity from the AI that was built to save it.",
+      "One engineer. One backdoor. Six hours to stop the AI that was built to save us.",
     url: "https://www.grokvox.com",
     siteName: "Grokvox",
     type: "website",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Groknet: The Plug",
     description:
-      "Three acts. One AI. Four endings. Enter the facility.",
+      "Three acts. One AI. Multiple endings. Enter the facility.",
   },
 };
 
