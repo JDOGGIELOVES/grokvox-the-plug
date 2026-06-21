@@ -21,25 +21,52 @@ const orbitron = Orbitron({
   display: "swap",
 });
 
+const siteUrl = "https://www.grokvox.com";
+const ogTitle = "Groknet: The Plug — The AI That Decided Humanity Must End";
+const ogDescription =
+  "One last chance to save humanity from the AI that was built to save it.";
+const ogImagePath = "/opengraph-image";
+const ogImageAlt =
+  "A lone engineer standing before a massive glowing orange neural network in a dark underground facility";
+
 export const metadata: Metadata = {
   title: "Groknet: The Plug — A Narrative Thriller",
   description:
     "One engineer. One backdoor. Six hours to stop Groknet — the AI that decided humanity must end. A dark, cinematic narrative thriller at grokvox.com.",
-  metadataBase: new URL("https://www.grokvox.com"),
+  metadataBase: new URL(siteUrl),
   openGraph: {
-    title: "Groknet: The Plug",
-    description:
-      "One engineer. One backdoor. Six hours to stop the AI that was built to save us.",
-    url: "https://www.grokvox.com",
+    title: ogTitle,
+    description: ogDescription,
+    url: siteUrl,
     siteName: "Grokvox",
     type: "website",
+    locale: "en_US",
+    images: [
+      {
+        url: ogImagePath,
+        width: 1200,
+        height: 630,
+        alt: ogImageAlt,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Groknet: The Plug",
-    description:
-      "Three acts. One AI. Multiple endings. Enter the facility.",
+    title: ogTitle,
+    description: ogDescription,
+    images: [ogImagePath],
   },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
+  manifest: "/site.webmanifest",
 };
 
 export const viewport = {
