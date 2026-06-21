@@ -16,6 +16,9 @@ type GardenHallucinationPromptProps = {
   phase: "rising" | "choices";
 };
 
+const CHOICES_UNLOCK_MS = 4_800;
+const BEAT_INTERVAL_MS = 2_800;
+
 export function GardenHallucinationPrompt({
   context,
   onChoose,
@@ -25,17 +28,30 @@ export function GardenHallucinationPrompt({
   const beats = getGardenEmotionalBeats(context);
   const labels = getGardenChoiceLabels();
   const [beatIndex, setBeatIndex] = useState(0);
+  const [choicesVisible, setChoicesVisible] = useState(phase === "choices");
 
   useEffect(() => {
-    if (phase !== "rising") return;
+    if (phase === "choices") {
+      setChoicesVisible(true);
+      return;
+    }
+    setChoicesVisible(false);
+    const timer = window.setTimeout(
+      () => setChoicesVisible(true),
+      CHOICES_UNLOCK_MS,
+    );
+    return () => window.clearTimeout(timer);
+  }, [phase]);
+
+  useEffect(() => {
     setBeatIndex(0);
     const interval = window.setInterval(() => {
-      setBeatIndex((i) => (i < beats.length - 1 ? i + 1 : i));
-    }, 3200);
+      setBeatIndex((i) => (i + 1) % beats.length);
+    }, BEAT_INTERVAL_MS);
     return () => window.clearInterval(interval);
-  }, [beats.length, phase]);
+  }, [beats.length]);
 
-  const activeBeat = beats[Math.min(beatIndex, beats.length - 1)];
+  const activeBeat = beats[beatIndex];
 
   return (
     <div className="hallucination-choice-in game-readable fixed inset-x-0 bottom-0 z-[49] flex justify-center px-4 pb-6 sm:pb-10">
@@ -44,15 +60,18 @@ export function GardenHallucinationPrompt({
           Neural Garden · The Garden
         </p>
 
-        <p className="mt-3 text-base leading-relaxed text-emerald-50/95 transition-opacity duration-500">
+        <p
+          key={beatIndex}
+          className="mt-3 text-base leading-relaxed text-emerald-50/95 transition-opacity duration-500"
+        >
           <span className="text-emerald-500/70">[GROKNET] </span>
           {activeBeat}
         </p>
 
-        {phase === "rising" ? (
+        {!choicesVisible ? (
           <>
             <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.28em] text-emerald-400/70">
-              Memory-flowers opening… choices appear in a moment
+              Memory-flowers opening… respond below or break free
             </p>
             <button
               type="button"
@@ -70,8 +89,8 @@ export function GardenHallucinationPrompt({
         ) : (
           <>
             <p className="mt-3 text-sm text-zinc-300">
-              The vision is asking something of you. Choose — or break free when
-              you&apos;ve seen enough.
+              The vision is asking something of you. Choose — or break free to
+              reach the physical plug.
             </p>
 
             <ul className="mt-4 grid gap-2 sm:grid-cols-2">
@@ -105,8 +124,8 @@ export function GardenHallucinationPrompt({
                 Break Free
               </p>
               <p className="mt-1 text-sm text-amber-100/80">
-                Tear yourself out of the garden. The plug still waits — you
-                won&apos;t be trapped here.
+                Tear yourself out of the garden. The Descent Shaft and physical
+                plug still wait — you won&apos;t be trapped here.
               </p>
             </button>
           </>

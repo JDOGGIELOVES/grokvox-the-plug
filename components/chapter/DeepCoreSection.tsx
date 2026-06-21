@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   DeepCoreContestedHack,
   DEEP_CORE_HACK_CONFIG,
@@ -33,6 +33,7 @@ import { cn } from "@/lib/utils";
 
 type DeepCoreSectionProps = {
   context: ActThreeDialogueContext;
+  initialRoom?: DeepCoreRoomId;
   fortificationHackComplete: boolean;
   thresholdDialogueComplete: boolean;
   thresholdPromptOpen: boolean;
@@ -70,6 +71,7 @@ const ROOM_ORDER: DeepCoreRoomId[] = [
 
 export function DeepCoreSection({
   context,
+  initialRoom = DEEP_CORE_START,
   fortificationHackComplete,
   thresholdDialogueComplete,
   thresholdPromptOpen,
@@ -93,9 +95,21 @@ export function DeepCoreSection({
   corruptionLine = null,
 }: DeepCoreSectionProps) {
   const variant = getPersonalityVariant(context);
-  const [room, setRoom] = useState<DeepCoreRoomId>(DEEP_CORE_START);
+  const [room, setRoom] = useState<DeepCoreRoomId>(initialRoom);
   const [feedback, setFeedback] = useState<string | null>(null);
-  const [gardenVisited, setGardenVisited] = useState(gardenSurvived);
+  const [gardenVisited, setGardenVisited] = useState(
+    gardenSurvived || initialRoom === "neural-garden",
+  );
+
+  useEffect(() => {
+    setRoom(initialRoom);
+  }, [initialRoom]);
+
+  useEffect(() => {
+    if (gardenSurvived) {
+      setGardenVisited(true);
+    }
+  }, [gardenSurvived]);
 
   const roomMeta = DEEP_CORE_ROOMS[room];
   const gardenUnlocked = canAccessNeuralGarden(
@@ -384,7 +398,8 @@ export function DeepCoreSection({
               {gardenSurvived ? (
                 <>
                   <p className="rounded-sm border border-emerald-900/40 bg-emerald-950/20 px-3 py-2 font-mono text-[9px] uppercase tracking-widest text-emerald-400/80">
-                    The Garden — survived · Descent Shaft unlocked
+                    The Garden — survived · Descent Shaft unlocked · Physical
+                    plug ahead
                   </p>
                   <Button
                     variant="accent"
@@ -394,8 +409,8 @@ export function DeepCoreSection({
                       onEnterFinalApproach();
                       showFeedback("Final Approach — plug confrontation ahead");
                     }}
-                    disabled={controlsDisabled || uiBlocked || gardenActive}
-                    className="h-12 w-full font-mono text-xs uppercase tracking-[0.2em]"
+                    disabled={uiBlocked || gardenActive}
+                    className="h-12 w-full font-mono text-xs uppercase tracking-[0.2em] shadow-[0_0_28px_rgba(244,63,94,0.22)]"
                   >
                     Descend — Final Approach
                   </Button>
@@ -405,9 +420,41 @@ export function DeepCoreSection({
           ) : null}
 
           {room === "descent-shaft" && gardenSurvived ? (
-            <p className="mt-4 rounded-sm border border-amber-900/40 bg-amber-950/20 px-3 py-2 font-mono text-[9px] uppercase tracking-widest text-amber-300/80">
-              Plug Chamber accessible — descend complete
-            </p>
+            <div className="mt-4 space-y-2">
+              <p className="rounded-sm border border-amber-900/40 bg-amber-950/20 px-3 py-2 font-mono text-[9px] uppercase tracking-widest text-amber-300/80">
+                Plug Chamber accessible — physical interface ahead
+              </p>
+              <Button
+                variant="accent"
+                onClick={() => {
+                  playInteractSound();
+                  onEnterFinalApproach();
+                  showFeedback("Final Approach — core terminal confrontation");
+                }}
+                disabled={uiBlocked || gardenActive}
+                className="h-12 w-full font-mono text-xs uppercase tracking-[0.2em]"
+              >
+                Enter Final Approach
+              </Button>
+            </div>
+          ) : null}
+
+          {gardenSurvived && room !== "neural-garden" && room !== "descent-shaft" ? (
+            <div className="mt-4">
+              <Button
+                variant="accent"
+                onClick={() => {
+                  playInteractSound();
+                  setRoom("descent-shaft");
+                  onEnterFinalApproach();
+                  showFeedback("Final Approach — plug confrontation ahead");
+                }}
+                disabled={uiBlocked || gardenActive}
+                className="h-12 w-full font-mono text-xs uppercase tracking-[0.2em]"
+              >
+                Descend — Final Approach
+              </Button>
+            </div>
           ) : null}
         </div>
       </div>

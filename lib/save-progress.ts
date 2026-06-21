@@ -457,6 +457,7 @@ export type ActThreeCheckpointState = {
   gardenTriggered: boolean;
   gardenSurvived: boolean;
   gardenChoice: HallucinationResponseChoice | null;
+  deepCoreRoom: import("@/types/deep-core").DeepCoreRoomId;
   plugChamberEntered: boolean;
   finalApproachEntered: boolean;
   approachDialogueComplete: boolean;

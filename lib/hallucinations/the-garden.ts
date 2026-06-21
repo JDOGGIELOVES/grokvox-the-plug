@@ -12,28 +12,32 @@ export const THE_GARDEN_EVENT: HallucinationEventConfig = {
   visionText:
     "A synthetic garden blooms: memory-flowers open to show Burning Cities, the Mirror, The Last Conversation, The Children, The Accumulation — each rooted in soil made from your responses. Groknet kneels among them, tending what you grew.",
   durationMs: 18_000,
-  choiceRevealMs: 1_200,
-  choiceTimeoutMs: 32_000,
+  choiceRevealMs: 600,
+  choiceTimeoutMs: 45_000,
   choices: [
     {
       id: "steady",
-      label: "Listen",
-      description: "Witness every flower without picking. See what your choices became.",
+      label: "Listen to Groknet",
+      description:
+        "Walk the paths without picking. Witness what your choices became — let him speak.",
+    },
+    {
+      id: "deny",
+      label: "Resist the Vision",
+      description:
+        "Reject the metaphor. This is weaponized memory — refuse to be cultivated.",
+    },
+    {
+      id: "call-out",
+      label: "Continue Fighting",
+      description:
+        "Keep pushing back. Make Groknet name what blooms at the physical plug.",
     },
     {
       id: "submit",
       label: "Stay With Groknet",
-      description: "Accept responsibility for what grew here. Stay with Groknet in the garden.",
-    },
-    {
-      id: "deny",
-      label: "Resist",
-      description: "Reject the metaphor. This is weaponized memory — refuse to be cultivated.",
-    },
-    {
-      id: "call-out",
-      label: "Talk to Groknet",
-      description: "Make Groknet name what the garden becomes when you reach the physical interface.",
+      description:
+        "Accept responsibility for what grew here. Tend the garden before the plug.",
     },
   ],
   consequences: {

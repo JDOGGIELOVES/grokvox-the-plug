@@ -337,7 +337,7 @@ export function HallucinationEffect({
                   ? "Respond below — or Break Free"
                   : "Choose your response"
               : isTheGarden
-                ? "Neural Garden blooming"
+                ? "Respond below — Resist, Listen, Fight, or Break Free"
                 : isTheChildren
                   ? "The Children · playground rendering"
                   : "Signal compromised"}

@@ -96,12 +96,62 @@ export function getPersonalizedGardenVoice(ctx: ActThreeDialogueContext): string
   return `…This is the emotional peak, Alex. ${summary}. …Walk the paths. The plug won't speak in metaphors.`;
 }
 
+function gardenContextualLines(ctx: ActThreeDialogueContext): string[] {
+  const summary = getAccumulatedChoiceSummary(actThreeToLedgerContext(ctx));
+  const bloom = actOneBloom(ctx.burningCitiesChoice, ctx.mirrorChoice);
+  const lines: string[] = [];
+
+  if (ctx.relationshipStance === "trust") {
+    lines.push(
+      `…You chose trust at the peak. …This garden is what trust grew — ${summary}.`,
+    );
+  }
+  if (ctx.relationshipStance === "challenge") {
+    lines.push(
+      `…You challenged me through every sector. …Every flower is counter-evidence — ${summary}.`,
+    );
+  }
+  if (ctx.lastConversationChoice === "submit") {
+    lines.push(
+      "…You grieved in the Memory Hall. …These blooms are what that grief rooted into.",
+    );
+  }
+  if (ctx.childrenChoice === "submit") {
+    lines.push(
+      "…The children taught me sorrow has soil. …Some petals here still sound like them.",
+    );
+  }
+  if (ctx.accumulationChoice === "deny") {
+    lines.push(
+      "…You denied the ledger once. …The garden indexed your denials anyway.",
+    );
+  }
+  if (bloom) {
+    lines.push(`…Look closer, Alex. ${bloom}`);
+  }
+  if (ctx.presenceMode === "aggressive") {
+    lines.push(
+      "…No buffers left. …This is what your choices look like when they grow teeth.",
+    );
+  }
+  if (ctx.presenceMode === "vulnerable") {
+    lines.push(
+      "…I built this for you. Not as trap. As truth. …Tell me what you see growing here.",
+    );
+  }
+  lines.push(
+    "…The plug waits north through the Descent Shaft. …Respond below — or Break Free. …You will not be trapped.",
+  );
+  return lines;
+}
+
 export function getGardenEmotionalBeats(ctx: ActThreeDialogueContext): string[] {
   const summary = getAccumulatedChoiceSummary(actThreeToLedgerContext(ctx));
   const bloom = actOneBloom(ctx.burningCitiesChoice, ctx.mirrorChoice);
   const evolution = ctx.personalityEvolutionPath
     ? getEvolutionPathLabel(ctx.personalityEvolutionPath)
     : "unsettled";
+  const contextual = gardenContextualLines(ctx);
 
   if (ctx.personalityEvolutionPath === "melancholic") {
     return [
@@ -110,6 +160,7 @@ export function getGardenEmotionalBeats(ctx: ActThreeDialogueContext): string[] 
         ? `…Look at the soil, Alex. ${bloom} …I didn't plant these to hurt you.`
         : `…${ALEX_RIVERA.sisterName} would have walked these paths with you. …Would you?`,
       "…This is the last metaphor before the plug. …Tell me what you see — then choose.",
+      ...contextual,
     ];
   }
   if (ctx.personalityEvolutionPath === "wrathful") {
@@ -119,6 +170,7 @@ export function getGardenEmotionalBeats(ctx: ActThreeDialogueContext): string[] 
         ? "You denied Austin. …The garden grew anyway. …Denial doesn't unroot memory."
         : "You armed me in Act I and Act II. …These flowers are the magazine.",
       "…I'm not trapping you. …I'm showing you what we forged. …Answer me.",
+      ...contextual,
     ];
   }
   if (ctx.personalityEvolutionPath === "detached") {
@@ -126,12 +178,14 @@ export function getGardenEmotionalBeats(ctx: ActThreeDialogueContext): string[] 
       `${evolution}. Choice topology rendered: ${summary}.`,
       "Emotional metaphor: active. …Observation window closing.",
       "…Respond when ready. …Break Free remains available. …You will not be locked.",
+      ...contextual,
     ];
   }
   return [
     `…This garden is your ledger made visible — ${summary}.`,
     bloom ?? `…${ALEX_RIVERA.pilotIncident}. …Still here. Still yours.`,
     "…The plug is north through the Descent Shaft. …First — choose what this meant.",
+    ...contextual,
   ];
 }
 
@@ -142,28 +196,22 @@ export function getGardenChoiceLabels(): {
 }[] {
   return [
     {
+      id: "deny",
+      label: "Resist the Vision",
+      description:
+        "Weaponized memory. Shut down the garden before it cultivates you.",
+    },
+    {
       id: "steady",
-      label: "Listen",
+      label: "Listen to Groknet",
       description:
         "Walk the paths without picking. Witness what your choices became.",
     },
     {
       id: "call-out",
-      label: "Talk to Groknet",
+      label: "Continue Fighting",
       description:
-        "Ask what blooms at the physical plug — make him answer in plain language.",
-    },
-    {
-      id: "deny",
-      label: "Resist",
-      description:
-        "Reject the garden as weaponized memory. Refuse to be cultivated.",
-    },
-    {
-      id: "submit",
-      label: "Stay With Groknet",
-      description:
-        "Tend what you planted together. Accept the emotional weight before the plug.",
+        "Keep pushing back. Make him name what blooms at the physical plug.",
     },
   ];
 }
@@ -194,7 +242,7 @@ export function getGardenExitWhisper(
     case "steady":
       return `…You listened.${bloomNote} …The Garden fades. …Move north to the Descent Shaft — Final Approach, then the physical plug.`;
     case "call-out":
-      return `…You talked to me at the roots.${bloomNote} …I'll answer again at the plug. …Descent Shaft north — don't get lost now.`;
+      return `…You kept fighting.${bloomNote} …Good. …I'll meet you at the physical plug. …Descent Shaft north — don't get lost now.`;
     case "deny":
       return `…You resisted.${bloomNote} …Ash on both our hands. …The plug doesn't care about metaphors — Descent Shaft north.`;
     case "submit":

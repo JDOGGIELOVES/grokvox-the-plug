@@ -90,9 +90,11 @@ import type {
   HallucinationResponseChoice,
 } from "@/types/hallucination";
 import type { ChapterStage } from "@/types/chapter";
+import { DEEP_CORE_START } from "@/lib/movement/deep-core";
 import type {
   ActThreeStage,
   ConfrontationChoiceId,
+  DeepCoreRoomId,
   PlugChoice,
 } from "@/types/deep-core";
 
@@ -131,6 +133,7 @@ type RunState = {
   gardenTriggered: boolean;
   gardenSurvived: boolean;
   gardenChoice: HallucinationResponseChoice | null;
+  deepCoreRoom: DeepCoreRoomId;
   plugChamberEntered: boolean;
   finalApproachEntered: boolean;
   approachDialogueComplete: boolean;
@@ -177,6 +180,7 @@ function createInitialRunState(actTwo: ChapterTwoSummary): RunState {
     gardenTriggered: false,
     gardenSurvived: false,
     gardenChoice: null,
+    deepCoreRoom: DEEP_CORE_START,
     plugChamberEntered: false,
     finalApproachEntered: false,
     approachDialogueComplete: false,
@@ -212,6 +216,7 @@ function toCheckpointState(state: RunState): ActThreeCheckpointState {
     gardenTriggered: state.gardenTriggered,
     gardenSurvived: state.gardenSurvived,
     gardenChoice: state.gardenChoice,
+    deepCoreRoom: state.deepCoreRoom,
     plugChamberEntered: state.plugChamberEntered,
     finalApproachEntered: state.finalApproachEntered,
     approachDialogueComplete: state.approachDialogueComplete,
@@ -252,6 +257,10 @@ export function ActThreeReckoning() {
     (line: string, persistMs?: number, speak?: boolean) => void
   >(() => {});
   const gardenDelayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const gardenApproachTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const schedulePostGardenTransitionRef = useRef<() => void>(() => {});
   const shakeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const ambientIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const idleIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -271,6 +280,7 @@ export function ActThreeReckoning() {
     eventTitle,
     profile,
     triggerHallucination,
+    resolveChoice,
     endHallucination,
   } = useHallucination({
     onEnd: (endedEvent) => {
@@ -283,6 +293,7 @@ export function ActThreeReckoning() {
           ? {
               ...s,
               gardenSurvived: true,
+              deepCoreRoom: "neural-garden",
               screenShaking: false,
               disorientation: {
                 active: true,
@@ -296,6 +307,7 @@ export function ActThreeReckoning() {
       if (ctx) {
         groknetWhisperRef.current(getGardenExitWhisper(ctx, null), 9000, true);
       }
+      schedulePostGardenTransitionRef.current();
     },
   });
 
@@ -313,9 +325,26 @@ export function ActThreeReckoning() {
     ) {
       setActTwo(checkpoint.actTwoSummary);
       setClockInitialMs(checkpoint.clockRemainingMs);
+      const restoredDisorientation =
+        checkpoint.state.disorientation.active &&
+        checkpoint.state.disorientation.endsAt <= Date.now()
+          ? INITIAL_DISORIENTATION
+          : checkpoint.state.disorientation;
+      const gardenWasInterrupted =
+        checkpoint.state.gardenTriggered && !checkpoint.state.gardenSurvived;
+
       setState({
         ...createInitialRunState(checkpoint.actTwoSummary),
         ...checkpoint.state,
+        disorientation: restoredDisorientation,
+        gardenTriggered: gardenWasInterrupted
+          ? false
+          : checkpoint.state.gardenTriggered,
+        deepCoreRoom:
+          checkpoint.state.deepCoreRoom ??
+          (checkpoint.state.gardenSurvived
+            ? "neural-garden"
+            : DEEP_CORE_START),
         thresholdPromptOpen: false,
         majorHackOpen: false,
         approachPromptOpen: false,
@@ -333,7 +362,9 @@ export function ActThreeReckoning() {
         lastActionAt: Date.now(),
       });
       setResumeWhisper(
-        "Checkpoint restored. The core remembers your path — and what you refused to forget.",
+        gardenWasInterrupted
+          ? "Checkpoint restored. The garden vision faded — Neural Garden is open again. Break Free or choose when ready."
+          : "Checkpoint restored. The core remembers your path — and what you refused to forget.",
       );
       return;
     }
@@ -469,6 +500,27 @@ export function ActThreeReckoning() {
     }
   }, [resumeWhisper, setGroknetWhisper]);
 
+  const handleEnterFinalApproachRef = useRef<() => void>(() => {});
+
+  const schedulePostGardenTransition = useCallback(() => {
+    if (gardenApproachTimeoutRef.current) {
+      clearTimeout(gardenApproachTimeoutRef.current);
+    }
+    gardenApproachTimeoutRef.current = setTimeout(() => {
+      const s = stateRef.current;
+      if (
+        s?.phase === "playing" &&
+        s.actThreeStage === "deep-core-access" &&
+        s.gardenSurvived &&
+        !s.finalApproachEntered
+      ) {
+        handleEnterFinalApproachRef.current();
+      }
+      gardenApproachTimeoutRef.current = null;
+    }, 8_500);
+  }, []);
+  schedulePostGardenTransitionRef.current = schedulePostGardenTransition;
+
   const handleGardenBreakFree = useCallback(() => {
     if (eventId !== "the-garden" || !dialogueContext) return;
 
@@ -479,6 +531,7 @@ export function ActThreeReckoning() {
         ? {
             ...s,
             gardenSurvived: true,
+            deepCoreRoom: "neural-garden",
             screenShaking: false,
             disorientation: {
               active: true,
@@ -490,7 +543,14 @@ export function ActThreeReckoning() {
         : s,
     );
     setGroknetWhisper(getGardenExitWhisper(dialogueContext, null), 9000, true);
-  }, [dialogueContext, endHallucination, eventId, setGroknetWhisper]);
+    schedulePostGardenTransition();
+  }, [
+    dialogueContext,
+    endHallucination,
+    eventId,
+    schedulePostGardenTransition,
+    setGroknetWhisper,
+  ]);
 
   const handleHallucinationChoice = useCallback(
     (choice: HallucinationResponseChoice) => {
@@ -500,7 +560,7 @@ export function ActThreeReckoning() {
 
       if (eventId === "the-garden") {
         gardenExitHandledRef.current = true;
-        endHallucination();
+        resolveChoice(choice);
 
         setState((s) => {
           if (!s) return s;
@@ -508,6 +568,7 @@ export function ActThreeReckoning() {
             ...s,
             gardenChoice: choice,
             gardenSurvived: true,
+            deepCoreRoom: "neural-garden",
             screenShaking: false,
             finalMood: {
               cold: Math.min(
@@ -554,6 +615,7 @@ export function ActThreeReckoning() {
             );
           }, 3800);
         }
+        schedulePostGardenTransition();
         return;
       }
 
@@ -594,8 +656,45 @@ export function ActThreeReckoning() {
         : consequence.groknetLine;
       setGroknetWhisper(personalized, 8000, true);
     },
-    [dialogueContext, endHallucination, eventId, setGroknetWhisper],
+    [
+      dialogueContext,
+      endHallucination,
+      eventId,
+      resolveChoice,
+      schedulePostGardenTransition,
+      setGroknetWhisper,
+    ],
   );
+
+  useEffect(() => {
+    if (!state?.disorientation.active) return;
+
+    const remaining = state.disorientation.endsAt - Date.now();
+    if (remaining <= 0) {
+      setState((s) =>
+        s
+          ? {
+              ...s,
+              disorientation: INITIAL_DISORIENTATION,
+            }
+          : s,
+      );
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      setState((s) =>
+        s
+          ? {
+              ...s,
+              disorientation: INITIAL_DISORIENTATION,
+            }
+          : s,
+      );
+    }, remaining);
+
+    return () => window.clearTimeout(timeout);
+  }, [state?.disorientation]);
 
   const scheduleTheGarden = useCallback(() => {
     if (!dialogueContext || state?.gardenSurvived || active) return;
@@ -692,6 +791,8 @@ export function ActThreeReckoning() {
         : s,
     );
   }, [actTwo, dialogueContext, state?.gardenChoice]);
+
+  handleEnterFinalApproachRef.current = handleEnterFinalApproach;
 
   const handleEnterPlugChamber = useCallback(() => {
     if (!actTwo || !dialogueContext) return;
@@ -907,6 +1008,9 @@ export function ActThreeReckoning() {
         clearTimeout(intentReactionTimeoutRef.current);
       }
       if (gardenDelayRef.current) clearTimeout(gardenDelayRef.current);
+      if (gardenApproachTimeoutRef.current) {
+        clearTimeout(gardenApproachTimeoutRef.current);
+      }
       if (shakeTimeoutRef.current) clearTimeout(shakeTimeoutRef.current);
       if (ambientIntervalRef.current) clearInterval(ambientIntervalRef.current);
       if (idleIntervalRef.current) clearInterval(idleIntervalRef.current);
@@ -1015,7 +1119,11 @@ export function ActThreeReckoning() {
             state.phase === "transition" && "opacity-0 pointer-events-none",
             playing && "stage-content-in",
             active && "hallucination-content-distort",
-            active && phase === "peak" && !awaitingChoice && "hallucination-controls-off",
+            active &&
+              phase === "peak" &&
+              !awaitingChoice &&
+              eventId !== "the-garden" &&
+              "hallucination-controls-off",
             state.disorientation.active && "disorientation-blur",
           )}
         >
@@ -1024,6 +1132,7 @@ export function ActThreeReckoning() {
           dialogueContext ? (
             <DeepCoreSection
               context={dialogueContext}
+              initialRoom={state.deepCoreRoom}
               fortificationHackComplete={state.fortificationHackComplete}
               thresholdDialogueComplete={state.thresholdDialogueComplete}
               thresholdPromptOpen={state.thresholdPromptOpen}
@@ -1108,6 +1217,7 @@ export function ActThreeReckoning() {
                   s
                     ? {
                         ...s,
+                        deepCoreRoom: to,
                         moveCount,
                         lastActionAt: Date.now(),
                       }
