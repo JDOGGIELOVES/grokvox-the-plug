@@ -1461,7 +1461,7 @@ body {
 }
 
 .intro-facility-zoom {
-  animation: intro-facility-zoom 16.5s cubic-bezier(0.22, 0.08, 0.18, 1) both;
+  animation: intro-facility-zoom 24.75s cubic-bezier(0.22, 0.08, 0.18, 1) both;
 }
 
 .intro-facility-scan {
@@ -1528,19 +1528,19 @@ body {
 }
 
 .intro-vo-subtitle {
-  animation: intro-vo-subtitle 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: intro-vo-subtitle 1.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .intro-montage-flash {
-  animation: intro-montage-flash 0.35s ease-out both;
+  animation: intro-montage-flash 0.55s ease-out both;
 }
 
 .intro-montage-headline {
-  animation: intro-montage-headline 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: intro-montage-headline 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .intro-montage-subline {
-  animation: intro-montage-subline 0.5s ease-out 0.15s both;
+  animation: intro-montage-subline 0.75s ease-out 0.25s both;
 }
 
 .intro-montage-static {
@@ -1600,19 +1600,19 @@ body {
 }
 
 .intro-title-prelude {
-  animation: intro-title-prelude 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+  animation: intro-title-prelude 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both;
 }
 
 .intro-title-main {
-  animation: intro-title-main 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both;
+  animation: intro-title-main 2.1s cubic-bezier(0.16, 1, 0.3, 1) 1.05s both;
 }
 
 .intro-title-divider {
-  animation: intro-title-divider 1s ease-out 1.4s both;
+  animation: intro-title-divider 1.5s ease-out 2.1s both;
 }
 
 .intro-title-tagline {
-  animation: intro-title-tagline 1.2s ease-out 1.8s both;
+  animation: intro-title-tagline 1.8s ease-out 2.7s both;
 }
 
 .intro-begin-prompt {

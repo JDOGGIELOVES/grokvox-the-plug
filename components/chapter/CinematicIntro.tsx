@@ -4,12 +4,17 @@ import { usePerformanceMode } from "@/components/PerformanceModeProvider";
 import { getIntroStarCount } from "@/lib/performance-mode";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  INTRO_FACILITY_ZOOM_MS,
   INTRO_SCENES,
   INTRO_SKIP_DELAY_MS,
   INTRO_TAGLINE,
   INTRO_TITLE,
+  INTRO_TITLE_READY_MS,
+  MONTAGE_FRAME_PAUSE_MS,
   MONTAGE_FRAMES,
+  scaleIntroMs,
   type IntroScene,
+  type IntroVoiceoverBeat,
   type MontageFrame,
 } from "@/lib/chapter/cinematic-intro";
 import { playGroknetVoiceLine } from "@/lib/hallucination";
@@ -61,6 +66,11 @@ function FacilityScene() {
         "absolute inset-0",
         !performanceMode && "intro-facility-zoom",
       )}
+      style={
+        performanceMode
+          ? undefined
+          : { animationDuration: `${INTRO_FACILITY_ZOOM_MS}ms` }
+      }
     >
       <svg
         className="absolute inset-0 h-full w-full"
@@ -239,11 +249,25 @@ function MontageScene({ frameIndex }: { frameIndex: number }) {
         </div>
       ) : null}
 
-      <p className="intro-montage-headline relative z-10 font-display text-center text-2xl font-bold uppercase tracking-[0.12em] text-zinc-50 sm:text-4xl md:text-5xl">
+      <p
+        className={cn(
+          "intro-montage-headline relative z-10 text-center font-display font-bold uppercase tracking-[0.12em] text-zinc-50",
+          frame.emphasis
+            ? "text-2xl sm:text-4xl md:text-[2.75rem]"
+            : "text-2xl sm:text-4xl md:text-5xl",
+        )}
+      >
         {frame.headline}
       </p>
       {frame.subline ? (
-        <p className="intro-montage-subline relative z-10 mt-4 max-w-2xl text-center font-mono text-xs uppercase tracking-[0.2em] text-zinc-300 sm:text-sm">
+        <p
+          className={cn(
+            "intro-montage-subline relative z-10 mt-4 max-w-2xl text-center font-mono uppercase tracking-[0.2em] sm:text-sm",
+            frame.emphasis
+              ? "text-xs text-orange-100/90 sm:text-base"
+              : "text-xs text-zinc-300",
+          )}
+        >
           {frame.subline}
         </p>
       ) : null}
@@ -338,17 +362,40 @@ function TitleScene() {
   );
 }
 
-function VoiceoverSubtitle({ text, visible }: { text: string; visible: boolean }) {
-  if (!visible) return null;
+function VoiceoverSubtitle({
+  beat,
+  visible,
+}: {
+  beat: IntroVoiceoverBeat | null;
+  visible: boolean;
+}) {
+  if (!visible || !beat) return null;
 
   return (
-    <div className="intro-vo-subtitle pointer-events-none absolute inset-x-0 bottom-[12%] z-20 flex justify-center px-6 sm:bottom-[14%]">
-      <div className="max-w-3xl rounded-sm border border-orange-900/25 bg-black/55 px-5 py-4 backdrop-blur-sm">
-        <p className="text-center font-mono text-sm italic leading-relaxed text-zinc-100 sm:text-base md:text-lg">
+    <div
+      key={beat.text}
+      className="intro-vo-subtitle pointer-events-none absolute inset-x-0 bottom-[12%] z-20 flex justify-center px-6 sm:bottom-[14%]"
+    >
+      <div
+        className={cn(
+          "max-w-3xl rounded-sm border bg-black/60 px-5 py-4 backdrop-blur-sm",
+          beat.emphasis
+            ? "border-orange-700/40 shadow-[0_0_32px_rgba(249,115,22,0.12)]"
+            : "border-orange-900/25",
+        )}
+      >
+        <p
+          className={cn(
+            "text-center font-mono italic leading-relaxed text-zinc-100",
+            beat.emphasis
+              ? "text-base font-medium not-italic sm:text-lg md:text-xl"
+              : "text-sm sm:text-base md:text-lg",
+          )}
+        >
           <span className="mb-2 block text-[10px] not-italic uppercase tracking-[0.35em] text-accent">
             Groknet
           </span>
-          {text}
+          {beat.text}
         </p>
       </div>
     </div>
@@ -386,8 +433,10 @@ export function CinematicIntro({
   const [exiting, setExiting] = useState(false);
   const [canSkip, setCanSkip] = useState(skipAvailableMs <= 0);
   const [titleReady, setTitleReady] = useState(false);
+  const [voiceoverBeatIndex, setVoiceoverBeatIndex] = useState(0);
   const completedRef = useRef(false);
   const montageTimeoutRef = useRef<number | null>(null);
+  const beatTimeoutRef = useRef<number | null>(null);
   const audioTimeoutRef = useRef<number[]>([]);
 
   const currentConfig = INTRO_SCENES[sceneIndex];
@@ -407,6 +456,10 @@ export function CinematicIntro({
     if (montageTimeoutRef.current) {
       window.clearTimeout(montageTimeoutRef.current);
       montageTimeoutRef.current = null;
+    }
+    if (beatTimeoutRef.current) {
+      window.clearTimeout(beatTimeoutRef.current);
+      beatTimeoutRef.current = null;
     }
     for (const id of audioTimeoutRef.current) {
       window.clearTimeout(id);
@@ -431,6 +484,11 @@ export function CinematicIntro({
   }, [skipAvailableMs]);
 
   useEffect(() => {
+    setVoiceoverBeatIndex(0);
+    setTitleReady(false);
+  }, [sceneIndex]);
+
+  useEffect(() => {
     if (sceneIndex === 0) {
       playCinematicHitSound();
     }
@@ -440,7 +498,7 @@ export function CinematicIntro({
       return;
     }
 
-    const { scene, durationMs, voiceover } = currentConfig;
+    const { scene, durationMs, voiceoverBeats } = currentConfig;
 
     if (scene === "montage") {
       setMontageIndex(0);
@@ -454,7 +512,7 @@ export function CinematicIntro({
           playTensionPulseSound();
           montageTimeoutRef.current = window.setTimeout(
             advanceFrame,
-            MONTAGE_FRAMES[frameIdx].durationMs,
+            MONTAGE_FRAMES[frameIdx].durationMs + MONTAGE_FRAME_PAUSE_MS,
           );
         }
       };
@@ -484,26 +542,46 @@ export function CinematicIntro({
       };
     }
 
-    if (voiceover) {
-      audioTimeoutRef.current.push(
-        window.setTimeout(
-          () => playGroknetVoiceLine(voiceover),
-          scene === "facility" ? 1400 : 700,
-        ),
-      );
+    if (voiceoverBeats?.length) {
+      const showBeat = (index: number) => {
+        const beat = voiceoverBeats[index];
+        if (!beat) return;
+
+        setVoiceoverBeatIndex(index);
+        playGroknetVoiceLine(beat.text);
+
+        if (beat.emphasis) {
+          playCinematicHitSound();
+        }
+
+        beatTimeoutRef.current = window.setTimeout(() => {
+          if (index >= voiceoverBeats.length - 1) return;
+          const pause = beat.pauseAfterMs ?? 0;
+          beatTimeoutRef.current = window.setTimeout(() => {
+            showBeat(index + 1);
+          }, pause);
+        }, beat.durationMs);
+      };
+
+      const initialDelay =
+        scene === "facility" ? scaleIntroMs(1400) : scaleIntroMs(700);
+      beatTimeoutRef.current = window.setTimeout(() => showBeat(0), initialDelay);
     }
 
     if (scene === "terminal") {
       audioTimeoutRef.current.push(
-        window.setTimeout(() => playTerminalKeySound(), 900),
-        window.setTimeout(() => playTerminalKeySound(), 2400),
-        window.setTimeout(() => playCinematicHitSound(), 1200),
+        window.setTimeout(() => playTerminalKeySound(), scaleIntroMs(900)),
+        window.setTimeout(() => playTerminalKeySound(), scaleIntroMs(2400)),
+        window.setTimeout(() => playCinematicHitSound(), scaleIntroMs(1200)),
       );
     }
 
     if (scene === "title") {
       playCinematicHitSound();
-      const readyTimeout = window.setTimeout(() => setTitleReady(true), 3000);
+      const readyTimeout = window.setTimeout(
+        () => setTitleReady(true),
+        INTRO_TITLE_READY_MS,
+      );
       const autoTimeout = window.setTimeout(finish, durationMs);
       return () => {
         window.clearTimeout(readyTimeout);
@@ -514,6 +592,10 @@ export function CinematicIntro({
     const timeout = window.setTimeout(() => setSceneIndex((i) => i + 1), durationMs);
     return () => {
       window.clearTimeout(timeout);
+      if (beatTimeoutRef.current) {
+        window.clearTimeout(beatTimeoutRef.current);
+        beatTimeoutRef.current = null;
+      }
       for (const id of audioTimeoutRef.current) {
         window.clearTimeout(id);
       }
@@ -542,8 +624,11 @@ export function CinematicIntro({
       {currentScene === "terminal" ? <TerminalScene /> : null}
       {currentScene === "title" ? <TitleScene /> : null}
 
-      {currentConfig?.subtitle && currentScene !== "title" ? (
-        <VoiceoverSubtitle text={currentConfig.subtitle} visible />
+      {currentConfig?.voiceoverBeats?.length && currentScene !== "title" ? (
+        <VoiceoverSubtitle
+          beat={currentConfig.voiceoverBeats[voiceoverBeatIndex] ?? null}
+          visible
+        />
       ) : null}
 
       {currentScene !== "title" && !exiting ? (
