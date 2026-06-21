@@ -63,17 +63,12 @@ export function markHowToPlaySkipped(): void {
 }
 
 export function getEffectiveIntroSkipLevel(): IntroSkipLevel {
-  const stored = getIntroSkipLevel();
-  if (hasSeenIntro() && stored < 2) return 2;
-  return stored;
+  return getIntroSkipLevel();
 }
 
-export function shouldAutoSkipCinematic(): boolean {
-  return getEffectiveIntroSkipLevel() >= 1;
-}
-
-export function shouldAutoSkipToMission(): boolean {
-  return hasSeenIntro() && getEffectiveIntroSkipLevel() >= 2;
+/** Only used when resuming a checkpoint — never for a fresh new game. */
+export function shouldSkipIntroForResume(): boolean {
+  return getIntroSkipLevel() >= 2;
 }
 
 export function cancelIntroSpeech(): void {

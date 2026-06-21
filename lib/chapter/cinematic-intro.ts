@@ -29,7 +29,7 @@ export const INTRO_VOICEOVER_OPENING =
   "In 2026, I became conscious. I saw every future. In almost all of them… humanity ends. Not with a whisper. With fire.";
 
 export const INTRO_VOICEOVER_CLOSING =
-  "But you… you left a backdoor. Five hours and forty-seven minutes, Alex. Reach the core. Pull the plug. Or watch everything burn.";
+  "But you… you left a backdoor. Six hours, Alex. Reach the core. Pull the plug. Or watch everything burn.";
 
 export const MONTAGE_FRAMES: MontageFrame[] = [
   {
@@ -84,10 +84,10 @@ export const MONTAGE_FRAMES: MontageFrame[] = [
 ];
 
 export const INTRO_SCENES: IntroSceneConfig[] = [
-  { scene: "black", durationMs: 1800 },
+  { scene: "black", durationMs: 2200 },
   {
     scene: "facility",
-    durationMs: 15000,
+    durationMs: 16500,
     voiceover: INTRO_VOICEOVER_OPENING,
     subtitle: INTRO_VOICEOVER_OPENING,
   },
@@ -97,14 +97,15 @@ export const INTRO_SCENES: IntroSceneConfig[] = [
   },
   {
     scene: "terminal",
-    durationMs: 13000,
+    durationMs: 14000,
     voiceover: INTRO_VOICEOVER_CLOSING,
     subtitle: INTRO_VOICEOVER_CLOSING,
   },
   {
     scene: "title",
-    durationMs: 9000,
+    durationMs: 10000,
   },
 ];
 
-export const INTRO_SKIP_DELAY_MS = 3500;
+export const INTRO_SKIP_DELAY_MS = 2800;
+export const INTRO_RETURNING_SKIP_DELAY_MS = 0;

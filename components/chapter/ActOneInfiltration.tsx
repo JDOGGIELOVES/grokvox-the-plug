@@ -54,9 +54,8 @@ import {
   markCinematicSkipped,
   markHowToPlaySkipped,
   markIntroSeen,
-  shouldAutoSkipCinematic,
-  shouldAutoSkipToMission,
 } from "@/lib/chapter/intro-persistence";
+import { INTRO_RETURNING_SKIP_DELAY_MS } from "@/lib/chapter/cinematic-intro";
 import {
   getBurningCitiesVisionText,
   getBurningCitiesVoiceLine,
@@ -245,28 +244,12 @@ function createActOneInitialState(): ActOneInitial {
     };
   }
 
-  if (shouldAutoSkipToMission()) {
-    return {
-      ...fallback,
-      returning,
-      skippedBriefing,
-      state: createInitialRunState("playing"),
-      missionDeploying: true,
-      missionDeployed: false,
-      startMissionDeploy: true,
-    };
-  }
-
-  if (shouldAutoSkipCinematic()) {
-    return {
-      ...fallback,
-      returning,
-      skippedBriefing,
-      state: createInitialRunState("how-to-play"),
-    };
-  }
-
-  return { ...fallback, returning, skippedBriefing };
+  return {
+    ...fallback,
+    returning,
+    skippedBriefing,
+    state: createInitialRunState("cinematic-intro"),
+  };
 }
 
 function buildActOneHallucinationContext(
@@ -905,11 +888,13 @@ export function ActOneInfiltration() {
   }, [beginMission]);
 
   const handleCinematicIntroComplete = useCallback(() => {
+    markIntroSeen();
     setState((s) => ({ ...s, phase: "how-to-play" }));
   }, []);
 
   const handleSkipCinematic = useCallback(() => {
     markCinematicSkipped();
+    markIntroSeen();
     cancelIntroSpeech();
     setSkippedBriefing(true);
     setState((s) => ({ ...s, phase: "how-to-play" }));
@@ -1049,7 +1034,10 @@ export function ActOneInfiltration() {
         <CinematicIntro
           onComplete={handleCinematicIntroComplete}
           onSkipIntro={handleSkipCinematic}
-          skipAvailableMs={returningPlayer ? 0 : undefined}
+          skipAvailableMs={
+            returningPlayer ? INTRO_RETURNING_SKIP_DELAY_MS : undefined
+          }
+          showReturningHint={returningPlayer}
         />
       ) : null}
 
