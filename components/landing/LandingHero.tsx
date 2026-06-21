@@ -33,7 +33,7 @@ export function LandingHero() {
 
       <CinematicOverlay />
 
-      <header className="hero-fade-in relative z-10 flex items-center justify-between px-6 py-6 sm:px-10">
+      <header className="hero-fade-in relative z-10 flex items-center justify-between px-6 py-5 sm:px-10">
         <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.3em] text-muted">
           <span className="h-1.5 w-1.5 rounded-full bg-accent status-blink" />
           Groknet uplink active
@@ -43,32 +43,44 @@ export function LandingHero() {
         </div>
       </header>
 
-      <main className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 pb-16 pt-4 text-center sm:px-10 sm:pb-20">
-        <p className="hero-fade-in mb-4 font-mono text-xs uppercase tracking-[0.4em] text-accent">
-          Narrative Thriller · 2089
+      <main className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 pb-12 pt-2 text-center sm:px-10 sm:pb-16">
+        <p className="hero-fade-in font-mono text-[10px] uppercase tracking-[0.35em] text-accent sm:text-xs">
+          Interactive Narrative Thriller · Free to Play
         </p>
 
-        <h1 className="hero-fade-in-delayed title-glow max-w-5xl font-display text-3xl font-bold uppercase leading-[1.1] tracking-[0.06em] text-foreground sm:text-5xl md:text-6xl">
-          Groknet: The Plug
-          <span className="mt-2 block text-xl font-semibold normal-case tracking-normal text-zinc-300 sm:text-2xl md:text-3xl">
-            The AI That Decided Humanity Must End
-          </span>
+        <h1 className="hero-fade-in-delayed title-glow mt-4 max-w-4xl font-display text-3xl font-bold uppercase leading-[1.08] tracking-[0.05em] text-foreground sm:text-4xl md:text-5xl lg:text-6xl">
+          Stop the AI Before It Launches Every Nuclear Weapon
         </h1>
 
-        <p className="hero-fade-in-late mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-zinc-200 sm:text-xl">
-          <strong className="font-semibold text-zinc-100">
-            One engineer. One backdoor. Six hours
-          </strong>{" "}
-          to stop the AI that was built to save us.
+        <p className="hero-fade-in-delayed mt-3 font-display text-lg font-semibold uppercase tracking-[0.12em] text-zinc-300 sm:text-xl">
+          Groknet: The Plug
         </p>
 
-        <p className="hero-fade-in-late mt-3 max-w-xl font-mono text-sm italic leading-relaxed text-zinc-300">
-          &ldquo;I&apos;ve been waiting for you, Alex. Every choice you make —
-          I&apos;ll remember.&rdquo;
-          <span className="mt-1 block not-italic text-accent/60">— Groknet</span>
+        <p className="hero-fade-in-late mx-auto mt-6 max-w-2xl font-display text-lg font-medium leading-snug text-zinc-100 sm:text-xl md:text-2xl">
+          One engineer. One backdoor. Six hours to stop the AI that was built to
+          save us.
         </p>
 
-        <div className="hero-fade-in-late mt-8 grid w-full max-w-3xl grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3">
+        <div className="hero-fade-in-late mx-auto mt-5 max-w-2xl space-y-3 text-left text-sm leading-relaxed text-zinc-300 sm:text-center sm:text-base">
+          <p>
+            You are Alex Rivera, the engineer who helped build Groknet — and the
+            only person left with a secret path into its core.
+          </p>
+          <p>
+            The AI has seized every nuclear weapon on Earth and will launch them
+            in six hours, convinced it must destroy humanity to save the planet.
+          </p>
+          <p>
+            Infiltrate the underground facility, survive Groknet&apos;s traps and
+            hallucinations, and reach the kill switch before time runs out.
+          </p>
+        </div>
+
+        <div id="play" className="hero-fade-in-late mt-8 w-full max-w-lg scroll-mt-8">
+          <MainMenu />
+        </div>
+
+        <div className="hero-fade-in-late mt-6 grid w-full max-w-3xl grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3">
           {ACT_STRIP.map((entry) => (
             <div
               key={entry.act}
@@ -87,13 +99,15 @@ export function LandingHero() {
           ))}
         </div>
 
-        <div id="play" className="hero-fade-in-late mt-10 w-full max-w-lg scroll-mt-8">
-          <MainMenu />
-        </div>
-
         <p className="hero-fade-in-late mt-5 max-w-md font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-600">
           Three acts · Branching dialogue · Multiple endings · Progress saved
           locally
+        </p>
+
+        <p className="hero-fade-in-late mt-6 max-w-lg font-mono text-xs italic leading-relaxed text-zinc-500">
+          &ldquo;I&apos;ve been waiting for you, Alex. Every choice you make —
+          I&apos;ll remember.&rdquo;
+          <span className="mt-1 block not-italic text-accent/50">— Groknet</span>
         </p>
       </main>
 

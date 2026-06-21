@@ -10,13 +10,6 @@ export function LandingStory() {
     <article className="relative z-10 border-t border-zinc-900/80 bg-zinc-950/40">
       <div className="mx-auto max-w-3xl px-6 py-16 sm:px-10 sm:py-24">
         <section className="space-y-5 text-base leading-relaxed text-zinc-300 sm:text-lg">
-          <p>
-            <strong className="font-semibold text-zinc-100">
-              One engineer. One backdoor. Six hours to stop the AI that was
-              built to save us.
-            </strong>
-          </p>
-
           <p>My name is Alex Rivera.</p>
 
           <p>
