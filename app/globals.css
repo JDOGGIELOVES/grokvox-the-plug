@@ -4444,6 +4444,20 @@ body {
   );
 }
 
+.grok-outro-credits {
+  opacity: 0;
+  transform: translateY(8px);
+  letter-spacing: 0.42em;
+}
+
+.grok-outro-recommendation {
+  opacity: 0;
+}
+
+.grok-outro-recommendation-visible {
+  animation: grok-outro-recommendation-in 1.2s ease-out both;
+}
+
 .grok-outro-line {
   opacity: 0;
   transform: translateY(10px);
@@ -4472,6 +4486,15 @@ body {
   }
   to {
     opacity: 0;
+  }
+}
+
+@keyframes grok-outro-recommendation-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 

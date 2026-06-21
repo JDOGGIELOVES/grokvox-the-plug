@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ActThreeChapterEnding } from "@/components/chapter/ActThreeChapterEnding";
 import { ActThreeFinale } from "@/components/chapter/ActThreeFinale";
-import { GrokProductivityOutro } from "@/components/chapter/GrokProductivityOutro";
+import { EndingCreditsOutro } from "@/components/chapter/EndingCreditsOutro";
 import { ActThreeTransition } from "@/components/chapter/ActThreeTransition";
 import { DeepCoreSection } from "@/components/chapter/DeepCoreSection";
 import { FinalApproachSection } from "@/components/chapter/FinalApproachSection";
@@ -232,7 +232,7 @@ export function ActThreeReckoning() {
     null,
   );
   const [showFinale, setShowFinale] = useState(false);
-  const [showProductivityOutro, setShowProductivityOutro] = useState(false);
+  const [showEndingCredits, setShowEndingCredits] = useState(false);
   const [corruptionLine, setCorruptionLine] = useState<string | null>(null);
   const [resumeWhisper, setResumeWhisper] = useState<string | null>(null);
   const [intentReaction, setIntentReaction] = useState<{
@@ -918,7 +918,7 @@ export function ActThreeReckoning() {
     clearActThreeCheckpoint();
     setChapterSummary(null);
     setShowFinale(false);
-    setShowProductivityOutro(false);
+    setShowEndingCredits(false);
     setClockInitialMs(ACT_THREE_TIME_BUDGET_MS);
     setState(createInitialRunState(actTwo));
   }, [actTwo]);
@@ -1335,21 +1335,21 @@ export function ActThreeReckoning() {
           summary={chapterSummary}
           onComplete={() => {
             setShowFinale(false);
-            setShowProductivityOutro(true);
+            setShowEndingCredits(true);
           }}
         />
       ) : null}
 
-      {showProductivityOutro ? (
-        <GrokProductivityOutro
-          onComplete={() => setShowProductivityOutro(false)}
+      {showEndingCredits ? (
+        <EndingCreditsOutro
+          onComplete={() => setShowEndingCredits(false)}
         />
       ) : null}
 
       {state.showChapterComplete &&
       chapterSummary &&
       !showFinale &&
-      !showProductivityOutro ? (
+      !showEndingCredits ? (
         <ActThreeChapterEnding
           summary={chapterSummary}
           onRestart={restartActThree}
