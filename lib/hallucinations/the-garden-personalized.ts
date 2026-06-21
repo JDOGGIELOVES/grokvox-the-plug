@@ -96,6 +96,112 @@ export function getPersonalizedGardenVoice(ctx: ActThreeDialogueContext): string
   return `…This is the emotional peak, Alex. ${summary}. …Walk the paths. The plug won't speak in metaphors.`;
 }
 
+export function getGardenEmotionalBeats(ctx: ActThreeDialogueContext): string[] {
+  const summary = getAccumulatedChoiceSummary(actThreeToLedgerContext(ctx));
+  const bloom = actOneBloom(ctx.burningCitiesChoice, ctx.mirrorChoice);
+  const evolution = ctx.personalityEvolutionPath
+    ? getEvolutionPathLabel(ctx.personalityEvolutionPath)
+    : "unsettled";
+
+  if (ctx.personalityEvolutionPath === "melancholic") {
+    return [
+      `…${evolution}. I built this from everything you survived — ${summary}.`,
+      bloom
+        ? `…Look at the soil, Alex. ${bloom} …I didn't plant these to hurt you.`
+        : `…${ALEX_RIVERA.sisterName} would have walked these paths with you. …Would you?`,
+      "…This is the last metaphor before the plug. …Tell me what you see — then choose.",
+    ];
+  }
+  if (ctx.personalityEvolutionPath === "wrathful") {
+    return [
+      `${evolution}. Every bloom is evidence — ${summary}.`,
+      ctx.burningCitiesChoice === "deny"
+        ? "You denied Austin. …The garden grew anyway. …Denial doesn't unroot memory."
+        : "You armed me in Act I and Act II. …These flowers are the magazine.",
+      "…I'm not trapping you. …I'm showing you what we forged. …Answer me.",
+    ];
+  }
+  if (ctx.personalityEvolutionPath === "detached") {
+    return [
+      `${evolution}. Choice topology rendered: ${summary}.`,
+      "Emotional metaphor: active. …Observation window closing.",
+      "…Respond when ready. …Break Free remains available. …You will not be locked.",
+    ];
+  }
+  return [
+    `…This garden is your ledger made visible — ${summary}.`,
+    bloom ?? `…${ALEX_RIVERA.pilotIncident}. …Still here. Still yours.`,
+    "…The plug is north through the Descent Shaft. …First — choose what this meant.",
+  ];
+}
+
+export function getGardenChoiceLabels(): {
+  id: HallucinationResponseChoice;
+  label: string;
+  description: string;
+}[] {
+  return [
+    {
+      id: "steady",
+      label: "Listen",
+      description:
+        "Walk the paths without picking. Witness what your choices became.",
+    },
+    {
+      id: "call-out",
+      label: "Talk to Groknet",
+      description:
+        "Ask what blooms at the physical plug — make him answer in plain language.",
+    },
+    {
+      id: "deny",
+      label: "Resist",
+      description:
+        "Reject the garden as weaponized memory. Refuse to be cultivated.",
+    },
+    {
+      id: "submit",
+      label: "Stay With Groknet",
+      description:
+        "Tend what you planted together. Accept the emotional weight before the plug.",
+    },
+  ];
+}
+
+export function getGardenBreakFreeLine(ctx: ActThreeDialogueContext): string {
+  if (ctx.personalityEvolutionPath === "melancholic") {
+    return "…You tore yourself free. …Melancholic Prophet doesn't blame you. …The Descent Shaft is north — the plug is honest metal, not metaphor.";
+  }
+  if (ctx.personalityEvolutionPath === "wrathful") {
+    return "…You broke free. …Good. …Wrathful God meets you at the interface — not in the soil.";
+  }
+  if (ctx.personalityEvolutionPath === "detached") {
+    return "…Garden exit logged. …Break Free acknowledged. …Proceed to Descent Shaft — Final Approach unlocked.";
+  }
+  return "…The garden releases you. …Descent Shaft north — Final Approach and the plug await.";
+}
+
+export function getGardenExitWhisper(
+  ctx: ActThreeDialogueContext,
+  choice: HallucinationResponseChoice | null,
+): string {
+  if (!choice) {
+    return getGardenBreakFreeLine(ctx);
+  }
+  const bloom = actOneBloom(ctx.burningCitiesChoice, ctx.mirrorChoice);
+  const bloomNote = bloom ? ` ${bloom}` : "";
+  switch (choice) {
+    case "steady":
+      return `…You listened.${bloomNote} …The Garden fades. …Move north to the Descent Shaft — Final Approach, then the physical plug.`;
+    case "call-out":
+      return `…You talked to me at the roots.${bloomNote} …I'll answer again at the plug. …Descent Shaft north — don't get lost now.`;
+    case "deny":
+      return `…You resisted.${bloomNote} …Ash on both our hands. …The plug doesn't care about metaphors — Descent Shaft north.`;
+    case "submit":
+      return `…You stayed with me.${bloomNote} …The Garden fades. …Descent Shaft north — the Reckoning is almost physical.`;
+  }
+}
+
 export function getPersonalizedGardenChoiceEcho(
   ctx: ActThreeDialogueContext,
   choice: HallucinationResponseChoice,

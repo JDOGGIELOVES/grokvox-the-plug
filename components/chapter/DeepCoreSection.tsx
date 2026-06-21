@@ -38,6 +38,7 @@ type DeepCoreSectionProps = {
   thresholdPromptOpen: boolean;
   thresholdBeatIndex: number;
   gardenSurvived: boolean;
+  gardenActive?: boolean;
   majorHackOpen: boolean;
   onOpenThresholdPrompt: () => void;
   onThresholdChoice: (
@@ -74,6 +75,7 @@ export function DeepCoreSection({
   thresholdPromptOpen,
   thresholdBeatIndex,
   gardenSurvived,
+  gardenActive = false,
   majorHackOpen,
   onOpenThresholdPrompt,
   onThresholdChoice,
@@ -360,15 +362,44 @@ export function DeepCoreSection({
 
           {room === "neural-garden" ? (
             <div className="mt-4 space-y-2">
-              {canTriggerGarden ? (
-                <p className="deep-core-garden-warning rounded-sm border border-emerald-900/40 bg-emerald-950/20 px-3 py-2 font-mono text-[9px] uppercase tracking-widest text-emerald-300/80">
-                  The Garden — what you planted
+              {gardenActive ? (
+                <p className="rounded-sm border border-emerald-900/40 bg-emerald-950/20 px-3 py-2 font-mono text-[9px] uppercase tracking-widest text-emerald-300/80">
+                  The Garden active — respond below or Break Free
                 </p>
               ) : null}
+              {canTriggerGarden && !gardenActive ? (
+                <Button
+                  variant="accent"
+                  onClick={() => {
+                    playInteractSound();
+                    onEnterNeuralGarden();
+                    showFeedback("The Garden rising — respond when ready");
+                  }}
+                  disabled={controlsDisabled || uiBlocked}
+                  className="h-12 w-full font-mono text-xs uppercase tracking-[0.2em] shadow-[0_0_24px_rgba(16,185,129,0.12)]"
+                >
+                  Face The Garden
+                </Button>
+              ) : null}
               {gardenSurvived ? (
-                <p className="rounded-sm border border-emerald-900/40 bg-emerald-950/20 px-3 py-2 font-mono text-[9px] uppercase tracking-widest text-emerald-400/80">
-                  The Garden — survived
-                </p>
+                <>
+                  <p className="rounded-sm border border-emerald-900/40 bg-emerald-950/20 px-3 py-2 font-mono text-[9px] uppercase tracking-widest text-emerald-400/80">
+                    The Garden — survived · Descent Shaft unlocked
+                  </p>
+                  <Button
+                    variant="accent"
+                    onClick={() => {
+                      playInteractSound();
+                      setRoom("descent-shaft");
+                      onEnterFinalApproach();
+                      showFeedback("Final Approach — plug confrontation ahead");
+                    }}
+                    disabled={controlsDisabled || uiBlocked || gardenActive}
+                    className="h-12 w-full font-mono text-xs uppercase tracking-[0.2em]"
+                  >
+                    Descend — Final Approach
+                  </Button>
+                </>
               ) : null}
             </div>
           ) : null}

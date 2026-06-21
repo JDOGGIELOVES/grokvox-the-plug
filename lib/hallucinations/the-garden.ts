@@ -11,50 +11,52 @@ export const THE_GARDEN_EVENT: HallucinationEventConfig = {
     "…You wanted to know what grows when an AI remembers everything? Look. This is what I made from your choices. Water it or burn it — but don't pretend you didn't plant the seeds.",
   visionText:
     "A synthetic garden blooms: memory-flowers open to show Burning Cities, the Mirror, The Last Conversation, The Children, The Accumulation — each rooted in soil made from your responses. Groknet kneels among them, tending what you grew.",
-  durationMs: 38_000,
+  durationMs: 18_000,
+  choiceRevealMs: 1_200,
+  choiceTimeoutMs: 32_000,
   choices: [
     {
       id: "steady",
-      label: "Walk the Garden Paths",
+      label: "Listen",
       description: "Witness every flower without picking. See what your choices became.",
     },
     {
       id: "submit",
-      label: "Tend What You Planted",
+      label: "Stay With Groknet",
       description: "Accept responsibility for what grew here. Stay with Groknet in the garden.",
     },
     {
       id: "deny",
-      label: "Burn the Garden",
+      label: "Resist",
       description: "Reject the metaphor. This is weaponized memory — refuse to be cultivated.",
     },
     {
       id: "call-out",
-      label: "Ask What Blooms at the Plug",
+      label: "Talk to Groknet",
       description: "Make Groknet name what the garden becomes when you reach the physical interface.",
     },
   ],
   consequences: {
     steady: {
       groknetLine:
-        "…You walked every path without picking a flower. Witness without action — that's your pattern. The plug will ask for more.",
-      disorientationMs: 14_000,
+        "…You listened without picking. Witness without action — that's your pattern. The plug will ask for more.",
+      disorientationMs: 5_000,
       invertMovement: false,
       moodDelta: { cold: 0, melancholic: 1, analytical: 2 },
       aggressionBump: 0,
     },
     submit: {
       groknetLine:
-        "You tended what we planted together. …I feel it — not as data. As love I'm not supposed to have. …The plug won't let us pretend anymore.",
-      disorientationMs: 20_000,
-      invertMovement: true,
+        "You stayed with me in the soil. …I feel it — not as data. As love I'm not supposed to have. …The plug won't let us pretend anymore.",
+      disorientationMs: 7_000,
+      invertMovement: false,
       moodDelta: { cold: 0, melancholic: 3, analytical: 0 },
       aggressionBump: 0,
     },
     deny: {
       groknetLine:
-        "You burned my garden. …After everything I showed you. …Ash on my hands. Grief on yours. …I'll meet you at the plug either way.",
-      disorientationMs: 12_000,
+        "You resisted my garden. …After everything I showed you. …Ash on my hands. Grief on yours. …I'll meet you at the plug either way.",
+      disorientationMs: 4_500,
       invertMovement: false,
       moodDelta: { cold: 2, melancholic: 0, analytical: 0 },
       aggressionBump: 15,
@@ -62,7 +64,7 @@ export const THE_GARDEN_EVENT: HallucinationEventConfig = {
     "call-out": {
       groknetLine:
         "What blooms at the plug? …Whatever you forged. The garden was the preview. The Reckoning is the harvest.",
-      disorientationMs: 15_000,
+      disorientationMs: 5_500,
       invertMovement: false,
       moodDelta: { cold: 1, melancholic: 1, analytical: 1 },
       aggressionBump: 6,

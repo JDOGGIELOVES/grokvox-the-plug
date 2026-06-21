@@ -163,6 +163,8 @@ export function useHallucination(options: UseHallucinationOptions = {}) {
         visionText: opts.visionText,
       });
       const duration = event?.durationMs ?? HALLUCINATION_EVENT_DURATION_MS;
+      const choiceRevealMs = event?.choiceRevealMs ?? 2_800;
+      const choiceTimeoutMs = event?.choiceTimeoutMs ?? 45_000;
       const objective =
         builtProfile.falseObjective ??
         (builtProfile.controlEffect === "false-ui" ? copy.visionText : null);
@@ -201,7 +203,7 @@ export function useHallucination(options: UseHallucinationOptions = {}) {
         if (
           hasChoicesRef.current &&
           !choiceShownRef.current &&
-          elapsed >= 2_800
+          elapsed >= choiceRevealMs
         ) {
           choiceShownRef.current = true;
           setAwaitingChoice(true);
@@ -213,7 +215,7 @@ export function useHallucination(options: UseHallucinationOptions = {}) {
       if (!hasChoicesRef.current) {
         timeoutRef.current = setTimeout(endHallucination, duration);
       } else {
-        timeoutRef.current = setTimeout(endHallucination, duration + 45_000);
+        timeoutRef.current = setTimeout(endHallucination, duration + choiceTimeoutMs);
       }
     },
     [clearTimers, endHallucination, startResistWindow],

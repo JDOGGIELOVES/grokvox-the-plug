@@ -11,6 +11,7 @@ import { PlugChamberSection } from "@/components/chapter/PlugChamberSection";
 import { GameHeader } from "@/components/chapter/GameHeader";
 import { GameShell } from "@/components/chapter/GameShell";
 import { AreaTransition } from "@/components/chapter/AreaTransition";
+import { GardenHallucinationPrompt } from "@/components/GardenHallucinationPrompt";
 import { HallucinationChoicePrompt } from "@/components/HallucinationChoicePrompt";
 import { HallucinationEffect } from "@/components/HallucinationEffect";
 import { useGameClock } from "@/hooks/useGameClock";
@@ -60,7 +61,7 @@ import { getHallucinationEvent } from "@/lib/hallucinations";
 import { getPersonalizedChoiceConsequence } from "@/lib/hallucinations/hallucination-consequences";
 
 import {
-  getPersonalizedGardenChoiceEcho,
+  getGardenExitWhisper,
   getPersonalizedGardenVision,
   getPersonalizedGardenVoice,
 } from "@/lib/hallucinations/the-garden-personalized";
@@ -243,6 +244,11 @@ export function ActThreeReckoning() {
   );
   const stateRef = useRef(state);
   stateRef.current = state;
+  const dialogueContextRef = useRef<ActThreeDialogueContext | null>(null);
+  const gardenExitHandledRef = useRef(false);
+  const groknetWhisperRef = useRef<
+    (line: string, persistMs?: number, speak?: boolean) => void
+  >(() => {});
   const gardenDelayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const shakeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const ambientIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -266,16 +272,27 @@ export function ActThreeReckoning() {
     endHallucination,
   } = useHallucination({
     onEnd: (endedEvent) => {
-      if (endedEvent === "the-garden") {
-        setState((s) =>
-          s
-            ? {
-                ...s,
-                gardenSurvived: true,
-                screenShaking: false,
-              }
-            : s,
-        );
+      if (endedEvent !== "the-garden" || gardenExitHandledRef.current) return;
+
+      const ctx = dialogueContextRef.current;
+      gardenExitHandledRef.current = true;
+      setState((s) =>
+        s
+          ? {
+              ...s,
+              gardenSurvived: true,
+              screenShaking: false,
+              disorientation: {
+                active: true,
+                invertMovement: false,
+                endsAt: Date.now() + 2_500,
+              },
+              lastActionAt: Date.now(),
+            }
+          : s,
+      );
+      if (ctx) {
+        groknetWhisperRef.current(getGardenExitWhisper(ctx, null), 9000, true);
       }
     },
   });
@@ -401,6 +418,11 @@ export function ActThreeReckoning() {
     },
     [],
   );
+  groknetWhisperRef.current = setGroknetWhisper;
+
+  useEffect(() => {
+    dialogueContextRef.current = dialogueContext;
+  }, [dialogueContext]);
 
   const handlePlayerIntent = useCallback(
     (intent: PlayerIntent, line: string) => {
@@ -445,17 +467,98 @@ export function ActThreeReckoning() {
     }
   }, [resumeWhisper, setGroknetWhisper]);
 
+  const handleGardenBreakFree = useCallback(() => {
+    if (eventId !== "the-garden" || !dialogueContext) return;
+
+    gardenExitHandledRef.current = true;
+    endHallucination();
+    setState((s) =>
+      s
+        ? {
+            ...s,
+            gardenSurvived: true,
+            screenShaking: false,
+            disorientation: {
+              active: true,
+              invertMovement: false,
+              endsAt: Date.now() + 2_500,
+            },
+            lastActionAt: Date.now(),
+          }
+        : s,
+    );
+    setGroknetWhisper(getGardenExitWhisper(dialogueContext, null), 9000, true);
+  }, [dialogueContext, endHallucination, eventId, setGroknetWhisper]);
+
   const handleHallucinationChoice = useCallback(
     (choice: HallucinationResponseChoice) => {
       const event = getHallucinationEvent(eventId);
       const consequence = event?.consequences[choice];
       if (!consequence) return;
 
+      if (eventId === "the-garden") {
+        gardenExitHandledRef.current = true;
+        endHallucination();
+
+        setState((s) => {
+          if (!s) return s;
+          return {
+            ...s,
+            gardenChoice: choice,
+            gardenSurvived: true,
+            screenShaking: false,
+            finalMood: {
+              cold: Math.min(
+                3,
+                Math.max(0, s.finalMood.cold + consequence.moodDelta.cold),
+              ),
+              melancholic: Math.min(
+                3,
+                Math.max(
+                  0,
+                  s.finalMood.melancholic + consequence.moodDelta.melancholic,
+                ),
+              ),
+              analytical: Math.min(
+                3,
+                Math.max(
+                  0,
+                  s.finalMood.analytical + consequence.moodDelta.analytical,
+                ),
+              ),
+            },
+            disorientation: {
+              active: true,
+              invertMovement: consequence.invertMovement,
+              endsAt: Date.now() + consequence.disorientationMs,
+            },
+            lastActionAt: Date.now(),
+          };
+        });
+
+        if (dialogueContext) {
+          const personalized = getPersonalizedChoiceConsequence(
+            eventId,
+            choice,
+            consequence.groknetLine,
+            dialogueContext,
+          );
+          setGroknetWhisper(personalized, 6500, true);
+          window.setTimeout(() => {
+            setGroknetWhisper(
+              getGardenExitWhisper(dialogueContext, choice),
+              10_000,
+              true,
+            );
+          }, 3800);
+        }
+        return;
+      }
+
       setState((s) => {
         if (!s) return s;
         return {
           ...s,
-          ...(eventId === "the-garden" ? { gardenChoice: choice } : {}),
           finalMood: {
             cold: Math.min(
               3,
@@ -488,27 +591,14 @@ export function ActThreeReckoning() {
           )
         : consequence.groknetLine;
       setGroknetWhisper(personalized, 8000, true);
-
-      if (eventId === "the-garden" && dialogueContext) {
-        const echo = getPersonalizedGardenChoiceEcho(dialogueContext, choice);
-        if (echo) {
-          window.setTimeout(() => setGroknetWhisper(echo, 7500, true), 5000);
-        }
-        window.setTimeout(() => {
-          setGroknetWhisper(
-            "The Garden fades. …Descent Shaft north — the Plug Chamber waits below.",
-            7500,
-            true,
-          );
-        }, 9000);
-      }
     },
     [dialogueContext, endHallucination, eventId, setGroknetWhisper],
   );
 
   const scheduleTheGarden = useCallback(() => {
-    if (!dialogueContext || state?.gardenTriggered) return;
+    if (!dialogueContext || state?.gardenSurvived || active) return;
 
+    gardenExitHandledRef.current = false;
     setState((s) =>
       s ? { ...s, gardenTriggered: true, screenShaking: true } : s,
     );
@@ -528,12 +618,19 @@ export function ActThreeReckoning() {
       playHallucinationPeakSound();
       triggerHallucination({
         eventId: "the-garden",
+        personality: dialogueContext.dominantPersonality,
         visionText: getPersonalizedGardenVision(dialogueContext),
         voiceLine: getPersonalizedGardenVoice(dialogueContext),
       });
       gardenDelayRef.current = null;
-    }, 3200);
-  }, [dialogueContext, setGroknetWhisper, state?.gardenTriggered, triggerHallucination]);
+    }, 2200);
+  }, [
+    active,
+    dialogueContext,
+    setGroknetWhisper,
+    state?.gardenSurvived,
+    triggerHallucination,
+  ]);
 
   const completeAreaTransition = useCallback(() => {
     setAreaTransition(null);
@@ -728,7 +825,7 @@ export function ActThreeReckoning() {
   }, [actTwo, clock.remainingMs, state]);
 
   useEffect(() => {
-    if (!dialogueContext || !state || state.phase !== "playing") return;
+    if (!dialogueContext || !state || state.phase !== "playing" || active) return;
 
     const lateStage =
       state.actThreeStage === "plug-chamber" ||
@@ -782,6 +879,7 @@ export function ActThreeReckoning() {
       if (ambientIntervalRef.current) clearInterval(ambientIntervalRef.current);
     };
   }, [
+    active,
     dialogueContext,
     setGroknetWhisper,
     state?.phase,
@@ -928,6 +1026,7 @@ export function ActThreeReckoning() {
               thresholdPromptOpen={state.thresholdPromptOpen}
               thresholdBeatIndex={state.thresholdBeatIndex}
               gardenSurvived={state.gardenSurvived}
+              gardenActive={active && eventId === "the-garden"}
               majorHackOpen={state.majorHackOpen}
               onOpenThresholdPrompt={() =>
                 setState((s) =>
@@ -1201,11 +1300,20 @@ export function ActThreeReckoning() {
         visionText={visionText}
         eventTitle={eventTitle}
         awaitingChoice={awaitingChoice}
+        profile={profile}
       />
 
-      {awaitingChoice ? (
+      {active && eventId === "the-garden" && dialogueContext ? (
+        <GardenHallucinationPrompt
+          context={dialogueContext}
+          phase={awaitingChoice ? "choices" : "rising"}
+          onChoose={handleHallucinationChoice}
+          onBreakFree={handleGardenBreakFree}
+        />
+      ) : awaitingChoice ? (
         <HallucinationChoicePrompt
           eventId={eventId}
+          profile={profile}
           onChoose={handleHallucinationChoice}
         />
       ) : null}

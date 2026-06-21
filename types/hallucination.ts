@@ -71,6 +71,10 @@ export type HallucinationEventConfig = {
   groknetVoiceLine: string;
   visionText: string;
   durationMs: number;
+  /** Ms after trigger before choice UI appears (default 2800) */
+  choiceRevealMs?: number;
+  /** Max ms to wait for a choice after reveal (default 45000) */
+  choiceTimeoutMs?: number;
   choices: HallucinationChoice[];
   consequences: Record<HallucinationResponseChoice, HallucinationConsequence>;
   /** Primary sensory channel */

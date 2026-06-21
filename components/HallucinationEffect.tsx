@@ -48,7 +48,9 @@ export function HallucinationEffect({
       <div
         className={cn(
           "hallucination-blocker fixed inset-0 z-[45]",
-          awaitingChoice ? "pointer-events-none" : "cursor-not-allowed",
+          awaitingChoice || isTheGarden
+            ? "pointer-events-none"
+            : "cursor-not-allowed",
         )}
         aria-hidden={awaitingChoice}
       />
@@ -235,7 +237,7 @@ export function HallucinationEffect({
             </p>
           ) : null}
 
-          {message ? (
+          {message && !isTheGarden ? (
             <p
               className={cn(
                 "hallucination-message max-w-xl text-center font-mono text-xl leading-relaxed tracking-wide sm:text-2xl",
@@ -300,8 +302,9 @@ export function HallucinationEffect({
               isConvergence && "text-amber-300",
               isLastConversation && "text-rose-300",
               isTheChildren && "text-amber-300",
-              isAccumulation && "text-cyan-300",
-              isWhisperEcho && "text-rose-300",
+                isAccumulation && "text-cyan-300",
+                isTheGarden && "text-emerald-300",
+                isWhisperEcho && "text-rose-300",
               isCorridorShift && "text-zinc-300",
               isDirectiveGhost && "text-orange-300",
               !isBurningCities &&
@@ -310,13 +313,20 @@ export function HallucinationEffect({
                 !isLastConversation &&
                 !isTheChildren &&
                 !isAccumulation &&
+                !isTheGarden &&
                 !isWhisperEcho &&
                 !isCorridorShift &&
                 !isDirectiveGhost &&
                 "text-red-300",
             )}
           >
-            {awaitingChoice ? "Choose your response" : "Signal compromised"}
+            {awaitingChoice
+              ? isTheGarden
+                ? "Respond below — or Break Free"
+                : "Choose your response"
+              : isTheGarden
+                ? "Neural Garden blooming"
+                : "Signal compromised"}
           </p>
         ) : null}
       </div>
