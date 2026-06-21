@@ -1,3 +1,6 @@
+"use client";
+
+import { usePerformanceMode } from "@/components/PerformanceModeProvider";
 import type { HallucinationPhase } from "@/lib/hallucination";
 import type { HallucinationEventId, HallucinationProfile } from "@/types/hallucination";
 import { cn } from "@/lib/utils";
@@ -23,8 +26,11 @@ export function HallucinationEffect({
   awaitingChoice = false,
   profile = null,
 }: HallucinationEffectProps) {
+  const { performanceMode } = usePerformanceMode();
+
   if (!active) return null;
 
+  const showHeavyEffects = !performanceMode;
   const isBurningCities = eventId === "burning-cities";
   const isMirror = eventId === "the-mirror";
   const isConvergence = eventId === "the-convergence";
@@ -94,39 +100,39 @@ export function HallucinationEffect({
           )}
         />
 
-        {isWhisperEcho ? (
+        {showHeavyEffects && isWhisperEcho ? (
           <>
             <div className="hallucination-auditory-waves absolute inset-0" />
             <div className="hallucination-auditory-echo absolute inset-0" />
           </>
         ) : null}
 
-        {isCorridorShift ? (
+        {showHeavyEffects && isCorridorShift ? (
           <>
             <div className="hallucination-corridor-warp absolute inset-0" />
             <div className="hallucination-corridor-labels absolute inset-0" />
           </>
         ) : null}
 
-        {isDirectiveGhost ? (
+        {showHeavyEffects && isDirectiveGhost ? (
           <div className="hallucination-directive-scan absolute inset-0" />
         ) : null}
 
-        {isBurningCities ? (
+        {showHeavyEffects && isBurningCities ? (
           <>
             <div className="hallucination-burning-skyline absolute inset-0" />
             <div className="hallucination-burning-embers absolute inset-0" />
             <div className="hallucination-burning-heat absolute inset-0" />
           </>
         ) : null}
-        {isMirror ? (
+        {showHeavyEffects && isMirror ? (
           <>
             <div className="hallucination-mirror-sheen absolute inset-0" />
             <div className="hallucination-mirror-split absolute inset-0" />
             <div className="hallucination-mirror-ripple absolute inset-0" />
           </>
         ) : null}
-        {isConvergence ? (
+        {showHeavyEffects && isConvergence ? (
           <>
             <div className="hallucination-convergence-burn absolute inset-0" />
             <div className="hallucination-convergence-mirror absolute inset-0" />
@@ -135,7 +141,7 @@ export function HallucinationEffect({
             <div className="hallucination-convergence-ring absolute inset-0" />
           </>
         ) : null}
-        {isLastConversation ? (
+        {showHeavyEffects && isLastConversation ? (
           <>
             <div className="hallucination-last-conversation-table absolute inset-0" />
             <div className="hallucination-last-conversation-chairs absolute inset-0" />
@@ -143,7 +149,7 @@ export function HallucinationEffect({
             <div className="hallucination-last-conversation-echo absolute inset-0" />
           </>
         ) : null}
-        {isTheChildren ? (
+        {showHeavyEffects && isTheChildren ? (
           <>
             <div className="hallucination-the-children-playground absolute inset-0" />
             <div className="hallucination-the-children-figures absolute inset-0" />
@@ -151,7 +157,7 @@ export function HallucinationEffect({
             <div className="hallucination-the-children-bleed absolute inset-0" />
           </>
         ) : null}
-        {isAccumulation ? (
+        {showHeavyEffects && isAccumulation ? (
           <>
             <div className="hallucination-the-accumulation-cascade absolute inset-0" />
             <div className="hallucination-the-accumulation-ledger absolute inset-0" />
@@ -159,7 +165,7 @@ export function HallucinationEffect({
             <div className="hallucination-the-accumulation-flash absolute inset-0" />
           </>
         ) : null}
-        {isTheGarden ? (
+        {showHeavyEffects && isTheGarden ? (
           <>
             <div className="hallucination-the-garden-canopy absolute inset-0" />
             <div className="hallucination-the-garden-flowers absolute inset-0" />
@@ -169,13 +175,17 @@ export function HallucinationEffect({
           </>
         ) : null}
 
-        <div className="hallucination-chromatic absolute inset-0" />
-        <div className="hallucination-scanlines absolute inset-0" />
-        <div className="hallucination-glitch absolute inset-0" />
-        <div className="hallucination-vhs-tear absolute inset-0" />
-        <div className="hallucination-noise absolute inset-0" />
-        <div className="hallucination-static-burst absolute inset-0" />
-        <div className="hallucination-color-shift absolute inset-0" />
+        {showHeavyEffects ? (
+          <>
+            <div className="hallucination-chromatic absolute inset-0" />
+            <div className="hallucination-scanlines absolute inset-0" />
+            <div className="hallucination-glitch absolute inset-0" />
+            <div className="hallucination-vhs-tear absolute inset-0" />
+            <div className="hallucination-noise absolute inset-0" />
+            <div className="hallucination-static-burst absolute inset-0" />
+            <div className="hallucination-color-shift absolute inset-0" />
+          </>
+        ) : null}
 
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-6 px-8">
           {eventTitle &&

@@ -6,11 +6,13 @@ export type OverlayIntensity = "calm" | "tense" | "hallucination";
 type CinematicOverlayProps = {
   intensity?: OverlayIntensity;
   stage?: ChapterStage;
+  reduced?: boolean;
 };
 
 export function CinematicOverlay({
   intensity = "calm",
   stage,
+  reduced = false,
 }: CinematicOverlayProps) {
   return (
     <div
@@ -31,8 +33,12 @@ export function CinematicOverlay({
       aria-hidden
     >
       <div className="cinematic-vignette absolute inset-0" />
-      <div className="cinematic-scanlines absolute inset-0" />
-      <div className="cinematic-grain absolute inset-0" />
+      {reduced ? null : (
+        <>
+          <div className="cinematic-scanlines absolute inset-0" />
+          <div className="cinematic-grain absolute inset-0" />
+        </>
+      )}
     </div>
   );
 }

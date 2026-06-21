@@ -1,3 +1,4 @@
+import { isPerformanceMode } from "@/lib/performance-mode";
 import type { GroknetPersonality } from "@/types/dialogue";
 import type {
   HallucinationEventConfig,
@@ -189,18 +190,24 @@ export function buildHallucinationProfile(
     defaults.intensity + (overlay?.intensityBoost ?? 0),
   );
 
+  const reducedEffects = isPerformanceMode();
   const cssClasses = [
     TYPE_CSS[type],
     ...secondaryTypes.map((t) => TYPE_CSS[t]),
     PERSONALITY_CSS[personality],
-    defaults.screenShake || merged?.screenShake ? "hallucination-effect-shake" : "",
-    defaults.controlEffect === "false-ui" || merged?.controlEffect === "false-ui"
+    !reducedEffects && (defaults.screenShake || merged?.screenShake)
+      ? "hallucination-effect-shake"
+      : "",
+    !reducedEffects &&
+    (defaults.controlEffect === "false-ui" || merged?.controlEffect === "false-ui")
       ? "hallucination-effect-false-ui"
       : "",
-    defaults.controlEffect === "invert" || merged?.controlEffect === "invert"
+    !reducedEffects &&
+    (defaults.controlEffect === "invert" || merged?.controlEffect === "invert")
       ? "hallucination-effect-invert"
       : "",
-    defaults.controlEffect === "lag" || merged?.controlEffect === "lag"
+    !reducedEffects &&
+    (defaults.controlEffect === "lag" || merged?.controlEffect === "lag")
       ? "hallucination-effect-lag"
       : "",
   ].filter(Boolean);
@@ -213,7 +220,8 @@ export function buildHallucinationProfile(
     intensity,
     resistible: merged?.resistible ?? defaults.resistible,
     resistWindowMs: merged?.resistWindowMs ?? defaults.resistWindowMs,
-    screenShake: merged?.screenShake ?? defaults.screenShake,
+    screenShake:
+      !reducedEffects && (merged?.screenShake ?? defaults.screenShake),
     controlEffect: merged?.controlEffect ?? defaults.controlEffect,
     falseObjective:
       overlay?.falseObjective ??

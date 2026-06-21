@@ -1,3 +1,4 @@
+import { isPerformanceMode } from "@/lib/performance-mode";
 import type { GroknetPersonality } from "@/types/dialogue";
 import type { HallucinationType } from "@/types/hallucination";
 
@@ -86,7 +87,9 @@ export function playHallucinationSurgeSound(
       playTone(120, 0.35, 0.035, "square", 80);
   }
 
-  startHallucinationDistortion(personality);
+  if (!isPerformanceMode()) {
+    startHallucinationDistortion(personality);
+  }
 }
 
 export function startHallucinationDistortion(

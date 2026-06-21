@@ -1,3 +1,6 @@
+"use client";
+
+import { usePerformanceMode } from "@/components/PerformanceModeProvider";
 import {
   CinematicOverlay,
   type OverlayIntensity,
@@ -26,19 +29,27 @@ export function GameShell({
   stage,
   hallucinationActive = false,
 }: GameShellProps) {
+  const { performanceMode } = usePerformanceMode();
   const resolvedIntensity = hallucinationActive ? "hallucination" : overlayIntensity;
+  const effectiveShaking = shaking && !performanceMode;
+  const effectiveHallucinationShell =
+    hallucinationActive && !performanceMode;
 
   return (
     <div
       className={cn(
         "game-shell relative flex min-h-screen flex-col bg-background text-foreground",
         `game-shell-${variant}`,
-        shaking && "screen-shake-detection",
-        hallucinationActive && "game-shell-hallucination-active",
+        effectiveShaking && "screen-shake-detection",
+        effectiveHallucinationShell && "game-shell-hallucination-active",
         className,
       )}
     >
-      <CinematicOverlay intensity={resolvedIntensity} stage={stage} />
+      <CinematicOverlay
+        intensity={resolvedIntensity}
+        stage={stage}
+        reduced={performanceMode}
+      />
 
       <div className="game-shell-glow pointer-events-none absolute inset-0" />
       <div className="pointer-events-none absolute inset-0 landing-grid opacity-[0.12]" />
@@ -52,6 +63,11 @@ export function GameShell({
       <footer className="relative z-10 border-t border-zinc-800/50 py-4 sm:py-5">
         <p className="text-center font-mono text-xs uppercase tracking-[0.35em] text-zinc-400">
           Groknet is watching · Sector 07
+          {performanceMode ? (
+            <span className="mt-1 block text-[9px] tracking-[0.25em] text-zinc-600">
+              Performance mode
+            </span>
+          ) : null}
         </p>
       </footer>
     </div>

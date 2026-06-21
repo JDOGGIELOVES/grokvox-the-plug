@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Orbitron } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { PerformanceModeProvider } from "@/components/PerformanceModeProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -85,7 +86,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${orbitron.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        {children}
+        <PerformanceModeProvider>{children}</PerformanceModeProvider>
         <Analytics />
       </body>
     </html>

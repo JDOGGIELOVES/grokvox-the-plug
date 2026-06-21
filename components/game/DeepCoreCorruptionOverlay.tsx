@@ -1,5 +1,7 @@
 "use client";
 
+import { usePerformanceMode } from "@/components/PerformanceModeProvider";
+import { getDeepCoreFlickerIntervalMs } from "@/lib/performance-mode";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -14,14 +16,20 @@ export function DeepCoreCorruptionOverlay({
   corruptionLine = null,
   personalityPulse = null,
 }: DeepCoreCorruptionOverlayProps) {
+  const { performanceMode } = usePerformanceMode();
   const [flicker, setFlicker] = useState(false);
 
   useEffect(() => {
+    if (performanceMode) {
+      setFlicker(false);
+      return;
+    }
+
     const interval = window.setInterval(() => {
       setFlicker(Math.random() > 0.55);
-    }, intense ? 280 : 520);
+    }, getDeepCoreFlickerIntervalMs(intense));
     return () => window.clearInterval(interval);
-  }, [intense]);
+  }, [intense, performanceMode]);
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-sm">
@@ -32,15 +40,19 @@ export function DeepCoreCorruptionOverlay({
           flicker && "deep-core-flicker-active",
         )}
       />
-      <div
-        aria-hidden
-        className="deep-core-corrupted-scan absolute inset-0 opacity-40"
-      />
-      <div
-        aria-hidden
-        className="deep-core-static-noise absolute inset-0 opacity-[0.07]"
-      />
-      {intense ? (
+      {performanceMode ? null : (
+        <>
+          <div
+            aria-hidden
+            className="deep-core-corrupted-scan absolute inset-0 opacity-40"
+          />
+          <div
+            aria-hidden
+            className="deep-core-static-noise absolute inset-0 opacity-[0.07]"
+          />
+        </>
+      )}
+      {intense && !performanceMode ? (
         <div
           aria-hidden
           className="deep-core-red-strobe absolute inset-0"

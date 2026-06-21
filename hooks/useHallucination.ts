@@ -7,6 +7,10 @@ import {
   stopHallucinationDistortion,
 } from "@/lib/hallucination-audio";
 import {
+  getHallucinationPhaseIntervalMs,
+  getHallucinationResistIntervalMs,
+} from "@/lib/performance-mode";
+import {
   buildHallucinationProfile,
   resolveHallucinationCopy,
 } from "@/lib/hallucination-profiles";
@@ -142,7 +146,7 @@ export function useHallucination(options: UseHallucinationOptions = {}) {
           resistIntervalRef.current = null;
         }
       }
-    }, 50);
+    }, getHallucinationResistIntervalMs());
   }, []);
 
   const triggerHallucination = useCallback(
@@ -210,7 +214,7 @@ export function useHallucination(options: UseHallucinationOptions = {}) {
           setResistWindowOpen(false);
           onChoiceRequiredRef.current?.(currentEventIdRef.current);
         }
-      }, 100);
+      }, getHallucinationPhaseIntervalMs());
 
       if (!hasChoicesRef.current) {
         timeoutRef.current = setTimeout(endHallucination, duration);

@@ -11,6 +11,7 @@ import { AreaBreadcrumb } from "@/components/chapter/AreaBreadcrumb";
 import { FeedbackToast } from "@/components/ui/FeedbackToast";
 import { Button } from "@/components/ui/Button";
 import { useSecurityHubMovement } from "@/hooks/useSecurityHubMovement";
+import { getDroneAnimationIntervalMs } from "@/lib/performance-mode";
 import {
   canExitToDataArchives,
   getSecurityHubDirectionLabel,
@@ -146,7 +147,7 @@ export function SecurityHubSection({
           return next;
         });
       }
-    }, 50);
+    }, getDroneAnimationIntervalMs());
     return () => clearInterval(interval);
   }, [s04Direction, s07Direction, s04Status, s07Status]);
 

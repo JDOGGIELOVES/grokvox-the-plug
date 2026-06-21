@@ -4519,3 +4519,153 @@ body {
     transform: translateY(0);
   }
 }
+
+/* ── Performance Mode (mobile / low-end auto-detect) ── */
+
+html.performance-mode .cinematic-grain,
+html.performance-mode .cinematic-scanlines,
+html.performance-mode .landing-scanlines,
+html.performance-mode .landing-scan-sweep,
+html.performance-mode .landing-particle,
+html.performance-mode .landing-bg-drift,
+html.performance-mode .landing-light-flicker,
+html.performance-mode .landing-horizon-pulse,
+html.performance-mode .landing-door-glow,
+html.performance-mode .intro-star-twinkle,
+html.performance-mode .intro-montage-static,
+html.performance-mode .intro-montage-scan,
+html.performance-mode .intro-title-particles,
+html.performance-mode .lab-scan,
+html.performance-mode .perimeter-heat-haze,
+html.performance-mode .residential-breath-haze,
+html.performance-mode .residential-heartbeat-ring,
+html.performance-mode .research-lab-scan,
+html.performance-mode .research-lab-pressure,
+html.performance-mode .server-farm-rack-glow,
+html.performance-mode .server-farm-coolant,
+html.performance-mode .server-farm-pressure,
+html.performance-mode .deep-core-tremor-glow,
+html.performance-mode .deep-core-fracture-lines,
+html.performance-mode .deep-core-static-noise,
+html.performance-mode .deep-core-red-strobe,
+html.performance-mode .deep-core-corrupted-scan,
+html.performance-mode .plug-chamber-frost,
+html.performance-mode .plug-chamber-glow,
+html.performance-mode .plug-interface-pulse,
+html.performance-mode .hallucination-chromatic,
+html.performance-mode .hallucination-scanlines,
+html.performance-mode .hallucination-glitch,
+html.performance-mode .hallucination-vhs-tear,
+html.performance-mode .hallucination-noise,
+html.performance-mode .hallucination-static-burst,
+html.performance-mode .hallucination-color-shift,
+html.performance-mode .hallucination-burning-skyline,
+html.performance-mode .hallucination-burning-embers,
+html.performance-mode .hallucination-burning-heat,
+html.performance-mode .hallucination-mirror-sheen,
+html.performance-mode .hallucination-mirror-split,
+html.performance-mode .hallucination-mirror-ripple,
+html.performance-mode .hallucination-convergence-burn,
+html.performance-mode .hallucination-convergence-mirror,
+html.performance-mode .hallucination-convergence-cascade,
+html.performance-mode .hallucination-convergence-flash,
+html.performance-mode .hallucination-convergence-ring,
+html.performance-mode .hallucination-last-conversation-table,
+html.performance-mode .hallucination-last-conversation-chairs,
+html.performance-mode .hallucination-last-conversation-glow,
+html.performance-mode .hallucination-last-conversation-echo,
+html.performance-mode .hallucination-the-children-playground,
+html.performance-mode .hallucination-the-children-figures,
+html.performance-mode .hallucination-the-children-voices,
+html.performance-mode .hallucination-the-children-bleed,
+html.performance-mode .hallucination-the-accumulation-cascade,
+html.performance-mode .hallucination-the-accumulation-ledger,
+html.performance-mode .hallucination-the-accumulation-synthesis,
+html.performance-mode .hallucination-the-accumulation-flash,
+html.performance-mode .hallucination-the-garden-canopy,
+html.performance-mode .hallucination-the-garden-flowers,
+html.performance-mode .hallucination-the-garden-rain,
+html.performance-mode .hallucination-the-garden-roots,
+html.performance-mode .hallucination-the-garden-bloom,
+html.performance-mode .hallucination-auditory-waves,
+html.performance-mode .hallucination-auditory-echo,
+html.performance-mode .hallucination-corridor-warp,
+html.performance-mode .hallucination-corridor-labels,
+html.performance-mode .hallucination-directive-scan,
+html.performance-mode .accent-pulse,
+html.performance-mode .intro-perimeter-light,
+html.performance-mode .intro-facility-scan,
+html.performance-mode .intro-montage-radar,
+html.performance-mode .intro-radar-ring,
+html.performance-mode .intro-montage-fire-glow,
+html.performance-mode .intro-montage-live,
+html.performance-mode .status-blink {
+  display: none !important;
+}
+
+html.performance-mode .title-glow {
+  text-shadow: none !important;
+}
+
+html.performance-mode .intro-facility-zoom {
+  animation: none !important;
+  transform: scale(1) !important;
+}
+
+html.performance-mode .screen-shake-detection,
+html.performance-mode .hallucination-effect-shake,
+html.performance-mode .game-shell-hallucination-active,
+html.performance-mode .hallucination-effect-lag,
+html.performance-mode .hallucination-effect-invert,
+html.performance-mode .disorientation-active,
+html.performance-mode .hallucination-peak {
+  animation: none !important;
+  filter: none !important;
+  transform: none !important;
+}
+
+html.performance-mode .hallucination-overlay {
+  backdrop-filter: none !important;
+}
+
+html.performance-mode .hallucination-tint {
+  opacity: 0.72 !important;
+}
+
+html.performance-mode .lab-pulse {
+  animation: none !important;
+  opacity: 0.85;
+}
+
+html.performance-mode .deep-core-flicker-lights {
+  animation: none !important;
+  opacity: 0.35;
+}
+
+html.performance-mode .blur-3xl {
+  display: none !important;
+}
+
+html.performance-mode [class*="backdrop-blur"] {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+html.performance-mode .game-shell-glow,
+html.performance-mode .landing-grid {
+  opacity: 0.06 !important;
+}
+
+html.performance-mode .landing-vignette,
+html.performance-mode .cinematic-vignette {
+  opacity: 0.35 !important;
+}
+
+html.performance-mode .act-three-finale-cinematic-glow,
+html.performance-mode .act-three-finale-vignette {
+  opacity: 0.5 !important;
+}
+
+html.performance-mode .drone-patrol-smooth {
+  transition-duration: 200ms !important;
+}

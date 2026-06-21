@@ -1,5 +1,7 @@
 "use client";
 
+import { usePerformanceMode } from "@/components/PerformanceModeProvider";
+import { getIntroStarCount } from "@/lib/performance-mode";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   INTRO_SCENES,
@@ -50,8 +52,16 @@ function montageVariantClass(variant: MontageFrame["variant"]) {
 }
 
 function FacilityScene() {
+  const { performanceMode } = usePerformanceMode();
+  const starCount = getIntroStarCount();
+
   return (
-    <div className="intro-facility-zoom absolute inset-0">
+    <div
+      className={cn(
+        "absolute inset-0",
+        !performanceMode && "intro-facility-zoom",
+      )}
+    >
       <svg
         className="absolute inset-0 h-full w-full"
         viewBox="0 0 1440 900"
@@ -86,7 +96,7 @@ function FacilityScene() {
 
         <rect width="1440" height="900" fill="url(#intro-sky)" />
 
-        {Array.from({ length: 140 }).map((_, i) => {
+        {Array.from({ length: starCount }).map((_, i) => {
           const x = ((i * 137) % 1440) + (i % 3) * 12;
           const y = ((i * 89) % 380) + (i % 5) * 8;
           const r = 0.35 + (i % 4) * 0.28;
@@ -98,8 +108,12 @@ function FacilityScene() {
               r={r}
               fill="#e4e4e7"
               opacity={0.12 + (i % 7) * 0.05}
-              className="intro-star-twinkle"
-              style={{ animationDelay: `${(i % 11) * 0.35}s` }}
+              className={performanceMode ? undefined : "intro-star-twinkle"}
+              style={
+                performanceMode
+                  ? undefined
+                  : { animationDelay: `${(i % 11) * 0.35}s` }
+              }
             />
           );
         })}
@@ -178,12 +192,15 @@ function FacilityScene() {
 
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-black/70" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_85%_65%_at_50%_52%,transparent_25%,rgba(0,0,0,0.82)_100%)]" />
-      <div className="intro-facility-scan pointer-events-none absolute inset-0 opacity-40" />
+      {performanceMode ? null : (
+        <div className="intro-facility-scan pointer-events-none absolute inset-0 opacity-40" />
+      )}
     </div>
   );
 }
 
 function MontageScene({ frameIndex }: { frameIndex: number }) {
+  const { performanceMode } = usePerformanceMode();
   const frame = MONTAGE_FRAMES[frameIndex];
   if (!frame) return null;
 
@@ -195,8 +212,12 @@ function MontageScene({ frameIndex }: { frameIndex: number }) {
         montageVariantClass(frame.variant),
       )}
     >
-      <div className="intro-montage-static absolute inset-0 opacity-35" />
-      <div className="intro-montage-scan absolute inset-0" />
+      {performanceMode ? null : (
+        <>
+          <div className="intro-montage-static absolute inset-0 opacity-35" />
+          <div className="intro-montage-scan absolute inset-0" />
+        </>
+      )}
       <div className="intro-montage-vignette absolute inset-0" />
 
       {frame.variant === "nuclear" ? (

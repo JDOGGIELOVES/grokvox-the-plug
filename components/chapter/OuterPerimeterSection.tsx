@@ -9,6 +9,7 @@ import { AreaBreadcrumb } from "@/components/chapter/AreaBreadcrumb";
 import { FeedbackToast } from "@/components/ui/FeedbackToast";
 import { Button } from "@/components/ui/Button";
 import { usePerimeterMovement } from "@/hooks/usePerimeterMovement";
+import { getDroneAnimationIntervalMs } from "@/lib/performance-mode";
 import {
   isInnerGateMove,
   movePerimeter,
@@ -99,7 +100,7 @@ export function OuterPerimeterSection({
         }
         return next;
       });
-    }, 50);
+    }, getDroneAnimationIntervalMs());
     return () => clearInterval(interval);
   }, [droneDirection, droneStatus]);
 

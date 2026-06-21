@@ -1,3 +1,6 @@
+"use client";
+
+import { usePerformanceMode } from "@/components/PerformanceModeProvider";
 import { Button } from "@/components/ui/Button";
 import type { DroneStatus } from "@/lib/drone";
 import type { PlayerInventory } from "@/types/inventory";
@@ -26,6 +29,7 @@ export function DronePatrol({
   onSneakPast,
   onDeployBeacon,
 }: DronePatrolProps) {
+  const { performanceMode } = usePerformanceMode();
   const statusLabel =
     status === "distracted"
       ? "Drone diverted"
@@ -72,7 +76,10 @@ export function DronePatrol({
 
         <div
           className={cn(
-            "absolute top-1/2 flex -translate-y-1/2 items-center gap-1 transition-[left] duration-100 ease-linear",
+            "absolute top-1/2 flex -translate-y-1/2 items-center gap-1 ease-linear",
+            performanceMode
+              ? "transition-[left] duration-200"
+              : "transition-[left] duration-100",
             status === "distracted" && "opacity-40",
           )}
           style={{ left: `calc(${position}% - 12px)` }}

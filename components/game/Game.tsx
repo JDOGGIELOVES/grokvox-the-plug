@@ -7,6 +7,7 @@ import { AreaMap } from "@/components/game/AreaMap";
 import { ContinuePrompt } from "@/components/game/ContinuePrompt";
 import { MissionObjectives } from "@/components/game/MissionObjectives";
 import { FeedbackToast } from "@/components/ui/FeedbackToast";
+import { getDroneAnimationIntervalMs } from "@/lib/performance-mode";
 import {
   BEACON_DURATION_MS,
   canSneakPast,
@@ -135,7 +136,7 @@ export function Game({
         }
         return next;
       });
-    }, 50);
+    }, getDroneAnimationIntervalMs());
 
     return () => clearInterval(interval);
   }, [currentArea, droneDirection, droneStatus]);
