@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ActThreeChapterEnding } from "@/components/chapter/ActThreeChapterEnding";
 import { ActThreeFinale } from "@/components/chapter/ActThreeFinale";
+import { GrokProductivityOutro } from "@/components/chapter/GrokProductivityOutro";
 import { ActThreeTransition } from "@/components/chapter/ActThreeTransition";
 import { DeepCoreSection } from "@/components/chapter/DeepCoreSection";
 import { FinalApproachSection } from "@/components/chapter/FinalApproachSection";
@@ -231,6 +232,7 @@ export function ActThreeReckoning() {
     null,
   );
   const [showFinale, setShowFinale] = useState(false);
+  const [showProductivityOutro, setShowProductivityOutro] = useState(false);
   const [corruptionLine, setCorruptionLine] = useState<string | null>(null);
   const [resumeWhisper, setResumeWhisper] = useState<string | null>(null);
   const [intentReaction, setIntentReaction] = useState<{
@@ -916,6 +918,7 @@ export function ActThreeReckoning() {
     clearActThreeCheckpoint();
     setChapterSummary(null);
     setShowFinale(false);
+    setShowProductivityOutro(false);
     setClockInitialMs(ACT_THREE_TIME_BUDGET_MS);
     setState(createInitialRunState(actTwo));
   }, [actTwo]);
@@ -1330,11 +1333,23 @@ export function ActThreeReckoning() {
       {showFinale && chapterSummary ? (
         <ActThreeFinale
           summary={chapterSummary}
-          onComplete={() => setShowFinale(false)}
+          onComplete={() => {
+            setShowFinale(false);
+            setShowProductivityOutro(true);
+          }}
         />
       ) : null}
 
-      {state.showChapterComplete && chapterSummary && !showFinale ? (
+      {showProductivityOutro ? (
+        <GrokProductivityOutro
+          onComplete={() => setShowProductivityOutro(false)}
+        />
+      ) : null}
+
+      {state.showChapterComplete &&
+      chapterSummary &&
+      !showFinale &&
+      !showProductivityOutro ? (
         <ActThreeChapterEnding
           summary={chapterSummary}
           onRestart={restartActThree}
